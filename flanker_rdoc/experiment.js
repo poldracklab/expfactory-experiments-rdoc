@@ -648,7 +648,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     stimulus_duration: 1000, //1000
     response_ends_trial: false,
     post_trial_gap: 0,
-    prompt: prompt_text,
+    // prompt: prompt_text, // should this be here, i commented it out, flashes instruct every trial
     on_finish: appendData,
   };
 
@@ -745,9 +745,9 @@ var flanker_rdoc_init = () => {
   //globals
   block_stims = jsPsych.randomization.repeat(test_stimuli, practice_len / 4);
 
-  flanker_rdoc_experiment.push(fullscreen);
-  flanker_rdoc_experiment.push(instruction_node);
-  flanker_rdoc_experiment.push(practiceNode);
+  // flanker_rdoc_experiment.push(fullscreen);
+  // flanker_rdoc_experiment.push(instruction_node);
+  // flanker_rdoc_experiment.push(practiceNode);
   flanker_rdoc_experiment.push(testNode);
   flanker_rdoc_experiment.push(post_task_block);
   flanker_rdoc_experiment.push(end_block);
