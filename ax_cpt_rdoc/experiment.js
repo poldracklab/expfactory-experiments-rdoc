@@ -158,12 +158,16 @@ var missed_response_thresh = 0.1;
 var practice_thresh = 3; // 3 blocks max
 
 // task specific variables
+
+// formatted: instruct_name, key_code, key_description
 var possible_responses = [
   ["index finger", ",", "comma key (,)"],
   ["middle finger", ".", "period key (.)"],
-]; // [instruct_name, key_code, key_description]
+];
+// choices for keyboard input
 var choices = [possible_responses[0][1], possible_responses[1][1]];
 
+// characters used in task
 var chars = "BCDEFGHIJLMNOPQRSTUVWZ";
 var trial_proportions = [
   "AX",
@@ -181,12 +185,12 @@ var practice_proportions = ["AX", "AX", "AX", "BX", "AY", "BY"];
 var numTestBlocks = 3;
 var numTrialsPerBlock = trial_proportions.length * 4;
 var numPracticeTrials = practice_proportions.length;
-
+// set empty and populate later with current trial data
 var currCondition = "";
 var currCue = "";
 var currStim = "";
 
-//rule reminder for practice
+// rule reminder for practice
 var prompt_text_list =
   '<ul style="text-align:left;">' +
   "<li>A -> X: " +
@@ -196,6 +200,7 @@ var prompt_text_list =
   possible_responses[1][0] +
   "</li>" +
   "</ul>";
+
 var prompt_text =
   "<div class = prompt_box>" +
   '<p class = center-block-text style = "font-size:16px; line-height:80%%;">A -> X: ' +
@@ -205,13 +210,14 @@ var prompt_text =
   possible_responses[1][0] +
   "</li>" +
   "</div>";
-
+// speed reminder
 var speed_reminder =
   "<p class = block-text>Try to respond as quickly and accurately as possible.</p>";
 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+
 // Set up attention check node
 var attention_check_block = {
   type: "attention-check-rdoc",
@@ -231,6 +237,8 @@ var attention_node = {
 };
 
 //Set up post task questionnaire
+
+// TODO: consider changing format of text input
 var post_task_block = {
   type: jsPsychSurveyText,
   data: {
@@ -252,7 +260,7 @@ var post_task_block = {
     },
   ],
 };
-
+// last block in timeline
 var end_block = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -273,17 +281,7 @@ var end_block = {
   },
 };
 
-// instructions
-/* 
-var getInstructFeedback = function () {
-  return (
-    "<div class = centerbox><p class = center-block-text>" +
-    feedback_instruct_text +
-    "</p></div>"
-  );
-};
-*/
-
+// instructions html text
 var feedback_instruct_text =
   "<p class=center-block-text>Welcome! This experiment will take around 5 minutes.</p>" +
   "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
@@ -292,14 +290,14 @@ var feedback_instruct_text =
 var feedback_instruct_block = {
   type: jsPsychHtmlKeyboardResponse,
   choices: ["Enter"],
-  stimulus: getInstructFeedback,
+  stimulus: getInstructFeedback, //TODO: Consider changing how these are called, ES6 probably cleaner
   data: {
     trial_id: "instruction_feedback",
   },
   post_trial_gap: 0,
   trial_duration: 180000,
 };
-
+// instruct block, includes all possible task-specific responses
 var instructions_block = {
   type: jsPsychInstructions,
   pages: [
@@ -330,7 +328,7 @@ var instructions_block = {
       speed_reminder +
       "</div>",
   ],
-  allow_keys: false,
+  allow_keys: false, // instead clickable pages
   data: {
     exp_id: "ax_cpt_rdoc",
     trial_id: "instructions",
