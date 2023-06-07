@@ -1,0 +1,30 @@
+General Task Notes: 
+Jaime will be pushing his changes to the nback task (corrected fixation display)
+Visual Search, Spatial Cueing, Change Detection, and (maybe) Span Tasks need to be coded, brand new tasks
+
+Task-Specific Notes: 
+Stroop Task
+1. Changed way of generated stimuli. Now looping through arrays of colors and words and creating jspsych objects. Did this instead so that we don't have to copy and paste the same jspsych object.
+2. Caught error that was showing undefined stimuli. Changed so that word stimuli now appears.
+3. Found out the time threshold for instructions check is 0 right now, 1s is also too fast. Consider changing.
+
+AX-CPT
+1. Caught error showing incorrect feedback after practice trials. Changed so that now shows correct feedback for correct/incorrect/null response.
+2. Found out the time threshold for instructions check is 0 right now, 1s is also too fast. Consider changing.
+3. The final trial in practice trial in ax_cpt_rdoc experiment says "Trial over, get ready for the next one" when there is no trial after. I changed this by reading in index of the trials and changing stimuli dynamically when last trial input value is a particular value. Add same functionality to test trials?
+4. For this task, why can't I just span a response if first letter is not A?
+5. No fixation for this task for each letter presented?
+
+Change-Detection 
+1. 0 -> 1s instructTimeThresh
+2. No stimuli
+
+Flanker
+1. 0 -> 1s instructTimeThresh
+2. Accuracy was not logging correctly, was not getting correct trial_id, so feedback was never logged or presented after practice trials. This means that they would always do multiple rounds of practice until all rounds are up until practiceCount == practice_thresh
+3. Accuracy is always 0, correct responses are not being logged properly - changed this
+4. Always flashes instruct on every trial -- I removed this
+
+Go-NoGo
+1. I think personally practice trials should have to include outlined square too, to show both conditions (filled and outlined)
+2. Might not be an issue, logs at end correctly: Go-NoGo condition does not exist on every trial, which causes error, exiting the experiment. To fix this, you can make optional access using ?. or change data append on trial
