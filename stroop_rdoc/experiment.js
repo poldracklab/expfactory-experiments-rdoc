@@ -204,8 +204,8 @@ console.log(incongruent_stim);
 //end generating stimuli
 
 var stims = [].concat(congruent_stim, congruent_stim, incongruent_stim);
-var practice_length = 12 / 6;
-var block_length = 36 / 6;
+var practice_length = 12;
+var block_length = 36;
 var numTestBlocks = 3;
 var exp_length = block_length * numTestBlocks;
 

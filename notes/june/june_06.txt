@@ -1,0 +1,11 @@
+General Task Notes: 
+Jaime will be pushing his changes to the nback task (corrected fixation display)
+Visual Search, Spatial Cueing, Change Detection, and (maybe) Span Tasks need to be coded, brand new tasks
+
+Task-Specific Notes: 
+Stroop Task:
+1. Changed way of generated stimuli. Now looping through arrays of colors and words and creating 
+jspsych objects. Did this instead so that we don't have to copy and paste the same jspsych object.
+2. Caught error that was showing undefined stimuli. Changed so that word stimuli now appears.
+3. Caught error showing incorrect feedback after practice trials. Changed so that now shows correct feedback 
+for correct/incorrect/null response.
