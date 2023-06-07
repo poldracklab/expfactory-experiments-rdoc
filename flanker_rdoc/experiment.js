@@ -745,9 +745,9 @@ var flanker_rdoc_init = () => {
   //globals
   block_stims = jsPsych.randomization.repeat(test_stimuli, practice_len / 4);
 
-  // flanker_rdoc_experiment.push(fullscreen);
-  // flanker_rdoc_experiment.push(instruction_node);
-  // flanker_rdoc_experiment.push(practiceNode);
+  flanker_rdoc_experiment.push(fullscreen);
+  flanker_rdoc_experiment.push(instruction_node);
+  flanker_rdoc_experiment.push(practiceNode);
   flanker_rdoc_experiment.push(testNode);
   flanker_rdoc_experiment.push(post_task_block);
   flanker_rdoc_experiment.push(end_block);
