@@ -280,10 +280,6 @@ var test_stimuli = [
 var practice_len = 12; // must be divisible by 4
 var exp_len = 96; // must be divisible by 4, 100 in original
 var numTrialsPerBlock = 48; //must be divisible by 4
-
-var practice_len = 2;
-var exp_len = 8;
-var numTrialsPerBlock = 4;
 var numTestBlocks = exp_len / numTrialsPerBlock;
 
 var speed_reminder =
