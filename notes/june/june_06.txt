@@ -9,3 +9,8 @@ jspsych objects. Did this instead so that we don't have to copy and paste the sa
 2. Caught error that was showing undefined stimuli. Changed so that word stimuli now appears.
 3. Caught error showing incorrect feedback after practice trials. Changed so that now shows correct feedback 
 for correct/incorrect/null response.
+4. Found out the time threshold for instructions check is 0 right now, 1s is also too fast. Consider changing.
+5. The final trial in practice trial in ax_cpt_rdoc experiment says "Trial over, get ready for the next one"
+when there is no trial after. I changed this by reading in index of the trials and changing stimuli dynamically 
+when last trial input value is a particular value. Add same functionality to test trials?
+6. For this task, why can't I just span a response if first letter is not A?

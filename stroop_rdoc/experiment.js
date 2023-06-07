@@ -125,7 +125,7 @@ var getKeyAnswer = function () {
 var credit_var = 0;
 var run_attention_checks = true;
 var attention_check_thresh = 0.45;
-var instructTimeThresh = 0; ///in seconds
+var instructTimeThresh = 1; ///in seconds -- this works, just really fast
 
 var accuracy_thresh = 0.7;
 var rt_thresh = 1000;
