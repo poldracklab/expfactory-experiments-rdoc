@@ -28,3 +28,23 @@ Flanker
 Go-NoGo
 1. I think personally practice trials should have to include outlined square too, to show both conditions (filled and outlined)
 2. Might not be an issue, logs at end correctly: Go-NoGo condition does not exist on every trial, which causes error, exiting the experiment. To fix this, you can make optional access using ?. or change data append on trial
+
+Cued Task Switching
+1. Format of text was weird in instructions, changed to align better
+2. Finger to task response pairing - should odd be index finger and even be middle? Left to right is different than high-low response
+
+Stop-Signal
+1. Instruct for keypress wasn't bolded
+2. crashes with reading correct_response -- corrected by adding .trials[i]
+
+Spatial Pairing Task
+1. Directions again, higher or lower, index or middle, but odd or even, middle or index. Switch order? to make consistent with order finger is mentioned.
+2. Error, crashed bc of data[i].rt -> changed to data.trials[i].rt
+3. ^ Same issue with reading correct_response
+*otherwise seems to be working and logging data.
+
+Visual Search
+1. No stimuli -> changing that now
+2. Sum instruct const not muttable
+3. -your task -> -- your task, change wording in instruct
+4. creating plugin for html visual search
