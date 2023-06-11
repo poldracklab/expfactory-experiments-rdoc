@@ -112,8 +112,8 @@ img.center {
 /************    Visual Search CSS Styles   ************/
 /*******************************************************/
 .rectangle {
-  width: 200px;
-  height: 100px;
+  width: 28.8px;
+  height: 67.2px;
   margin-bottom: 10px;
 }
 
@@ -123,4 +123,14 @@ img.center {
 
 .white {
   background-color: white;
+}
+
+/* Rotate target by degrees */
+.pop_out {
+  transform: rotate(90deg);
+}
+/* Make target larger by ratio */
+.size {
+  width: calc(28.8px / 0.7);
+  height: calc(67.2px / 0.7);
 }

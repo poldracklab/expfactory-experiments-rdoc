@@ -1,3 +1,89 @@
+/* 
+
+### From the literature ###
+
+The stimuli were generated on an IBM PC system. The
+display was presented on a colour monitor on which just
+the green phosphor was activated. The area used to display
+the stimuli subtended 17.3 × 10.6◦ at a viewing distance of
+80 cm in front of the display monitor. The participant’s eye
+level was at that of the centre of the display. The luminance
+of the uniform green screen was 5.6 cd m−2
+
+See here: https://seis.bristol.ac.uk/~psidg/download/TBF2002.pdf
+
+For the pop-out task the target was a vertical dark bar, the
+distractors were horizontal dark bars (Fig. 1a). For the size
+task, the target was a vertical dark bar, the distractors were
+smaller vertical dark bars (Fig. 1b). For the conjunction task,
+the target was a vertical dark bar, the distracters were vertical
+light bars and horizontal dark bars (Fig. 1c). The luminance
+of the dark bars (in the pop-out, conjunction and size conditions) was 4.3 cd m−2. The luminance of the light bars in the
+conjunction condition was 7.3 cd m−2 (giving a Michelson
+contrast of 13% for both light and dark stimuli). Each bar
+in the pop-out and conjunction task subtended 0.3 × 0.7◦.
+For the size task in which the target was a dark vertical
+large bar the target subtended 0.3 × 0.7◦ and the distractors were dark vertical bars which had 70% of the height
+and width of the target bar—see Figs. 1a–c for examples of
+the target present stimuli. Each bar was located in an imaginary grid box but with a random internal perturbation and
+no bars touched each other. The target could appear at any
+location amid three possible arrays of items (containing 16,
+36, or 81 elements). There were 30 trials for each of the six
+1852 A. Tales et al. / Neuropsychologia 40 (2002) 1849–1857
+conditions, i.e. 16, 36 and 81 items with the target present
+and the same for the target absent. The conditions appeared
+in a random order of presentation.
+
+Estimated size of rect stimuli: 
+
+28.8 pixels wide and 67.2 pixels tall when viewed from a distance of 80 cm on a display with a pixel density of 96 PPI.
+
+Specifically, we found that
+a size ratio of 0.7 (distractor-to-target) in the “size” task
+matched the search difficulty of this task and the conjunction task. 
+
+For standard resolution, 1920x1080 stimuli limited to this much of screen:
+991.29 pixels in width and 607.38 pixels in height.
+
+*/
+
+function* generateRandomBooleans(length) {
+  for (let i = 0; i < length; i++) {
+    yield Math.random() < 0.5;
+  }
+}
+function extractValueAfterId(html) {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+
+  const targetDiv = div.querySelector("#size");
+  if (targetDiv) {
+    const classes = targetDiv.getAttribute("class");
+    const value = classes.split(" ")[0]; // Extract the value after the id
+    return value;
+  }
+
+  return null;
+}
+
+function combineArrays(array1, array2) {
+  var combinedArray = [];
+
+  // Combine objects from array1
+  for (var i = 0; i < array1.length; i++) {
+    combinedArray.push(array1[i]);
+  }
+
+  // Combine objects from array2
+  for (var j = 0; j < array2.length; j++) {
+    for (var k = 0; k < array2[j].length; k++) {
+      combinedArray.push(array2[j][k]);
+    }
+  }
+
+  return combinedArray;
+}
+
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
@@ -86,33 +172,76 @@ function appendData() {
 }
 
 var setBlockStims = function () {
-  block_targets = [
-    {
-      stimulus: [
-        "<div class='rectangle white'></div>",
-        "<div class='rectangle white'></div>",
-        "<div class='rectangle black'></div>",
-      ],
-    },
-  ];
-  block_distractions = [
-    {
-      stimulus: [
-        "<div class='rectangle black'></div>",
-        "<div class='rectangle white'></div>",
-        "<div class='rectangle black'></div>",
-      ],
-    },
-  ];
+  var blockConditionsAndResponses = [
+    ["pop_out", ","],
+    ["size", "."],
+    ["conjunction", "/"],
+  ]; // conditions and responses
+
+  // below is eh, could initialize it as two arrays
+  var blockConditions = blockConditionsAndResponses.map(function (nestedArray) {
+    return nestedArray[0];
+  });
+
+  var blockResponses = blockConditionsAndResponses.map(function (nestedArray) {
+    return nestedArray[1];
+  });
+
+  var number_of_distractors = 5;
+  var block_targets = [];
+  var block_distractions = [];
+
+  for (var i = 0; i < blockConditions.length; i++) {
+    var stim_target = {
+      stimulus:
+        blockConditions[i] == "size"
+          ? `<div id="${blockConditions[i]}" class='rectangle black ${blockConditions[i]}'></div>`
+          : `<div id="${blockConditions[i]}" class='rectangle black'></div>`,
+      trial_id: blockConditions[i],
+      correct_response: blockResponses[i],
+    };
+
+    block_targets.push(stim_target);
+  }
+
+  for (var i = 0; i < block_targets.length; i++) {
+    var { trial_id } = block_targets[i];
+
+    if (trial_id == "conjunction") {
+      var random_array = Array.from(
+        generateRandomBooleans(number_of_distractors)
+      );
+    }
+
+    var stim_distraction_trials = [];
+
+    for (var j = 0; j < number_of_distractors; j++) {
+      var stim_distraction = {
+        stimulus:
+          trial_id == "pop_out"
+            ? `<div class="rectangle black ${trial_id}"></div>`
+            : trial_id == "conjunction"
+            ? `<div class="rectangle ${
+                random_array[j] ? "black pop_out" : "white"
+              }"></div>`
+            : `<div class="rectangle black"></div>`, // size
+        trial_id: trial_id,
+      };
+
+      stim_distraction_trials.push(stim_distraction);
+    }
+    block_distractions.push(stim_distraction_trials);
+  }
+
+  var all_trials = combineArrays(block_targets, block_distractions);
+
   return {
-    block_targets: block_targets,
-    block_distractions: block_distractions,
+    block_targets,
+    block_distractions,
+    all_trials,
+    blockConditions,
+    blockResponses,
   };
-  //   if (search_type == "feature") {
-  //   } else if (search_type == "conjunction") {
-  //   } else if (block_type == "high") {
-  //   } else if (block_type == "low") {
-  //   }
 };
 
 var getStim = function () {
@@ -120,14 +249,17 @@ var getStim = function () {
   return currStim.stimulus;
 };
 
-var getTarget = function () {
-  currTarg = block_targets.shift();
-  return currTarg.stimulus;
+var getTarget = function (targets) {
+  var currentIndex = stimulus_block.target_index;
+  stimulus_block.target_index = (currentIndex + 1) % targets.length;
+  console.log(targets[currentIndex].stimulus);
+  return targets[currentIndex].stimulus;
 };
 
-var getDistraction = function () {
-  currDist = block_distractions.shift();
-  return currDist.stimulus;
+var getDistraction = function (distractions) {
+  var currentIndex = stimulus_block.distraction_index;
+  stimulus_block.distraction_index = (currentIndex + 1) % distractions.length;
+  return distractions[currentIndex];
 };
 
 var getStimData = function () {
@@ -185,6 +317,8 @@ const target_present_prob = 0.5;
 const numPracticeTrials = 12; // 2 simple, 2 operation
 const numTrialsPerBlock = 48;
 const numTestBlocks = 4;
+const stimulus_duration = 200000;
+const trial_duration = 300000;
 
 var exp_stage = "practice";
 const possible_block_types = ["feature", "conjunction"]; // this will randomize load size trial-by-trial. setting this to ['low', 'high'] will randomize search type
@@ -205,17 +339,17 @@ var speed_reminder =
   "<p class = block-text>Try to respond as quickly and accurately as possible.</p>";
 
 ////// CREATE STIMULI !!! //////////////////////////////////////////
-var stimuli = [
-  {
-    stimulus: "<stim path here>",
-    data: {
-      target_present: 0, //1
-      num_distractors: 9, // 24
-      search_type: "feature", // 'conjunction'
-      correct_response: choices[0], // choices[1]
-    },
-  },
-];
+// var stimuli = [
+//   {
+//     stimulus: "<stim path here>",
+//     data: {
+//       target_present: 0, //1
+//       num_distractors: 9, // 24
+//       search_type: "feature", // 'conjunction'
+//       correct_response: choices[0], // choices[1]
+//     },
+//   },
+// ];
 ////// CREATE STIMULI !!! //////////////////////////////////////////
 
 /* ************************************ */
@@ -316,9 +450,9 @@ var instructions_block = {
       "<p class = block-text>In this experiment, on each trial you will see several black and white rectangles at various angles.</p>" +
       "<p class = block-text>On some trials, <b>one</b> of these rectangles will be angled differently than all others of its color. We will call this rectangle the 'target'.</p>" +
       "<p class = block-text>A target will only be present on some trials -- your task is to determine whether a target is present or absent on each trial. You will only have a few seconds to do so.</p>" +
-      "<p class=block-text>If you determine a target is <b>present, press your <b>" +
+      "<p class=block-text>If you determine a target is <b>present</b>, press your <b>" +
       possible_responses.key_name[0] +
-      "</b>, and if you determine a target is <b>absent, press your " +
+      "</b>, and if you determine a target is <b>absent</b>, press your <b>" +
       possible_responses.key_name[1] +
       "</b>.</p>" +
       speed_reminder +
@@ -377,7 +511,9 @@ var feedback_block = {
 var practice_feedback_block = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    var last = jsPsych.data.get().last(1).values()[0];
+    var last = jsPsych.data.get().last(1);
+    console.log(last);
+
     if (last.response == null) {
       return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
     } else if (last.correct_trial == 1) {
@@ -436,17 +572,59 @@ var stimulus_block = {
   type: jsPsychVisualSearchHTML,
   target_present: true,
   target_index: 0,
-  response_keys: ["F", "J"],
-  target_key: "F",
-  target: getTarget,
-  distractors: getDistraction,
+  distraction_index: 0,
+  stimulus_duration: stimulus_duration,
+  trial_duration: trial_duration,
+  response_ends_trial: true,
+  target: function () {
+    var call_function = jsPsych.data
+      .get()
+      .filter({ trial_type: "call-function" }).trials[0];
+    var { block_targets } = call_function.value;
+
+    return getTarget(block_targets);
+  },
+  distractors: function () {
+    var call_function = jsPsych.data
+      .get()
+      .filter({ trial_type: "call-function" }).trials[0];
+    var { block_distractions } = call_function.value;
+    return getDistraction(block_distractions);
+  },
   target_present: true,
-  choices: ["a", "b"],
+  choices: [",", ".", "/"],
+  prompt: prompt_text,
+  data: function () {
+    return {
+      trial_id: "stim",
+      exp_stage: getExpStage(),
+    };
+  },
+  on_finish: function (data) {
+    let { response, targetHTML, distractorsHTML } = data;
+    console.log(response);
+    console.log(targetHTML);
+    console.log(distractorsHTML);
+  },
 };
+
+// var set_stims_block = {
+//   type: jsPsychCallFunction,
+//   func: setBlockStims,
+// };
 
 var set_stims_block = {
   type: jsPsychCallFunction,
   func: setBlockStims,
+  on_finish: function (data) {
+    var stimuli = data.all_trials;
+    stimulus_block.target = function () {
+      return getTarget(stimuli.block_targets);
+    };
+    stimulus_block.distractors = function () {
+      return getDistraction(stimuli.block_distractions);
+    };
+  },
 };
 
 var practiceTrials = [];
