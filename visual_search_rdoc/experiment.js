@@ -109,6 +109,7 @@ function evalAttentionChecks() {
   return check_percent;
 }
 
+//TODO: modify this function
 function assessPerformance() {
   var experiment_data = jsPsych.data
     .get()
@@ -252,7 +253,7 @@ var getStim = function () {
 var getTarget = function (targets) {
   var currentIndex = stimulus_block.target_index;
   stimulus_block.target_index = (currentIndex + 1) % targets.length;
-  console.log(targets[currentIndex].stimulus);
+
   return targets[currentIndex].stimulus;
 };
 
@@ -306,19 +307,22 @@ const practice_thresh = 3; // max repetitions
 
 // task specific variables
 var possible_responses = {
-  key: [",", "."],
-  key_name: ["index finger", "middle finger"],
-  key_description: ["comma key (,)", "period key (.)"],
+  key: [",", ".", "/"],
+  key_name: ["index finger", "middle finger", "ring finger"],
+  key_description: ["comma key (,)", "period key (.)", "slash key (/)"],
 };
 var choices = possible_responses.key;
 
 const target_present_prob = 0.5;
 
-const numPracticeTrials = 12; // 2 simple, 2 operation
+// const numPracticeTrials = 12; // 2 simple, 2 operation
+// testing
+const numPracticeTrials = 2; // 2 simple, 2 operation
+
 const numTrialsPerBlock = 48;
 const numTestBlocks = 4;
-const stimulus_duration = 200000;
-const trial_duration = 300000;
+const stimulus_duration = 1000;
+const trial_duration = 3000;
 
 var exp_stage = "practice";
 const possible_block_types = ["feature", "conjunction"]; // this will randomize load size trial-by-trial. setting this to ['low', 'high'] will randomize search type
@@ -434,19 +438,18 @@ var feedback_instruct_block = {
 };
 
 /// This ensures that the subject does not read through the instructions too quickly.  If they do it too quickly, then we will go over the loop again.
+//TODO: Change instructions
 var instructions_block = {
   type: jsPsychInstructions,
   pages: [
     "<div class = centerbox>" +
-      "<p class=block-text>Place your <b>" +
+      "<p class=block-text>Place your pointer finger on the <b>" +
       possible_responses.key_name[0] +
-      "</b> on the <b>" +
+      "</b> key, your middle finger on the <b>" +
       possible_responses.key_description[0] +
-      "</b> and your <b>" +
+      "</b> key, and your ring finger on the <b>" +
       possible_responses.key_name[1] +
-      "</b> on the <b>" +
-      possible_responses.key_description[1] +
-      "</b></p>" +
+      "</b> key.</p>" +
       "<p class = block-text>In this experiment, on each trial you will see several black and white rectangles at various angles.</p>" +
       "<p class = block-text>On some trials, <b>one</b> of these rectangles will be angled differently than all others of its color. We will call this rectangle the 'target'.</p>" +
       "<p class = block-text>A target will only be present on some trials -- your task is to determine whether a target is present or absent on each trial. You will only have a few seconds to do so.</p>" +
@@ -511,12 +514,12 @@ var feedback_block = {
 var practice_feedback_block = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    var last = jsPsych.data.get().last(1);
-    console.log(last);
+    var last = jsPsych.data.get().last(1).trials[0];
+    var { response, correct_response } = last;
 
-    if (last.response == null) {
+    if (response == null) {
       return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
-    } else if (last.correct_trial == 1) {
+    } else if (response == correct_response) {
       return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
     } else {
       return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
@@ -575,7 +578,6 @@ var stimulus_block = {
   distraction_index: 0,
   stimulus_duration: stimulus_duration,
   trial_duration: trial_duration,
-  response_ends_trial: true,
   target: function () {
     var call_function = jsPsych.data
       .get()
@@ -602,9 +604,28 @@ var stimulus_block = {
   },
   on_finish: function (data) {
     let { response, targetHTML, distractorsHTML } = data;
-    console.log(response);
-    console.log(targetHTML);
-    console.log(distractorsHTML);
+    const regex = /id="([^"]+)"/;
+    const match = targetHTML.match(regex);
+
+    if (match && match.length > 1) {
+      const id_of_trial = match[1];
+      switch (id_of_trial) {
+        case "pop_out":
+          var correct_response = ",";
+          break;
+        case "size":
+          var correct_response = ".";
+          break;
+        case "conjunction":
+          var correct_response = "/";
+        default:
+          break;
+      }
+      data.id_of_trial = id_of_trial;
+      data.correct_response = correct_response;
+    } else {
+      console.log("No id value found.");
+    }
   },
 };
 
@@ -654,7 +675,7 @@ var practiceNode = {
         if (data.trials[i].rt != null) {
           sum_rt += data.trials[i].rt;
           sum_responses += 1;
-          if (data.trials[i].correct_trial == 1) {
+          if (data.trials[i].response == data.trials[i].correct_response) {
             correct += 1;
           }
         }
@@ -664,19 +685,21 @@ var practiceNode = {
     var accuracy = correct / total_trials;
     var missed_responses = (total_trials - sum_responses) / total_trials;
     var ave_rt = sum_rt / sum_responses;
+    console.log(accuracy);
+    console.log(missed_responses);
+    console.log(ave_rt);
 
     if (accuracy > accuracy_thresh || practiceCount == practice_thresh) {
       feedback_text =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
-        "<p class = block-text>Keep your gaze on the central '+', your " +
-        possible_responses[0][0] +
-        " on the " +
-        possible_responses[0][2] +
-        " and your " +
-        possible_responses[1][0] +
-        " on the " +
-        possible_responses[1][2] +
-        "</p>" +
+        "<p class = block-text>Keep your gaze on the central '+', your index finger on the " +
+        //TODO: change key presses
+        possible_responses.key[0] +
+        "key and your middle finger on the " +
+        possible_responses.key[0] +
+        "key and your ring finder on the " +
+        possible_responses.key[0] +
+        "key.</p>" +
         "<p class = center-block-text>Press <i>enter</i> to continue.</p></div>";
       exp_stage = "test";
       setBlockStims();
@@ -685,9 +708,9 @@ var practiceNode = {
       feedback_text =
         "<p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
       if (accuracy < accuracy_thresh) {
-        feedback_text +=
-          "<p class = block-text>Your accuracy is low.  Remember: </p>" +
-          response_keys;
+        feedback_text += "<div>";
+        "<p class = block-text>Your accuracy is low.  Remember: </p>" +
+          "<div>[insert task instructions]</div>";
       }
       if (ave_rt > rt_thresh) {
         feedback_text +=
