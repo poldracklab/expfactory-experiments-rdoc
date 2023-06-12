@@ -44,7 +44,10 @@ Spatial Pairing Task
 *otherwise seems to be working and logging data.
 
 Visual Search
-1. No stimuli -> changing that now
+1. No stimuli -> added stimuli with three conditions, pop_out, size, conjunction, based on paper I saw online
 2. Sum instruct const not muttable
 3. -your task -> -- your task, change wording in instruct
-4. creating plugin for html visual search
+4. created plugin for html visual search
+
+Span 
+1. Showing correct/incorrect feedback after letter in trials without mathematical expressions where no responses are given. 
