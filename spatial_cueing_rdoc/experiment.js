@@ -8,58 +8,63 @@ function addID() {
 
 function assessPerformance() {
   /* Function to calculate the "credit_var", which is a boolean used to
-	credit individual experiments in expfactory. 
-	 */
-  var experiment_data = jsPsych.data
-    .get()
-    .filter({ exp_stage: "test", trial_id: "stim" }).trials;
-  var missed_count = 0;
-  var trial_count = 0;
-  var rt_array = [];
-  var rt = 0;
-  var correct = 0;
+     credit individual experiments in expfactory. 
+  */
 
-  //record choices participants made
-  var choice_counts = {};
-  choice_counts[null] = 0;
-  for (var k = 0; k < choices.length; k++) {
-    choice_counts[choices[k]] = 0;
+  const { trials: experiment_data } = jsPsych.data
+    .get()
+    .filter({ exp_stage: "test", trial_id: "stim" });
+
+  const rt_array = [];
+  let missed_count = 0;
+  let trial_count = 0;
+  let correct = 0;
+
+  // record choices participants made
+  const choice_counts = { [null]: 0 };
+  for (const choice of choices) {
+    choice_counts[choice] = 0;
   }
 
-  for (var i = 0; i < experiment_data.length; i++) {
-    trial_count += 1;
-    rt = experiment_data[i].rt;
-    key = experiment_data[i].key_press;
-    correct += experiment_data[i].correct_trial;
-    choice_counts[key] += 1;
+  for (const { rt, response: key, correct_trial } of experiment_data) {
+    trial_count++;
+    if (correct_trial === 1) {
+      correct++;
+    }
+    choice_counts[key]++;
     if (rt == null) {
-      missed_count += 1;
+      missed_count++;
     } else {
       rt_array.push(rt);
     }
   }
-  //calculate average rt
-  var avg_rt = null;
+
+  // calculate average rt
+  let avg_rt = null;
   if (rt_array.length !== 0) {
     avg_rt = math.median(rt_array);
   }
-  //calculate whether response distribution is okay
-  var responses_ok = true;
-  Object.keys(choice_counts).forEach(function (key, index) {
+
+  // calculate missed percent
+  const missed_percent = missed_count / trial_count;
+
+  // calculate whether response distribution is okay
+  let responses_ok = true;
+  for (const key of Object.keys(choice_counts)) {
     if (choice_counts[key] > trial_count * 0.85) {
       responses_ok = false;
+      break;
     }
+  }
+
+  const credit_var = missed_percent < 0.4 && avg_rt > 200 && responses_ok;
+  jsPsych.data.get().addToLast({
+    final_credit_var: credit_var,
+    final_missed_percent: missed_percent,
+    final_avg_rt: avg_rt,
+    final_responses_ok: responses_ok,
+    final_accuracy: correct / trial_count,
   });
-  var credit_var = missed_percent < 0.4 && avg_rt > 200 && responses_ok;
-  jsPsych.data
-    .get()
-    .addToLast({
-      final_credit_var: credit_var,
-      final_missed_percent: missed_count / trial_count,
-      final_avg_rt: avg_rt,
-      final_responses_ok: responses_ok,
-      final_accuracy: correct / trial_count,
-    });
 }
 
 function evalAttentionChecks() {
@@ -137,10 +142,13 @@ var numTestBlocks = 3;
 var numTrialsPerBlock = 48; // should be multiple of 24
 
 // task specific variables
-var possible_responses = [
+const possible_responses = [
   ["index finger", ",", "comma key (,)"],
   ["middle finger", ".", "period key (.)"],
 ]; // [instruct_name, key_code, key_description]
+
+const response_keys = `<p class='block-text'>Press your <b>${possible_responses[0][0]}</b> if the star ('+') appears in the left box and press your <b>${possible_responses[1][0]}</b> if the star ('+') appears in the right box.</p>`;
+
 var choices = [possible_responses[0][1], possible_responses[1][1]];
 
 var trial_proportions = ["valid", "valid", "valid", "invalid"];
@@ -558,11 +566,13 @@ var practiceNode = {
     } else {
       feedback_text =
         "<p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
+
       if (accuracy < accuracy_thresh) {
         feedback_text +=
           "<p class = block-text>Your accuracy is low.  Remember: </p>" +
           response_keys;
       }
+
       if (ave_rt > rt_thresh) {
         feedback_text +=
           "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
@@ -571,6 +581,7 @@ var practiceNode = {
         feedback_text +=
           "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
       }
+
       feedback_text +=
         "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p>";
       block_stims = jsPsych.randomization
@@ -610,7 +621,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     post_trial_gap: 0,
     stimulus_duration: 500,
     trial_duration: 500,
-    prompt: prompt_text,
+    // prompt: prompt_text,
   };
   var second_fixation_block = {
     type: jsPsychHtmlKeyboardResponse,
@@ -623,7 +634,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     post_trial_gap: 0,
     stimulus_duration: second_fixation_gap,
     trial_duration: second_fixation_gap,
-    prompt: prompt_text,
+    // prompt: prompt_text,
     on_finish: function () {
       second_fixation_gap = Math.floor(Math.random() * 1200) + 400;
     },
@@ -643,7 +654,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     response_ends_trial: false,
     post_trial_gap: 0,
     on_finish: appendData,
-    prompt: prompt_text,
+    // prompt: prompt_text,
   };
   var last_fixation_block = {
     type: jsPsychHtmlKeyboardResponse,
@@ -656,7 +667,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     post_trial_gap: 0,
     stimulus_duration: last_fixation_gap,
     trial_duration: last_fixation_gap,
-    prompt: prompt_text,
+    // prompt: prompt_text,
     on_finish: function () {
       second_fixation_gap = Math.floor(Math.random() * 1200) + 400;
     },
@@ -666,7 +677,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     cue_block,
     second_fixation_block,
     trial_block,
-    last_fixation_gap
+    last_fixation_block
   );
 }
 // testTrials.push(attention_node)
@@ -758,7 +769,7 @@ var spatial_cueing_rdoc_experiment = [];
 spatial_cueing_rdoc_init = () => {
   document.body.style.background = "gray"; //// CHANGE THIS
 
-  /* 24 practice trials. Included all nocue up trials, center cue up trials, double cue down trials, and 6 spatial trials (3 up, 3 down) */
+  /* 24 practice trials. Included all no-cue up trials, center cue up trials, double cue down trials, and 6 spatial trials (3 up, 3 down) */
   block_stims = jsPsych.randomization
     .repeat(stimuli, 1)
     .slice(0, numPracticeTrials);
