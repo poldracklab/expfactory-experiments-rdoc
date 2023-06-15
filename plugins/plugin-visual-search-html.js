@@ -1,52 +1,33 @@
-const getRandomPositions = (count) => {
-  const positions = [];
-  // Get window resolution
-  var screenWidth =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth;
-  var screenHeight =
-    window.innerHeight ||
-    document.documentElement.clientHeight ||
-    document.body.clientHeight;
+function addTextToDivs(divsString, targetString, optionsArray) {
+  const divs = document.createElement("div");
+  divs.innerHTML = divsString;
 
-  const constrainedWidth = screenWidth * 0.2;
-  const constrainedHeight = screenHeight * 0.2;
+  const targetDiv = document.createElement("div");
+  targetDiv.innerHTML = targetString;
 
-  const isPositionValid = (randomLeft, randomTop) => {
-    return !positions.some((position) => {
-      const diffX = Math.abs(randomLeft - position.left);
-      const diffY = Math.abs(randomTop - position.top);
-      return diffX < 28.8 / 0.7 || diffY < 67.2 / 0.7;
-    });
-  };
+  const allDivs = [...divs.childNodes, ...targetDiv.childNodes];
 
-  for (let i = 0; i < count; i++) {
-    let isValidPosition = false;
-    let randomLeft, randomTop;
+  const shuffledOptions = shuffleArray(optionsArray);
 
-    while (!isValidPosition) {
-      randomLeft = Math.floor(
-        screenWidth * 0.2 + Math.random() * (screenWidth * 0.6)
-      );
-      randomTop = Math.floor(
-        screenHeight * 0.2 + Math.random() * (screenHeight * 0.6)
-      );
-
-      isValidPosition = isPositionValid(randomLeft, randomTop);
-    }
-
-    positions.push({ left: randomLeft, top: randomTop });
-  }
-
-  return positions;
-};
-
-const replaceDivWithStyle = (htmlString, leftPosition, topPosition) => {
-  return htmlString.replace("<div", () => {
-    return `<div style="position: absolute; left: ${leftPosition}px; top: ${topPosition}px;"`;
+  allDivs.forEach((div, index) => {
+    const optionIndex = index % shuffledOptions.length;
+    const option = shuffledOptions[optionIndex];
+    div.classList.add(option);
   });
-};
+
+  return {
+    divs: divs.innerHTML,
+    target: targetDiv.innerHTML,
+  };
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 const jsPsychVisualSearchHTML = (function (jspsych) {
   "use strict";
@@ -90,14 +71,27 @@ const jsPsychVisualSearchHTML = (function (jspsych) {
         description:
           "The keys the participant is allowed to press to respond to the stimulus.",
       },
-      stimulus_duration: {
+      number_of_targets: {
         type: jspsych.ParameterType.INT,
-        pretty_name: "Stimulus duration",
+        pretty_name: "Number of targets",
+        default: null,
+      },
+      number_of_distractors: {
+        type: jspsych.ParameterType.INT,
+        pretty_name: "Number of distractors",
         default: null,
       },
       trial_duration: {
         type: jspsych.ParameterType.INT,
         pretty_name: "Trial duration",
+        default: null,
+      },
+      /**
+       * How long to show the stimulus.
+       */
+      stimulus_duration: {
+        type: jspsych.ParameterType.INT,
+        pretty_name: "Stimulus duration",
         default: null,
       },
       response_ends_trial: {
@@ -116,26 +110,32 @@ const jsPsychVisualSearchHTML = (function (jspsych) {
     trial(display_element, trial) {
       let targetHTML = trial.target;
       let distractorsHTML = trial.distractors.map((d) => d.stimulus);
-      const [targetPosition, ...otherPositions] = getRandomPositions(4);
 
-      targetHTML = replaceDivWithStyle(
+      distractorsHTML = distractorsHTML.join("");
+
+      var optionsArray = [
+        "top_left",
+        "top_middle",
+        "top_right",
+        "bottom_left",
+        "bottom_middle",
+        "bottom_right",
+      ];
+
+      var { divs, target } = addTextToDivs(
+        distractorsHTML,
         targetHTML,
-        targetPosition.left,
-        targetPosition.top
+        optionsArray
       );
 
-      distractorsHTML = otherPositions
-        .map(({ left, top }, index) => {
-          return replaceDivWithStyle(distractorsHTML[index], left, top);
-        })
-        .join("");
+      distractorsHTML = divs;
+      targetHTML = target;
 
       let html = `<div id="jspsych-visual-search-target">${targetHTML}</div><div id="jspsych-visual-search-distractors">${distractorsHTML}</div>`;
 
       if (trial.prompt !== null) {
         html += trial.prompt;
       }
-
       display_element.innerHTML = html;
 
       const start_time = performance.now();
@@ -151,7 +151,7 @@ const jsPsychVisualSearchHTML = (function (jspsych) {
           response.key_press = e.key;
         }
 
-        if (trial.choices.includes(e.key)) {
+        if (trial.choices.includes(e.key) && trial.response_ends_trial) {
           document.removeEventListener("keydown", handleResponse);
           end_trial();
         }
@@ -175,20 +175,28 @@ const jsPsychVisualSearchHTML = (function (jspsych) {
         this.jsPsych.finishTrial(trial_data);
       };
 
-      var after_response = () => {
+      if (!trial.response_ends_trial) {
+        // Adjust trial duration if response doesn't end the trial
+        const trialDuration = trial.trial_duration || 0;
+        this.jsPsych.pluginAPI.setTimeout(end_trial, trialDuration);
+      }
+
+      // function to handle responses by the subject
+      var after_response = (info) => {
+        // after a valid response, the stimulus will have the CSS class 'responded'
+        // which can be used to provide visual feedback that a response was recorded
         display_element.querySelector(
           "#jspsych-visual-search-html-stimulus"
         ).className += " responded";
-
+        // only record the first response
         if (response.key == null) {
           response = info;
         }
-
         if (trial.response_ends_trial) {
           end_trial();
         }
       };
-
+      // start the response listener
       if (trial.choices != "NO_KEYS") {
         var keyboardListener = this.jsPsych.pluginAPI.getKeyboardResponse({
           callback_function: after_response,
@@ -198,7 +206,6 @@ const jsPsychVisualSearchHTML = (function (jspsych) {
           allow_held_key: false,
         });
       }
-
       if (trial.stimulus_duration !== null) {
         this.jsPsych.pluginAPI.setTimeout(() => {
           display_element.querySelector(
@@ -210,11 +217,47 @@ const jsPsychVisualSearchHTML = (function (jspsych) {
         }, trial.stimulus_duration);
       }
 
+      // end trial if trial_duration is set
       if (trial.trial_duration !== null) {
         this.jsPsych.pluginAPI.setTimeout(end_trial, trial.trial_duration);
       }
-
       document.addEventListener("keydown", handleResponse);
+    }
+
+    simulate(trial, simulation_mode, simulation_options, load_callback) {
+      if (simulation_mode == "data-only") {
+        load_callback();
+        this.simulate_data_only(trial, simulation_options);
+      }
+      if (simulation_mode == "visual") {
+        this.simulate_visual(trial, simulation_options, load_callback);
+      }
+    }
+    create_simulation_data(trial, simulation_options) {
+      const default_data = {
+        stimulus: trial.stimulus,
+        rt: this.jsPsych.randomization.sampleExGaussian(500, 50, 1 / 150, true),
+        response: this.jsPsych.pluginAPI.getValidKey(trial.choices),
+      };
+      const data = this.jsPsych.pluginAPI.mergeSimulationData(
+        default_data,
+        simulation_options
+      );
+      this.jsPsych.pluginAPI.ensureSimulationDataConsistency(trial, data);
+      return data;
+    }
+    simulate_data_only(trial, simulation_options) {
+      const data = this.create_simulation_data(trial, simulation_options);
+      this.jsPsych.finishTrial(data);
+    }
+    simulate_visual(trial, simulation_options, load_callback) {
+      const data = this.create_simulation_data(trial, simulation_options);
+      const display_element = this.jsPsych.getDisplayElement();
+      this.trial(display_element, trial);
+      load_callback();
+      if (data.rt !== null) {
+        this.jsPsych.pluginAPI.pressKey(data.response, data.rt);
+      }
     }
   }
 
