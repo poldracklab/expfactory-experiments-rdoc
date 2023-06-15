@@ -111,11 +111,12 @@ img.center {
 /*******************************************************/
 /************    Visual Search CSS Styles   ************/
 /*******************************************************/
-.rectangle {
-  width: 28.8px;
-  height: 67.2px;
-  margin-bottom: 10px;
-}
+
+/* 
+converted width and height from Visual Angles from paper:
+width: 28.8px;
+height: 67.2px;
+*/
 
 .black {
   background-color: black;
@@ -125,12 +126,51 @@ img.center {
   background-color: white;
 }
 
-/* Rotate target by degrees */
 .pop_out {
-  transform: rotate(90deg);
+  transform: translate(-50%, -50%) rotate(90deg) !important;
 }
 /* Make target larger by ratio */
 .size {
-  width: calc(28.8px / 0.7);
-  height: calc(67.2px / 0.7);
+  width: 110px !important;
+  height: 60px !important;
+}
+.rectangle {
+  width: 100px;
+  height: 50px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.bottom_left {
+  left: 30%; /* Move the first rectangle to the left */
+  top: 60%;
+}
+
+.bottom_middle {
+  left: 50%; /* Center the second rectangle horizontally */
+  top: 60%; /* Align vertically with other elements */
+  transform: translate(-50%, -50%);
+}
+
+.bottom_right {
+  left: 70%; /* Move the third rectangle to the right */
+  top: 60%;
+}
+
+.top_left {
+  left: 30%; /* Move the fourth rectangle to the left */
+  top: 40%;
+}
+
+.top_middle {
+  left: 50%; /* Center the fifth rectangle horizontally */
+  top: 40%; /* Align vertically with other elements */
+  transform: translate(-50%, -50%);
+}
+
+.top_right {
+  left: 70%; /* Move the sixth rectangle to the right */
+  top: 40%;
 }
