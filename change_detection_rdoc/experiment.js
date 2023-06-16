@@ -201,6 +201,8 @@ var { target_trial_color, distractor_trial_color } = createAllStims();
 
 var setBlockStims = function (index) {
   if (index == 0) {
+    console.log(target_trial_color);
+    console.log(distractor_trial_color);
     return {
       block_targets: target_trial_color,
       block_distractions: distractor_trial_color,
@@ -236,38 +238,22 @@ var getExpStage = function () {
 
 var getStageInstruction = function (index) {
   if (index == 0) {
+    // in case want other conditions, see visual search
     exp_stage_instruction =
-      "<div style='text-align:left;'>" +
-      "<h2>Instructions:</h2>" +
-      "<ol>" +
-      "<li>If you see a tilted black rectangle among the other rectangles, press the ',' key on your keyboard.</li>" +
-      "<li>If you do not see a tilted black rectangle and all the rectangles are aligned in the same direction, press the '.' key on your keyboard.</li>" +
-      "<li>Pay close attention to the orientation of the rectangles and scan the screen thoroughly before making your decision.</li>" +
-      "<li>Respond quickly and accurately. Try to minimize any errors while maintaining a fast pace.</li>" +
+      "<div style='text-align:left; font-family: Arial, sans-serif;'>" +
+      "<h2 style='font-size: 1.2em; margin-bottom: 10px;'>Instructions:</h2>" +
+      "<ol style='margin-left: 20px;'>" +
+      "<li style='margin-bottom: 5px;'>You will see a fixation point displayed on the screen as a reference point to focus your attention.</li>" +
+      "<li style='margin-bottom: 5px;'>After the fixation, six squares of different colors will appear on the screen, each square representing a unique color.</li>" +
+      "<li style='margin-bottom: 5px;'>Another fixation point will be presented briefly on the screen.</li>" +
+      "<li style='margin-bottom: 5px;'>Following the second fixation, the same assortment of colored squares will be displayed again.</li>" +
+      "<li style='margin-bottom: 5px;'>Pay close attention to the colors of the squares in both displays.</li>" +
+      "<li style='margin-bottom: 5px;'>If, and only if, any one of the squares in the second display is replaced by a color that was not originally in the array, press the ',' (comma) key on your keyboard to indicate a change.</li>" +
+      "<li style='margin-bottom: 5px;'>On the other hand, if all the squares in the second display remain the same as the first display, press the '.' (period) key to indicate no change.</li>" +
+      "<li style='margin-bottom: 5px;'>Take your time to carefully observe and make your decision before pressing the corresponding key.</li>" +
+      "<li style='margin-bottom: 5px;'>The task will continue with different variations, so stay attentive and focused throughout.</li>" +
       "</ol>" +
-      "<p>Remember, your goal is to identify the presence or absence of a tilted black rectangle in each screen. Use the ',' key to indicate its presence and the '.' key to indicate its absence. Good luck!</p></div>";
-  } else if (index == 1) {
-    exp_stage_instruction =
-      "<div style='text-align:left;'>" +
-      "<h2>Instructions:</h2>" +
-      "<ol>" +
-      "<li>If you see a larger black rectangle among the other rectangles, press the ',' key on your keyboard.</li>" +
-      "<li>If you do not see a larger black rectangle and all the rectangles are aligned in the same direction, press the '.' key on your keyboard.</li>" +
-      "<li>Pay close attention to the orientation of the rectangles and scan the screen thoroughly before making your decision.</li>" +
-      "<li>Respond quickly and accurately. Try to minimize any errors while maintaining a fast pace.</li>" +
-      "</ol>" +
-      "<p>Remember, your goal is to identify the presence or absence of a larger black rectangle in each screen. Use the ',' key to indicate its presence and the '.' key to indicate its absence. Good luck!</p></div>";
-  } else if (index == 2) {
-    exp_stage_instruction =
-      "<div style='text-align:left;'>" +
-      "<h2>Instructions:</h2>" +
-      "<ol>" +
-      "<li>If you see a straight vertical black rectangle among the other rectangles, press the ',' key on your keyboard.</li>" +
-      "<li>If you do not see a straight vertical black rectangle and all the rectangles are aligned in the same direction or are white, press the '.' key on your keyboard.</li>" +
-      "<li>Pay close attention to the orientation of the rectangles and scan the screen thoroughly before making your decision.</li>" +
-      "<li>Respond quickly and accurately. Try to minimize any errors while maintaining a fast pace.</li>" +
-      "</ol>" +
-      "<p>Remember, your goal is to identify the presence or absence of a straight vertical black rectangle in each screen. Use the ',' key to indicate its presence and the '.' key to indicate its absence. Good luck!</p></div>";
+      "<p style='margin-top: 10px;'>Remember, press the ',' key if there is a change, and the '.' key if there is no change between the two displays.</p></div>";
   }
   return exp_stage_instruction;
 };
@@ -318,13 +304,16 @@ const target_present_prob = 0.5;
 // testing
 const numPracticeTrials = 2; // 2 simple, 2 operation
 const numPracticeBlocks = 3;
-
-const stimulus_duration = 1000;
-const trial_duration = 1500;
+// timings for phases
+const fixation_duration = 100;
+const sample_duration = 200;
+const blank_duration = 900;
+const test_duration = 1300;
+const trial_duration = 1300;
 
 const numTrialsPerBlock = 2;
-const numTestBlocks = 2;
-const numConditions = 3;
+const numTestBlocks = 1;
+const numConditions = 1;
 
 var block_index = 0;
 
@@ -452,23 +441,13 @@ var instructions_block = {
   pages: [
     "<div class = centerbox>" +
       "<p class=block-text>Place your index finger on the <b>" +
-      possible_responses.key_name[0] +
+      "," +
       "</b> key, your middle finger on the <b>" +
-      possible_responses.key_description[0] +
-      "</b> key, and your ring finger on the <b>" +
-      possible_responses.key_name[1] +
-      "</b> key.</p>" +
-      "<p class = block-text>In this experiment, on each trial you will see several black and white rectangles at various angles.</p>" +
-      "<p class = block-text>On some trials, <b>one</b> of these rectangles will be angled differently than all others of its color. We will call this rectangle the 'target'.</p>" +
-      "<p class = block-text>A target will only be present on some trials -- your task is to determine whether a target is present or absent on each trial. You will only have a few seconds to do so.</p>" +
-      "<p class=block-text>If you determine a target is <b>present</b>, press your <b>" +
-      possible_responses.key_name[0] +
-      "</b>, and if you determine a target is <b>absent</b>, press your <b>" +
-      possible_responses.key_name[1] +
-      "</b>.</p>" +
-      speed_reminder +
-      "</div>",
-    "<div class = centerbox>" +
+      "." +
+      "</b> key. " +
+      "<p class = block-text>In this experiment, on each trial you will see a fixation, then several rectangles of different colors, then a fixation, then several rectangles of different colors.</p>" +
+      "<p class = block-text>On some trials, <b>one</b> rectangle in the second set will be a different color than in the first set.</p>" +
+      "<p class = block-text>Your task is to press ',' if it changed from the first set or '.' if it did not change.</p>" +
       "<p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>" +
       "</div>",
   ],
@@ -570,8 +549,26 @@ var fixation_block = {
   },
   choices: ["NO_KEYS"],
   post_trial_gap: 0,
-  stimulus_duration: 500,
-  trial_duration: 1000,
+  stimulus_duration: fixation_duration,
+  trial_duration: 100,
+  prompt: function () {
+    return getExpStage() == "practice" ? prompt_text : "";
+  },
+};
+
+var blank_block = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: "",
+  data: function () {
+    return {
+      trial_id: "practice_fixation",
+      exp_stage: getExpStage(),
+    };
+  },
+  choices: ["NO_KEYS"],
+  post_trial_gap: 0,
+  stimulus_duration: fixation_duration,
+  trial_duration: 900,
   prompt: function () {
     return getExpStage() == "practice" ? prompt_text : "";
   },
@@ -582,8 +579,26 @@ var stimulus_block = {
   type: jsPsychChangeDetectionHTML,
   target_index: 0,
   distraction_index: 0,
-  stimulus_duration: stimulus_duration,
-  trial_duration: trial_duration,
+  stimulus_duration: function () {
+    var last_two = jsPsych.data.get().last(2).trials;
+    var has_stim_trial = hasStimTrialId(last_two);
+
+    if (has_stim_trial) {
+      return 1300;
+    } else {
+      return 200;
+    }
+  },
+  trial_duration: function () {
+    var last_two = jsPsych.data.get().last(2).trials;
+    var has_stim_trial = hasStimTrialId(last_two);
+
+    if (has_stim_trial) {
+      return 1300;
+    } else {
+      return 200;
+    }
+  },
   number_of_targets: number_of_targets,
   number_of_distractors: number_of_distractors,
   sample_test: function () {
@@ -626,7 +641,16 @@ var stimulus_block = {
       return []; //no keys
     }
   },
-  response_ends_trial: false,
+  response_ends_trial: function () {
+    var last_two = jsPsych.data.get().last(2).trials;
+    var has_stim_trial = hasStimTrialId(last_two);
+
+    if (has_stim_trial) {
+      return true;
+    } else {
+      return false;
+    }
+  },
   target: function () {
     var trial_index = block_index - 1;
     var call_function = jsPsych.data
@@ -695,7 +719,7 @@ for (let i = 0; i < numPracticeTrials; i++) {
   practiceTrials.push(
     fixation_block,
     stimulus_block,
-    fixation_block,
+    blank_block,
     stimulus_block,
     practice_feedback_block
   );
@@ -775,12 +799,7 @@ var practiceNode = {
 
 var testTrials = [];
 for (let i = 0; i < numTrialsPerBlock; i++) {
-  testTrials.push(
-    fixation_block,
-    stimulus_block,
-    fixation_block,
-    stimulus_block
-  );
+  testTrials.push(fixation_block, stimulus_block, blank_block, stimulus_block);
 }
 
 var testNode = {
