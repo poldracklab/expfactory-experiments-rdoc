@@ -307,6 +307,7 @@ var createAllStims = function () {
   target_trial_pop_out = shuffleArray(target_trial_pop_out);
   target_trial_size = shuffleArray(target_trial_size);
   target_trial_conjunction = shuffleArray(target_trial_conjunction);
+  // dont have to shuffle these?
   distractor_trial_pop_out = shuffleArray(distractor_trial_pop_out);
   distractor_trial_size = shuffleArray(distractor_trial_size);
   distractor_trial_conjunction = shuffleArray(distractor_trial_conjunction);
@@ -721,7 +722,6 @@ var fixation_block = {
 var stimulus_block = {
   //TODO: check null response if corr/incorrect
   type: jsPsychVisualSearchHTML,
-  target_present: true,
   target_index: 0,
   distraction_index: 0,
   stimulus_duration: stimulus_duration,
