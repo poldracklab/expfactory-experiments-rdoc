@@ -1,0 +1,34 @@
+Spatial-Cueing
+1. Task crashing during testTrials -- last fixation gap -> last fixation block, had wrong variable name
+2. Crashing, cannot read properties data in getCue()
+3. Commented out promptText in test trials - was showing instruct during test trials
+4. miss_percent causes crashing -> looks like it wasn't defined
+5. Crashing when practice trials have no key response - response_keys in feedback is not defined. Also correct feedback instructions were not showing -> fixed these issues
+6. Task seems to be functional. 
+
+Visual Search
+1. Change instructions for key press after talk with Patrick
+2. Fixed stimuli positions being outside of max window dimensions.
+*: Receive more instructions about visual search conditions 
+
+Go-NoGo
+1. Maybe make sure that screen for feedback "review feedback:" is not available if they have high Accuracy, check what was done in the other tasks
+
+$$$ command to run jq
+jq '.trialdata | fromjson' < results.txt > results.pretty.json
+jq -r '["trial_index", "trial_type", "rt", "stimulus"], (.[] | [.trial_index, .trial_type, .rt, .stimulus]) | @csv' results.pretty.json > output.csv
+^ change column and field values
+
+Visual Search 
+1. ensure trial blocks work correctly
+2. add more elements?
+3. just do one version?
+4. look at literature and see what they do
+
+
+Change detection
+1. optimize color discrepency 
+2. ensure trial blocks work correctly
+3. how to distinguish between trials better
+4. 100ms fixation, 200ms memory array, 900ms blank, 1300ms test array
+5. change indexing
