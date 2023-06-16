@@ -233,10 +233,7 @@ const jsPsychChangeDetectionHTML = (function (jspsych) {
     trial(display_element, trial) {
       let targetHTML = trial.target;
       let distractorsHTML = trial.distractors.map((d) => d.stimulus);
-
       distractorsHTML = distractorsHTML.join("");
-
-      console.log(trial.sample_test);
       var optionsArray1 = [
         "top_left",
         "top_middle",
@@ -257,7 +254,6 @@ const jsPsychChangeDetectionHTML = (function (jspsych) {
       ];
 
       if (trial.sample_test.previous_target == null) {
-        console.log("first");
         var { divs, target } = addTextToDivs(
           distractorsHTML,
           targetHTML,
@@ -271,17 +267,19 @@ const jsPsychChangeDetectionHTML = (function (jspsych) {
         var { color_will_change, previous_target, previous_distractors } =
           trial.sample_test;
         if (color_will_change) {
-          console.log("WILL CAHNGE");
           var missing_color = extractMissingOptions(optionsArray2, [
             previous_target,
             previous_distractors,
           ])[0];
+
+          var temp = previous_target;
 
           previous_target = replaceClassValue(
             previous_target,
             optionsArray2,
             missing_color
           );
+
           targetHTML = previous_target;
           distractorsHTML = previous_distractors;
         } else {

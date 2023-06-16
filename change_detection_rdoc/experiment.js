@@ -1,11 +1,15 @@
+// %%%%%%% number of trials %%%%%%%
+const number_of_test_trials = 1;
+const number_of_practice_trials = 1;
+const number_of_total_trials =
+  number_of_test_trials + number_of_practice_trials;
 const number_of_distractors = 5;
 const number_of_targets = 1;
-var testCount;
-var practiceCount;
 
-function hasStimTrialId(array) {
+/* %%%%%%%% HELPER FUNCTIONS %%%%%% */
+function has_trial_id(array, property) {
   return array.some(function (obj) {
-    return obj.hasOwnProperty("trial_id") && obj.trial_id === "stim";
+    return obj.hasOwnProperty("trial_id") && obj.trial_id === property;
   });
 }
 
@@ -36,22 +40,8 @@ function extractValueAfterId(html) {
   return null;
 }
 
-function combineArrays(...arrays) {
-  var combinedArray = [];
-
-  // Combine objects from each array
-  for (var i = 0; i < arrays.length; i++) {
-    var currentArray = arrays[i];
-    for (var j = 0; j < currentArray.length; j++) {
-      combinedArray.push(currentArray[j]);
-    }
-  }
-
-  return combinedArray;
-}
-
 /* ************************************ */
-/* Define helper functions */
+/* TRIAL HELPER FUNCTIONS */
 /* ************************************ */
 
 function addID() {
@@ -142,78 +132,64 @@ function appendData() {
 }
 
 var createAllStims = function () {
-  var num_of_target_or_control_trials_per_condition = 1;
-  var distractor_trial_color = [];
+  var all_stimuli = [];
+  var practice_stimuli;
+  var test_stimuli;
 
-  // create outer loop with num_of_target_or_control_trials_per_condition
-  for (var i = 0; i < num_of_target_or_control_trials_per_condition; i++) {
-    // creater inner loop for target trials
-    // #### TARGETS ACROSS TRIAL TYPES ####
-    for (var j = 0; j < number_of_targets; j++) {
-      var target_trial_color = [];
-      var control_trial_color = [];
+  for (var i = 0; i < number_of_total_trials; i++) {
+    var stimuli_target_or_control = {
+      stimulus: `<div id=${
+        i % 2 == 0 ? "target" : "control"
+      } class='rectangle'></div>`,
+      stimuli_id: `${i % 2 == 0 ? "target" : "control"}`,
+      correct_response: `${i % 2 == 0 ? "," : "."} `,
+    };
 
-      var stim_target_color = {
-        stimulus: `<div id="target" class='rectangle'></div>`, // stays same
-        trial_id: "color",
-        correct_response: ",",
-      };
-
-      var control_target_color = {
-        stimulus: `<div id="control" class='rectangle'></div>`, // stays same
-        trial_id: "control",
-        correct_response: ".",
-      };
-
-      target_trial_color.push(stim_target_color);
-      control_trial_color.push(control_target_color);
-    }
-
-    // #### DISTRACTORS ACROSS TRIAL TYPES ####
-    var temp1 = [];
+    all_stimuli.push(stimuli_target_or_control);
 
     for (var j = 0; j < number_of_distractors; j++) {
-      var stim_distraction_color = {
-        stimulus: `<div class="rectangle"></div>`,
-      };
-
-      temp1.push(stim_distraction_color);
+      all_stimuli.push({
+        stimulus: "<div class='rectangle'></div>",
+        stimuli_id: "distraction",
+      });
     }
-    distractor_trial_color.push(temp1);
   }
 
-  target_trial_color = combineArrays(target_trial_color, control_trial_color);
+  const ret_all_stimuli = all_stimuli;
 
-  distractor_trial_color = combineArrays(
-    distractor_trial_color,
-    distractor_trial_color
+  practice_stimuli = all_stimuli.slice(
+    0,
+    number_of_practice_trials * (number_of_targets + number_of_distractors)
   );
-
-  target_trial_color = shuffleArray(target_trial_color);
+  test_stimuli = all_stimuli;
 
   return {
-    target_trial_color,
-    distractor_trial_color,
+    practice_stimuli,
+    test_stimuli,
+    all_stimuli: ret_all_stimuli,
   };
 };
 
-var { target_trial_color, distractor_trial_color } = createAllStims();
+var setBlockStims = function () {
+  var filtered_targets = all_stimuli.filter(
+    (obj) => obj.stimuli_id === "target" || obj.stimuli_id === "control"
+  );
+  var filtered_distraction = all_stimuli.filter(
+    (obj) => obj.stimuli_id === "distraction"
+  );
 
-var setBlockStims = function (index) {
-  if (index == 0) {
-    console.log(target_trial_color);
-    console.log(distractor_trial_color);
-    return {
-      block_targets: target_trial_color,
-      block_distractions: distractor_trial_color,
-    };
+  // Cluster the array into arrays of arrays with length 5
+  const clustered_filtered_distraction = [];
+  for (let i = 0; i < filtered_distraction.length; i += 5) {
+    clustered_filtered_distraction.push(filtered_distraction.slice(i, i + 5));
   }
-};
 
-// var getStim = function () {
-//   currStim = block_stims.shift();
-//   return currStim.stimulus;
-// };
+  filtered_targets = shuffleArray(filtered_targets);
+  return {
+    block_targets: filtered_targets,
+    block_distractions: clustered_filtered_distraction,
+  };
+};
 
 var getTarget = function (targets) {
   var currentIndex = stimulus_block.target_index;
@@ -236,25 +212,24 @@ var getExpStage = function () {
   return exp_stage;
 };
 
-var getStageInstruction = function (index) {
-  if (index == 0) {
-    // in case want other conditions, see visual search
-    exp_stage_instruction =
-      "<div style='text-align:left; font-family: Arial, sans-serif;'>" +
-      "<h2 style='font-size: 1.2em; margin-bottom: 10px;'>Instructions:</h2>" +
-      "<ol style='margin-left: 20px;'>" +
-      "<li style='margin-bottom: 5px;'>You will see a fixation point displayed on the screen as a reference point to focus your attention.</li>" +
-      "<li style='margin-bottom: 5px;'>After the fixation, six squares of different colors will appear on the screen, each square representing a unique color.</li>" +
-      "<li style='margin-bottom: 5px;'>Another fixation point will be presented briefly on the screen.</li>" +
-      "<li style='margin-bottom: 5px;'>Following the second fixation, the same assortment of colored squares will be displayed again.</li>" +
-      "<li style='margin-bottom: 5px;'>Pay close attention to the colors of the squares in both displays.</li>" +
-      "<li style='margin-bottom: 5px;'>If, and only if, any one of the squares in the second display is replaced by a color that was not originally in the array, press the ',' (comma) key on your keyboard to indicate a change.</li>" +
-      "<li style='margin-bottom: 5px;'>On the other hand, if all the squares in the second display remain the same as the first display, press the '.' (period) key to indicate no change.</li>" +
-      "<li style='margin-bottom: 5px;'>Take your time to carefully observe and make your decision before pressing the corresponding key.</li>" +
-      "<li style='margin-bottom: 5px;'>The task will continue with different variations, so stay attentive and focused throughout.</li>" +
-      "</ol>" +
-      "<p style='margin-top: 10px;'>Remember, press the ',' key if there is a change, and the '.' key if there is no change between the two displays.</p></div>";
-  }
+var getStageInstruction = function () {
+  // in case want other conditions, see visual search
+  exp_stage_instruction =
+    "<div style='text-align:left; font-family: Arial, sans-serif;'>" +
+    "<h2 style='font-size: 1.2em; margin-bottom: 10px;'>Instructions:</h2>" +
+    "<ol style='margin-left: 20px;'>" +
+    "<li style='margin-bottom: 5px;'>You will see a fixation point displayed on the screen as a reference point to focus your attention.</li>" +
+    "<li style='margin-bottom: 5px;'>After the fixation, six squares of different colors will appear on the screen, each square representing a unique color.</li>" +
+    "<li style='margin-bottom: 5px;'>Another fixation point will be presented briefly on the screen.</li>" +
+    "<li style='margin-bottom: 5px;'>Following the second fixation, the same assortment of colored squares will be displayed again.</li>" +
+    "<li style='margin-bottom: 5px;'>Pay close attention to the colors of the squares in both displays.</li>" +
+    "<li style='margin-bottom: 5px;'>If, and only if, any one of the squares in the second display is replaced by a color that was not originally in the array, press the ',' (comma) key on your keyboard to indicate a change.</li>" +
+    "<li style='margin-bottom: 5px;'>On the other hand, if all the squares in the second display remain the same as the first display, press the '.' (period) key to indicate no change.</li>" +
+    "<li style='margin-bottom: 5px;'>Take your time to carefully observe and make your decision before pressing the corresponding key.</li>" +
+    "<li style='margin-bottom: 5px;'>The task will continue with different variations, so stay attentive and focused throughout.</li>" +
+    "</ol>" +
+    "<p style='margin-top: 10px;'>Remember, press the ',' key if there is a change, and the '.' key if there is no change between the two displays.</p></div>";
+
   return exp_stage_instruction;
 };
 
@@ -274,19 +249,23 @@ var getFeedback = function () {
   );
 };
 
+// %%%%%% END HELPER FUNCTIONS
+
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
 // generic task variables
 const run_attention_checks = false;
 const attention_check_thresh = 0.65;
-let sumInstructTime = 0; //ms
-const instructTimeThresh = 0; ///in seconds
+let sumInstructTime = 1;
+const instructTimeThresh = 1; ///in seconds
 
 const accuracy_thresh = 0.6;
 const rt_thresh = 20000;
 const missed_response_thresh = 0.1;
-const practice_thresh = 3; // max repetitions
+const practice_thresh = 1; // max repetitions
+// stimuli arrays
+var { practice_stimuli, test_stimuli, all_stimuli } = createAllStims();
 
 // task specific variables
 var possible_responses = {
@@ -296,30 +275,29 @@ var possible_responses = {
 };
 var choices = possible_responses.key;
 
-const target_present_prob = 0.5;
+const numPracticeBlocks = 1;
 
-// const numPracticeTrials = 12; // 2 simple, 2 operation
-// const numTrialsPerBlock = 48;
-// const numTestBlocks = 4;
-// testing
-const numPracticeTrials = 2; // 2 simple, 2 operation
-const numPracticeBlocks = 3;
-// timings for phases
+// %%%%% timings based on papers, by experiment phases %%%%%
 const fixation_duration = 100;
 const sample_duration = 200;
 const blank_duration = 900;
-const test_duration = 1300;
-const trial_duration = 1300;
+const test_stimuli_duration = 1300;
+const test_trial_duration = 2500;
 
-const numTrialsPerBlock = 2;
+// %%%%% testing timings
+// const fixation_duration = 100;
+// const sample_duration = 1000;
+// const blank_duration = 900;
+// const test_duration = 1000;
+// const trial_duration = 1000;
+
+// %%%%%%% %%%%%%%
+const number_of_trials_per_test_block = 2;
 const numTestBlocks = 1;
 const numConditions = 1;
 
-var block_index = 0;
-
-var exp_stage = "practice";
+var exp_stage = "";
 var exp_stage_instruction = "";
-
 var currStim = "";
 
 /*  ######## Important text values for display ######## */
@@ -337,7 +315,7 @@ var speed_reminder =
   "<p class = block-text>Try to respond as quickly and accurately as possible.</p>";
 
 /* ************************************ */
-/* Set up jsPsych blocks */
+/* SETTING UP JSPSYCH BLOCKS */
 /* ************************************ */
 // Set up attention check node
 // var attention_check_block = {
@@ -423,14 +401,13 @@ var condition_instruct = {
     trial_id: "condition_instruct",
   },
   stimulus: function () {
-    return getStageInstruction(block_index);
+    return getStageInstruction();
   },
   post_trial_gap: 0,
   trial_duration: 180000,
   on_finish: function (data) {
     feedback_text =
       "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
-    data.condition_index = block_index;
   },
 };
 
@@ -550,7 +527,7 @@ var fixation_block = {
   choices: ["NO_KEYS"],
   post_trial_gap: 0,
   stimulus_duration: fixation_duration,
-  trial_duration: 100,
+  trial_duration: fixation_duration,
   prompt: function () {
     return getExpStage() == "practice" ? prompt_text : "";
   },
@@ -561,7 +538,7 @@ var blank_block = {
   stimulus: "",
   data: function () {
     return {
-      trial_id: "practice_fixation",
+      trial_id: "blank_block",
       exp_stage: getExpStage(),
     };
   },
@@ -573,56 +550,38 @@ var blank_block = {
     return getExpStage() == "practice" ? prompt_text : "";
   },
 };
-
 var stimulus_block = {
-  //TODO: check null response if corr/incorrect
   type: jsPsychChangeDetectionHTML,
   target_index: 0,
   distraction_index: 0,
   stimulus_duration: function () {
     var last_two = jsPsych.data.get().last(2).trials;
-    var has_stim_trial = hasStimTrialId(last_two);
-
-    if (has_stim_trial) {
-      return 1300;
-    } else {
-      return 200;
-    }
+    var trialId = getExpStage() == "practice" ? "stim" : "blank_block";
+    var has_stim_trial = has_trial_id(last_two, trialId);
+    return has_stim_trial ? test_stimuli_duration : sample_duration;
   },
   trial_duration: function () {
     var last_two = jsPsych.data.get().last(2).trials;
-    var has_stim_trial = hasStimTrialId(last_two);
-
-    if (has_stim_trial) {
-      return 1300;
-    } else {
-      return 200;
-    }
+    var trialId = getExpStage() == "practice" ? "stim" : "blank_block";
+    var has_stim_trial = has_trial_id(last_two, trialId);
+    return has_stim_trial ? test_trial_duration : sample_duration;
   },
   number_of_targets: number_of_targets,
   number_of_distractors: number_of_distractors,
   sample_test: function () {
     var last_two = jsPsych.data.get().last(2).trials;
-    var has_stim_trial = hasStimTrialId(last_two);
+    var trialId = getExpStage() == "practice" ? "stim" : "blank_block";
+    var has_stim_trial = has_trial_id(last_two, trialId);
 
     if (has_stim_trial) {
-      var { targetHTML } = last_two[0];
-      var { distractorsHTML } = last_two[0];
+      var { targetHTML, distractorsHTML } = last_two[0];
       var was_target = targetHTML.includes("target");
 
-      if (was_target) {
-        return {
-          previous_target: targetHTML,
-          previous_distractors: distractorsHTML,
-          color_will_change: true,
-        };
-      } else {
-        return {
-          previous_target: targetHTML,
-          previous_distractors: distractorsHTML,
-          color_will_change: false,
-        };
-      }
+      return {
+        previous_target: targetHTML,
+        previous_distractors: distractorsHTML,
+        color_will_change: was_target,
+      };
     } else {
       return {
         previous_target: null,
@@ -633,89 +592,61 @@ var stimulus_block = {
   },
   choices: function () {
     var last_two = jsPsych.data.get().last(2).trials;
-    var has_stim_trial = hasStimTrialId(last_two);
-
-    if (has_stim_trial) {
-      return [",", "."];
-    } else {
-      return []; //no keys
-    }
+    var trialId = getExpStage() == "practice" ? "stim" : "blank_block";
+    var has_stim_trial = has_trial_id(last_two, trialId);
+    return has_stim_trial ? [",", "."] : [];
   },
-  response_ends_trial: function () {
-    var last_two = jsPsych.data.get().last(2).trials;
-    var has_stim_trial = hasStimTrialId(last_two);
-
-    if (has_stim_trial) {
-      return true;
-    } else {
-      return false;
-    }
-  },
+  response_ends_trial: false,
   target: function () {
-    var trial_index = block_index - 1;
     var call_function = jsPsych.data
       .get()
-      .filter({ trial_type: "call-function" }).trials[trial_index];
-
+      .filter({ trial_type: "call-function" }).trials[0];
     var { block_targets } = call_function.value;
-
     return getTarget(block_targets);
   },
   distractors: function () {
-    var trial_index = block_index - 1;
     var call_function = jsPsych.data
       .get()
-      .filter({ trial_type: "call-function" }).trials[trial_index];
+      .filter({ trial_type: "call-function" }).trials[0];
     var { block_distractions } = call_function.value;
     return getDistraction(block_distractions);
   },
-  prompt: function () {
-    return getExpStage() == "practice" ? prompt_text : "";
-  },
+  prompt: getExpStage() == "practice" ? prompt_text : "",
   data: function () {
+    var last_two = jsPsych.data.get().last(2).trials;
+    var trialId = getExpStage() == "practice" ? "stim" : "blank_block";
+    var has_stim_trial = has_trial_id(last_two, trialId);
+
     return {
       trial_id: "stim",
+      sample_or_test: has_stim_trial ? "test" : "sample",
       exp_stage: getExpStage(),
     };
   },
-  on_finish: function (data) {
-    var trial_index = block_index - 1;
-    // had code here in visual search
-    var call_function = jsPsych.data
-      .get()
-      .filter({ trial_type: "call-function" }).trials[trial_index];
-
-    var { block_targets } = call_function.value;
-    console.log(block_targets);
+  on_finish: function () {
+    console.log(getExpStage());
   },
 };
 
 var set_stims_block = {
   type: jsPsychCallFunction,
   func: function () {
-    var condition_instruct = jsPsych.data
-      .get()
-      .filter({ trial_id: "condition_instruct" });
-    var { condition_index } = condition_instruct.trials[block_index];
-
-    return setBlockStims(condition_index); //only running first condition
+    return setBlockStims(); //only running first condition
   },
   on_finish: function (data) {
     testCount = 0;
     practiceCount = 0;
-    var stimuli = data.all_trials;
     stimulus_block.target = function () {
       return getTarget(stimuli.block_targets);
     };
     stimulus_block.distractors = function () {
       return getDistraction(stimuli.block_distractions);
     };
-    block_index += 1;
   },
 };
 
 var practiceTrials = [];
-for (let i = 0; i < numPracticeTrials; i++) {
+for (let i = 0; i < number_of_practice_trials; i++) {
   practiceTrials.push(
     fixation_block,
     stimulus_block,
@@ -728,6 +659,10 @@ for (let i = 0; i < numPracticeTrials; i++) {
 var practiceCount;
 var practiceNode = {
   timeline: [feedback_block].concat(practiceTrials),
+  on_start: function (trial) {
+    // Set exp_stage to "practice" before the trial starts
+    exp_stage = "practice";
+  },
   loop_function: function (data) {
     practiceCount += 1;
 
@@ -738,29 +673,27 @@ var practiceNode = {
     var correct_response;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "stim") {
-        var current_trial = data.trials[i];
-        try {
-          total_trials += 1;
-          var targetHTML = current_trial.targetHTML;
+      var current_trial = data.trials[i];
+      var { trial_id, sample_or_test, exp_stage, targetHTML, rt, response } =
+        current_trial;
+      if (
+        trial_id == "stim" &&
+        sample_or_test == "test" &&
+        exp_stage == "practice"
+      ) {
+        total_trials += 1;
 
-          if (targetHTML.includes("target")) {
-            correct_response = ",";
-          } else if (targetHTML.includes("control")) {
-            correct_response = ".";
-          } else {
-            // nothing
-            console.log("Error: Neither target nor control stimuli");
+        if (targetHTML.includes("target")) {
+          correct_response = ",";
+        } else if (targetHTML.includes("control")) {
+          correct_response = ".";
+        }
+        if (rt != null) {
+          sum_rt += rt;
+          sum_responses += 1;
+          if (response == correct_response) {
+            correct += 1;
           }
-          if (current_trial.rt != null) {
-            sum_rt += current_trial.rt;
-            sum_responses += 1;
-            if (current_trial.response == correct_response) {
-              correct += 1;
-            }
-          }
-        } catch (err) {
-          console.log(err);
         }
       }
     }
@@ -769,12 +702,12 @@ var practiceNode = {
     var missed_responses = (total_trials - sum_responses) / total_trials;
     var ave_rt = sum_rt / sum_responses;
 
-    if (accuracy > accuracy_thresh) {
+    if (accuracy > accuracy_thresh || practiceCount == practice_thresh) {
       feedback_text =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         "<p class = block-text>Keep your gaze on the central '+', your index finger on the ',' key and your middle finger on the '.' key." +
         "<p class = center-block-text> Press <i>enter</i> to continue.</p></div>";
-      exp_stage = "test";
+
       return false;
     } else {
       feedback_text =
@@ -798,12 +731,16 @@ var practiceNode = {
 };
 
 var testTrials = [];
-for (let i = 0; i < numTrialsPerBlock; i++) {
+for (let i = 0; i < number_of_trials_per_test_block; i++) {
   testTrials.push(fixation_block, stimulus_block, blank_block, stimulus_block);
 }
 
 var testNode = {
   timeline: [feedback_block].concat(testTrials),
+  on_start: function (trial) {
+    // Set exp_stage to "practice" before the trial starts
+    exp_stage = "test";
+  },
   loop_function: function (data) {
     testCount += 1;
     var sum_rt = 0;
@@ -812,23 +749,25 @@ var testNode = {
     var total_trials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "test_trial") {
+      var current_trial = data.trials[i];
+      var { trial_id, sample_or_test, exp_stage, targetHTML, rt, response } =
+        current_trial;
+      if (
+        trial_id == "stim" &&
+        sample_or_test == "test" &&
+        exp_stage == "test"
+      ) {
         total_trials += 1;
-        var targetHTML = data.trials[i].targetHTML;
-        if (data.trials[i].rt != null) {
-          sum_rt += data.trials[i].rt;
+
+        if (targetHTML.includes("target")) {
+          correct_response = ",";
+        } else if (targetHTML.includes("control")) {
+          correct_response = ".";
+        }
+        if (rt != null) {
+          sum_rt += rt;
           sum_responses += 1;
-
-          if (targetHTML.includes("target")) {
-            correct_response = ",";
-          } else if (targetHTML.includes("control")) {
-            correct_response = ".";
-          } else {
-            // nothing
-            console.log("Error: Neither target nor control stimuli");
-          }
-
-          if (data.trials[i].response == correct_response) {
+          if (response == correct_response) {
             correct += 1;
           }
         }
@@ -841,7 +780,7 @@ var testNode = {
 
     if (testCount == numTestBlocks) {
       feedback_text =
-        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>";
+        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to end this task.</p></div>";
       //If you have been completing tasks continuously for an hour or more, please take a 15-minute break before starting again.
       return false;
     } else {
