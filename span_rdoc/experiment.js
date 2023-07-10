@@ -32,9 +32,7 @@ function assessPerformance() {
   for (var i = 0; i < equations.length; i++) {
     equationCorrect += equations[i].correct_trial;
     missedEquations += equations[i].response == null;
-    if (equations[i].equationType == 'simple') {
-      simpleCount += 1
-    } else if (equations[i].equationType == 'complex') {
+    if (equations[i].equationType == 'complex') {
       complexCount += 1
     }
   }
@@ -200,12 +198,13 @@ var spanResponses = ['left arrow key', 'right arrow key', 'up arrow key', 'down 
 // *Timing:
 // stimulus and fixaiton
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 1000;
+const stimTrialDuration = 2000;
 // equation
 const equationStimulusDuration = 3000;
 const equationTrialDuration = 3000;
 // wait block (fixation or equation)
-const waitBlockDuration = 8000;
+const responseBlockDuration = 8000;
+const numStimuli = 4;
 
 // generic task variables
 // var run_attention_checks = false;
@@ -224,6 +223,33 @@ var possibleStimuli = "BCDFGJKLMNPSTVXZ".split("");
 var numPracticeTrials = 12;
 var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
+
+const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+const nonResponseTrialsDuration = numTrialsTotal * (fixationDuration + equationTrialDuration + meanITI * 1000) / 1000 / 60
+const responseTrialsDuration = responseBlockDuration * numTrialsTotal / numStimuli / 1000 / 60
+
+
+console.log(`Total number of trials: ${numTrialsTotal}`)
+console.log(`Total duration of trials without response blocks:
+- Fixation: ${fixationDuration} ms
+- Stimulus duration: ${stimTrialDuration} ms
+- Equation duration: ${equationTrialDuration} ms
+- Average ITI duration: ${meanITI * 1000} ms
+------------------------
+= ${nonResponseTrialsDuration} min
+
+Total duration of response blocks:
+- Response duration: ${responseBlockDuration}
+- Number of response blocks: ${numTrialsTotal / numStimuli}
+------------------------
+= ${responseTrialsDuration}
+
+Total duration:
+- Non-response trials = ${nonResponseTrialsDuration} min
+- Response trials = ${responseTrialsDuration}
+------------------------
+= ${nonResponseTrialsDuration + responseTrialsDuration} min
+`);
 
 // important variables used throughout
 var expStage = "practice";
@@ -377,35 +403,22 @@ var stimulusBlock = {
 };
 
 var equationAns;
-var equationType;
+var equationType = 'complex'
 
-function getRandomEquation(simpleOrComplex) {
+function getRandomEquation() {
   // Generate random operands and operator
   const operand1 = Math.floor(Math.random() * 8) + 3; // Random number between 3 and 10 to ensure operand1 is positive
   const operand2 = Math.floor(Math.random() * (10 / operand1 + 1)); // Random number from 0 to the maximum value that divides into 10
 
-  // Adjust the operator based on equation type
-  const operator = Math.random() < 0.5 ? '+' : '-';
+  // Adjust the operator to always be '+'
+  const operator = '+';
 
   // Calculate the correct answer
-  let correctAnswer;
-  switch (operator) {
-    case '+':
-      correctAnswer = operand1 + operand2;
-      break;
-    case '-':
-      correctAnswer = operand1 - operand2;
-      break;
-  }
+  const correctAnswer = operand1 + operand2;
 
-  // Generate the equation string
-  let equation;
-  if (simpleOrComplex === 'simple') {
-    equation = `(${operand1} ${operator} ${operand2})`;
-  } else {
-    const additionalOperand = Math.floor(Math.random() * 9) + 2; // Random number between 2 and 10
-    equation = `(${operand1} ${operator} ${operand2}) * ${additionalOperand}`;
-  }
+  // Generate the equation string with an additional operand
+  const additionalOperand = Math.floor(Math.random() * 9) + 2; // Random number between 2 and 10
+  const equation = `(${operand1} ${operator} ${operand2}) * ${additionalOperand}`;
 
   // Generate a random value for the question
   const randomValue = Math.floor(Math.random() * 10) + 1; // Random number between 1 and 10
@@ -417,9 +430,9 @@ function getRandomEquation(simpleOrComplex) {
   const html = `<div>Does ${equation} = ${randomValue}?</div>`;
 
   equationAns = isCorrect ? 1 : 0;
-  equationType = simpleOrComplex;
   return html;
 }
+
 
 function extractValueFromHTML(html) {
   const divElement = document.createElement('div');
@@ -516,8 +529,8 @@ var responseBlock = {
       correctResponse: getCurrSeq(),
     };
   },
-  trial_duration: waitBlockDuration,
-  stimulus_duration: waitBlockDuration,
+  trial_duration: responseBlockDuration,
+  stimulus_duration: responseBlockDuration,
   post_trial_gap: 0,
   // prompt: '',
   on_finish: function(data) {
@@ -556,22 +569,6 @@ var fixation = {
       return practicePromptText
     }
   },
-  on_finish: function(data) {
-    submittedAnswers = '';
-    if (getCurrBlockType() == 'operation') {
-      lastResponse = jsPsych.data.get().last(2).values()[0]; // Get the last trial and second-to-last trial
-      console.log('lastresponse', lastResponse)
-      console.log('current trial data', data)
-      if (lastResponse.trial_id == 'response') {
-        if (data.trial_index - lastResponse.trial_index == 1) { // If fixation is first in the trial, set equationType
-          equationType = Math.random() < 0.5 ? 'simple' : 'complex';
-        }
-      } else if (lastResponse.trial_id == 'feedback') { // If previous trial was feedback, set equationType
-        equationType = Math.random() < 0.5 ? 'simple' : 'complex';
-      }
-    }
-  }
-
 };
 
 var ITIBlock = {
@@ -604,7 +601,7 @@ var practiceFeedbackBlock = {
     var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block
     console.log(last);
-    if (getCurrBlockType() !== 'operation') return ''
+    if (getCurrBlockType() !== 'operation') return "<div class = centerbox><div class = fixation>+</div></div>"
 
     if (last.correctResponse == 1) {
       return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
@@ -632,11 +629,10 @@ var practiceFeedbackBlock = {
   },
 };
 var rtThresh = 1000
-var numStimuli = 4;
 var practiceTrials = [];
 for (let i = 0; i < numPracticeTrials; i++) { // number of trials
   // length of difficulty 
-  for (let j = 0; j < numStimuli; j++) {
+  for (let j = 0; j < 4; j++) {
     practiceTrials.push(
       fixation,
       stimulusBlock,
