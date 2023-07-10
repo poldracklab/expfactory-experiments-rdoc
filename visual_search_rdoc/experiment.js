@@ -1,25 +1,6 @@
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
-
-function evalAttentionChecks() {
-  var checkPercent = 1;
-  if (runAttentionChecks) {
-    var attentionCheckTrials = jsPsych.data
-      .get()
-      .filter({ trialId: "attention_check" }).trials;
-    var checksPassed = 0;
-    for (var i = 0; i < attentionCheckTrials.length; i++) {
-      if (attentionCheckTrials[i].correct === true) {
-        checksPassed += 1;
-      }
-    }
-    checkPercent = checksPassed / attentionCheckTrials.length;
-  }
-  jsPsych.data.get().addToLast({ attCheckPercent: checkPercent });
-  return checkPercent;
-}
-
 function assessPerformance() {
   var experimentData = jsPsych.data
     .get()
@@ -86,74 +67,83 @@ function appendData() {
   });
 }
 
-var n;
+var n = 8;
+var blockCount = 0;
+
 var trialTargetPresent;
 function getStim() {
-  const containerWidth = window.innerWidth * 0.9; // Adjusted width (90% of window width)
-  const containerHeight = window.innerHeight * 0.9; // Adjusted height (90% of window height)
+  const containerWidth = window.innerWidth * 0.7; // Adjusted width (90% of window width)
+  const containerHeight = window.innerHeight * 0.7; // Adjusted height (90% of window height)
   const boxWidth = 40;
   const boxHeight = 80; // Adjust the height as desired
-  const boxSpacing = boxHeight; // Use the height for spacing
 
-  const positions = [];
   const targetIndex = Math.floor(Math.random() * n); // Randomly select an index for the target div
-  let targetPresent = false; // Initialize targetPresent as false
-  let html = '<div class="container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: ' + containerWidth + 'px; height: ' + containerHeight + 'px;">';
-
-  for (let i = 0; i < n; i++) {
-    let left; let top;
-    let overlaps = true;
-
-    while (overlaps) {
-      left = Math.floor(Math.random() * (containerWidth - boxWidth));
-      top = Math.floor(Math.random() * (containerHeight - boxHeight));
-
-      overlaps = positions.some(function(position) {
-        return (
-          Math.abs(left - position.left) < boxSpacing &&
-          Math.abs(top - position.top) < boxSpacing
-        );
-      });
-    }
-
-    positions.push({ left, top });
-
-    if (i === targetIndex && Math.random() < 0.5) {
-      if (getCurrBlockType() === 'feature') {
-        html += '<div id="target" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + boxWidth + 'px; height: ' + boxHeight + 'px; background-color: white;"></div>';
-        targetPresent = true; // Set targetPresent to true if the condition is met
-      } else if (getCurrBlockType() === 'conjunction') {
-        if (Math.random() < 0.5) {
-          // Switch width and height for a white rectangle
-          html += '<div id="target" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + boxHeight + 'px; height: ' + boxWidth + 'px; background-color: white;"></div>';
-          targetPresent = true; // Set targetPresent to true if the condition is met
-        } else {
-          // Black rectangles with same width and height
-          html += '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + boxWidth + 'px; height: ' + boxHeight + 'px; background-color: black;"></div>';
-        }
-      }
-    } else {
-      if (getCurrBlockType() === 'feature') {
-        html += '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + boxWidth + 'px; height: ' + boxHeight + 'px; background-color: black;"></div>';
-      } else if (getCurrBlockType() === 'conjunction') {
-        if (Math.random() < 0.5) {
-          // White rectangles with switched width and height
-          html += '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + boxHeight + 'px; height: ' + boxWidth + 'px; background-color: white;"></div>';
-        } else {
-          // Black rectangles with same width and height
-          html += '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + boxWidth + 'px; height: ' + boxHeight + 'px; background-color: black;"></div>';
-        }
-      }
-    }
-  }
-
-  trialTargetPresent = targetPresent;
-  html += '</div>';
+  const targetPresent = isTargetPresent(targetIndex);
+  const html = generateHTML(containerWidth, containerHeight, targetPresent, targetIndex, boxWidth, boxHeight);
 
   return html;
 }
 
+function isTargetPresent(targetIndex) {
+  return targetIndex === 1 && Math.random() < 0.5; // Modify the condition for your target logic
+}
 
+function generateHTML(containerWidth, containerHeight, targetPresent, targetIndex, boxWidth, boxHeight) {
+  let html = '<div class="container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: ' + containerWidth + 'px; height: ' + containerHeight + 'px;">';
+  const positions = [];
+  let rows;
+  let cols;
+
+  if (n === 8) {
+    rows = 4;
+    cols = 2;
+  } else if (n === 24) {
+    rows = 6;
+    cols = 4;
+  } else {
+    throw new Error('Invalid value of n. Only 8 or 24 is supported.');
+  }
+
+  const spacingX = (containerWidth - cols * boxWidth) / (cols + 1);
+  const spacingY = (containerHeight - rows * boxHeight) / (rows + 1);
+
+  for (let i = 0; i < n; i++) {
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+
+    const left = spacingX * (col + 1) + col * boxWidth;
+    const top = spacingY * (row + 1) + row * boxHeight;
+
+    positions.push({ left, top });
+
+    if (i === targetIndex && targetPresent) {
+      html += generateTargetElement(left, top, boxWidth, boxHeight);
+    } else {
+      html += generateDistractorElement(left, top, boxWidth, boxHeight);
+    }
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function generateTargetElement(left, top, width, height) {
+  return '<div id="target" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white;"></div>';
+}
+
+function generateDistractorElement(left, top, width, height) {
+  if (getCurrBlockType() === 'color') {
+    return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
+  } else if (getCurrBlockType() === 'orientation') {
+    return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
+  } else if (getCurrBlockType() === 'conjunction') {
+    if (Math.random() < 0.5) {
+      return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
+    } else {
+      return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
+    }
+  }
+}
 
 
 var getExpStage = function() {
@@ -161,7 +151,7 @@ var getExpStage = function() {
 };
 
 
-var blockType = 'feature' // starting with feature
+var blockType = 'color' // starting with feature
 var getCurrBlockType = function() {
   return blockType;
 };
@@ -189,22 +179,31 @@ var getFeedback = function() {
 // generic task variables
 // const runAttentionChecks = false;
 // const attention_check_thresh = 0.65;
+const stimStimulusDuration = 1000;
+const stimTrialDuration = 1000;
+
+var numConditions = 3;
+var numBlocksPerCondition = 2;
 const instructTimeThresh = 0; // /in seconds
 let sumInstructTime = 0; // ms
 const accuracyThresh = 0.6;
 const rtThresh = 1000;
 const missedResponseThresh = 0.1;
 // practice
-// const numPracticeTrials = 8;
-// const numTrialsPerBlock = 72;
-// const numTestBlocks = 3;
+const numPracticeTrials = 4; // num practice trials for each block in each condition
+const numTrialsPerBlock = 12; // num test trials for each block in each condition
+const numTestBlocks = 3;
 
-const numPracticeTrials = 1;
-const numTrialsPerBlock = 1;
-const numTestBlocks = 2;
+const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
+const numTrialsTotal = numTrialsPerCondition * numConditions;
 
-const stimStimulusDuration = 1000;
-const stimTrialDuration = 1000;
+console.log(`Total number of trials: ${numTrialsTotal}`)
+console.log(`Total estimated duration:
+- Fixation: ${fixationDuration} ms
+- Stimulus duration: ${stimTrialDuration} ms
+- Average ITI duration: ${meanITI * 1000} ms
+------------------------
+= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min`);
 
 
 var practiceCount = 0;
@@ -272,8 +271,8 @@ var stimulusBlock = {
   choices: choices,
   stimulus_duration: stimStimulusDuration, // 1000,
   trial_duration: stimTrialDuration, // 2000
-  response_ends_trial: true,
   post_trial_gap: 0,
+  response_ends_trial: false,
   on_finish: appendData,
   prompt: function() {
     if (getExpStage() == 'practice') {
@@ -319,7 +318,7 @@ var instructionsBlock = {
     "</b>.</p>" +
     "<p class = block-text>In this experiment, on each trial you will see several black and white rectangles at various angles.</p>" +
     "<p class = block-text>On some trials, <b>one</b> of these rectangles will be angled differently than all others of its color. We will call this rectangle the 'target'.</p>" +
-    "<p class = block-text>A target will only be present on some trials -- your task is to determine whether a target is present or absent on each trial. You will only have a few seconds to do so.</p>" +
+    "<p class = block-text>A target will only be present on some trials. Your task is to determine whether a target is present or absent on each trial. You will only have a few seconds to do so.</p>" +
     "<p class=block-text>If you determine a target is <b>present</b>, press your <b>" +
     possibleResponses[0][0] +
     "</b>, and if you determine a target is <b>absent</b>, press your <b>" +
@@ -364,7 +363,9 @@ var instructionNode = {
   },
 };
 
-var feedbackText;
+var feedbackText =
+  "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
+
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -376,11 +377,6 @@ var feedbackBlock = {
   trialDuration: 180000,
   response_ends_trial: true,
 };
-
-function generateRandomValue(minNum, maxNum) {
-  return Math.floor(Math.random() * maxNum) + minNum;
-}
-
 
 var fixationBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -396,9 +392,6 @@ var fixationBlock = {
     } else {
       return ''
     }
-  },
-  on_finish: function() {
-    n = generateRandomValue(2, 20)
   },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
@@ -564,15 +557,46 @@ var testNode = {
     var avgRT = sumRT / sumResponses;
 
     if (testCount == numTestBlocks) {
-      if (getCurrBlockType() == 'feature') {
+      if (getCurrBlockType() == 'color') {
         testCount = 0;
-        blockType = 'conjunction'
-        feedbackText =
-          "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
+        if (blockCount == 0) {
+          n = 24;
+          blockCount += 1
+          feedbackText =
+            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
+        } else {
+          n = 8;
+          blockCount = 0;
+          blockType = 'orientation'
+          feedbackText =
+            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
+        }
+
+      } else if (getCurrBlockType() == 'orientation') {
+        testCount = 0;
+        if (blockCount == 0) {
+          n = 24;
+          blockCount += 1
+          feedbackText =
+            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
+        } else {
+          n = 8;
+          blockCount = 0;
+          blockType = 'conjunction'
+          feedbackText =
+            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
+        }
       } else if (getCurrBlockType() == 'conjunction') {
-        feedbackText =
-          "<div class = centerbox><p class = center-block-text>Done this task.</p>" +
-          '</div>';
+        testCount = 0;
+        if (blockCount == 0) {
+          n = 24;
+          blockCount += 1
+          feedbackText =
+            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
+        } else {
+          feedbackText =
+            "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
+        }
       }
       return false;
     } else {
@@ -668,12 +692,12 @@ var visual_search_rdoc_experiment = [];
 var visual_search_rdoc_init = () => {
   visual_search_rdoc_experiment.push(fullscreen);
   visual_search_rdoc_experiment.push(instructionNode);
-  // feature
-  visual_search_rdoc_experiment.push(practiceNode);
-  visual_search_rdoc_experiment.push(testNode);
-  // conjunction
-  visual_search_rdoc_experiment.push(practiceNode);
-  visual_search_rdoc_experiment.push(testNode);
+  for (let i = 0; i < numConditions; i++) {
+    for (let j = 0; j < numBlocksPerCondition; j++) {
+      visual_search_rdoc_experiment.push(practiceNode);
+      visual_search_rdoc_experiment.push(testNode);
+    }
+  }
   // post-task
   visual_search_rdoc_experiment.push(postTaskBlock);
   visual_search_rdoc_experiment.push(endBlock);
