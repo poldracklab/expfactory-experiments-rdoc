@@ -3,6 +3,8 @@
     "name": "Visual Search RDoC",
     "template": "jspsych",
     "run": [
+      "static/jspsych7/poldrack-plugins/utils/common.js",
+      "static/jspsych7/poldrack-plugins/utils/helpers.js",
       "static/js/math.min.js",
       "static/jspsych7/jspsych.js",
       "static/jspsych7/plugin-instructions.js",
@@ -24,7 +26,8 @@
       "Zeynep Enkavi",
       "Patrick Bissett",
       "Vanessa Sochat",
-      "Russell Poldrack"
+      "Russell Poldrack",
+      "Logan Bennett"
     ],
     "time": 7,
     "reference": "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2978794/",
