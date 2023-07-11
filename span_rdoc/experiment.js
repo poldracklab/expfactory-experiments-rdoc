@@ -248,7 +248,8 @@ Total duration:
 - Non-response trials = ${nonResponseTrialsDuration} min
 - Response trials = ${responseTrialsDuration}
 ------------------------
-= ${nonResponseTrialsDuration + responseTrialsDuration} min
+= ${nonResponseTrialsDuration + responseTrialsDuration} min for one block
+= ${2 * nonResponseTrialsDuration + responseTrialsDuration} min for both blocks
 `);
 
 // important variables used throughout

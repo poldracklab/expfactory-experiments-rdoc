@@ -183,6 +183,8 @@ var getFeedback = function() {
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000;
 
+// eslint-disable-next-line no-unused-vars
+var runAttentionChecks = true;
 var numConditions = 2;
 var numBlocksPerCondition = 2;
 const instructTimeThresh = 0; // /in seconds
@@ -194,9 +196,9 @@ const missedResponseThresh = 0.1;
 // const numPracticeTrials = 12; // num practice trials for each block in each condition
 // const numTrialsPerBlock = 24; // num test trials for each block in each condition
 // const numTestBlocks = 3;
-const numPracticeTrials = 1; // num practice trials for each block in each condition
-const numTrialsPerBlock = 1; // num test trials for each block in each condition
-const numTestBlocks = 1;
+const numPracticeTrials = 3; // num practice trials for each block in each condition
+const numTrialsPerBlock = 3; // num test trials for each block in each condition
+const numTestBlocks = 2;
 
 const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
 const numTrialsTotal = numTrialsPerCondition * numConditions;
@@ -494,13 +496,13 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
+    console.log(practiceCount)
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         `<p class = block-text>Keep your gaze on the central '+', your ${possibleResponses[0][0]} on the ${possibleResponses[0][2]} and your ${possibleResponses[1][0]} on the ${possibleResponses[1][2]}.` +
         "<p class = center-block-text> Press <i>enter</i> to continue.</p></div>";
       expStage = "test";
-      practiceCount = 0;
       return false;
     } else {
       feedbackText =
@@ -562,7 +564,9 @@ var testNode = {
 
     if (testCount == numTestBlocks) {
       if (getCurrBlockType() == 'color') {
+        practiceCount = 0;
         testCount = 0;
+        expStage = 'practice'
         if (blockCount == 0) {
           n = 24;
           blockCount += 1
@@ -577,10 +581,12 @@ var testNode = {
         }
 
       } else if (getCurrBlockType() == 'conjunction') {
+        practiceCount = 0;
         testCount = 0;
         if (blockCount == 0) {
           n = 24;
           blockCount += 1
+          expStage = 'practice'
           feedbackText =
             "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
         } else {

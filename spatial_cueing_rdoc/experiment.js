@@ -131,7 +131,12 @@ var expStage = 'practice'
 
 // Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 1000;
+const stimTrialDuration = 2000;
+const cueStimulusDuration = 500;
+const cueTrialDuration = 500;
+// initialize
+var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
+var blankBlockDuration = 1000;
 
 // generic task variables
 var runAttentionChecks = false;
@@ -146,6 +151,24 @@ var numPracticeTrials = 12; // 12
 var numTestBlocks = 3;
 var numTrialsPerBlock = 48; // should be multiple of 24
 
+numPracticeTrials = 1
+numTestBlocks = 1
+numTrialsPerBlock = 1
+
+const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+
+console.log(`Total number of trials: ${numTrialsTotal}`)
+console.log(`Total duration of trials:
+- Fixation: ${fixationDuration} ms
+- Cue: ${cueTrialDuration} ms
+- Fixation: ${fixationDuration} ms
+- Probe: ${stimTrialDuration} ms
+- Blank: ${blankBlockDuration} ms
+- Average ITI duration: ${meanITI * 1000} ms
+------------------------
+= ${numTrialsTotal * (fixationDuration + cueTrialDuration + fixationDuration + stimTrialDuration + blankBlockDuration + meanITI * 1000) / 1000 / 60} min
+`);
+
 const responseKeys = `<p class='block-text'>Press your <b>${possibleResponses[0][0]}</b> if the star ('+') appears in the left box and press your <b>${possibleResponses[1][0]}</b> if the star ('+') appears in the right box.</p>`;
 var currStim = "";
 
@@ -154,14 +177,14 @@ var fixation =
 
 var images = {
   left: {
-    box: "<div class = bigbox><div id = left_box></div></div>",
-    bold: '<div class = bigbox><div id = left_box style="border-width:15px"></div></div>',
-    star: "<div class = bigbox><div id = left_box><div class='center-text star'>*</div></div></div>",
+    box: "<div class = bigbox><div id=left_box></div></div>",
+    bold: '<div class = bigbox><div id=left_box style="border-width:15px"></div></div>',
+    star: "<div class = bigbox><div id=left_box><div class='center-text star'>*</div></div></div>",
   },
   right: {
-    box: "<div class = bigbox><div id = right_box></div></div>",
-    bold: '<div class = bigbox><div id = right_box style="border-width:15px"></div></div>',
-    star: "<div class = bigbox><div id = right_box><div class='center-text star'>*</div></div></div>",
+    box: "<div class = bigbox><div id=right_box></div></div>",
+    bold: '<div class = bigbox><div id=right_box style="border-width:15px"></div></div>',
+    star: "<div class = bigbox><div id=right_box><div class='center-text star'>*</div></div></div>",
   },
 };
 
@@ -361,6 +384,7 @@ var practiceFeedbackBlock = {
 // after each block
 var feedbackText =
   "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
+
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -373,9 +397,6 @@ var feedbackBlock = {
   response_ends_trial: true,
 };
 
-// initialize
-var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
-var blankBlockDuration = 1000;
 
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -400,7 +421,7 @@ var ITIBlock = {
   }
 };
 
-var blackPracticeBlock = {
+var blankPracticeBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: "",
   choices: ["NO_KEYS"],
@@ -414,7 +435,7 @@ var blackPracticeBlock = {
   prompt: promptText,
 };
 
-var blackTestBlock = {
+var blankBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: "",
   choices: ["NO_KEYS"],
@@ -454,8 +475,8 @@ for (let i = 0; i < numPracticeTrials; i++) {
       };
     },
     post_trial_gap: 0,
-    stimulus_duration: 500,
-    trial_duration: 500,
+    stimulus_duration: cueStimulusDuration,
+    trial_duration: cueTrialDuration,
     prompt: promptText,
   };
   var secondFixationBlock = {
@@ -485,7 +506,7 @@ for (let i = 0; i < numPracticeTrials; i++) {
       });
     },
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 1000
+    trial_duration: stimTrialDuration, // 2000
     response_ends_trial: false,
     post_trial_gap: 0,
     on_finish: appendData,
@@ -496,7 +517,7 @@ for (let i = 0; i < numPracticeTrials; i++) {
     cueBlock,
     secondFixationBlock,
     trialBlock,
-    blackPracticeBlock,
+    blankPracticeBlock,
     practiceFeedbackBlock,
     ITIBlock
   );
@@ -647,7 +668,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     cueBlock,
     secondFixationBlock,
     trialBlock,
-    blackTestBlock,
+    blankBlock,
     ITIBlock
   );
 }

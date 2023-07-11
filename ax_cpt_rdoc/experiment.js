@@ -1,4 +1,3 @@
-
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
@@ -35,7 +34,7 @@ function assessPerformance() {
   // calculate average rt
   var avgRT = null;
   if (rtArray.length !== 0) {
-    avgRT = math.median(rtArray);
+    avgRT = calculateMedian(rtArray);
   }
   // calculate whether response distribution is okay
   var responsesOK = true;
@@ -55,16 +54,46 @@ function assessPerformance() {
     final_accuracy: accuracy,
   });
 }
+
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
+
+  console.log(data)
   correctTrial = 0;
   if (data.response == data.correct_response) {
     correctTrial = 1;
   }
-  jsPsych.data.get().addToLast({ correctTrial: correctTrial });
+  jsPsych.data.get().addToLast({ correct_trial: correctTrial });
 }
+
+function calculateMedian(numbers) {
+  if (numbers.length === 0) {
+    return null; // Return null if the array is empty
+  }
+
+  const sortedNumbers = numbers.slice().sort((a, b) => a - b); // Create a sorted copy of the array
+  const middleIndex = Math.floor(sortedNumbers.length / 2); // Calculate the middle index
+
+  if (sortedNumbers.length % 2 === 0) {
+    // If the array length is even, return the average of the two middle elements
+    return (sortedNumbers[middleIndex - 1] + sortedNumbers[middleIndex]) / 2;
+  } else {
+    // If the array length is odd, return the middle element
+    return sortedNumbers[middleIndex];
+  }
+}
+
+
+var getCue = function() {
+  return currCue;
+};
+var getStim = function() {
+  return currStim;
+};
+
 var setStims = function() {
   currCondition = blockList.pop();
+  console.log('block list', blockList)
   switch (currCondition) {
     case 'AX':
       currStim = '<div class = centerbox><div class = AX_text>X</div></div>';
@@ -84,6 +113,7 @@ var setStims = function() {
       break;
   }
 };
+
 var getChar = function() {
   return (
     '<div class = centerbox><div class = AX_text>' +
@@ -99,17 +129,12 @@ var getChar = function() {
 /* ******************************* */
 /* TASK TEXT */
 /* ******************************* */
-var feedbackText = '<p class = center-block-text>Starting practice. Press <i>enter</i> to begin.</p>';
-
-var possibleResponses = [
-  ['index finger', ',', 'comma key (,)'],
-  ['middle finger', '.', 'period key (.)'],
-];
-
-// choices for keyboard input
-var choices = [possibleResponses[0][1], possibleResponses[1][1]];
-
 // rule reminder for practice
+// after each block
+// eslint-disable-next-line no-unused-vars
+var feedbackText =
+  "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
+
 var promptTextList =
   '<ul style="text-align:left;">' +
   '<li>A -> X: ' +
@@ -144,10 +169,10 @@ var pageInstruct = [
   possibleResponses[1][2] +
   '</b> </p>' +
   '<p class = block-text>' +
-  'In this task, on each trial you will see' +
-  'a letter presented, a short break, and then a second letter.' +
+  'In this task, on each trial you will see ' +
+  'a letter presented, a short break, and then a second letter. ' +
   'For instance, you may see "A",' +
-  'which would then disappear to be replaced by "F".</p>' +
+  ' which would then disappear to be replaced by "F".</p>' +
   '<p class = block-text>' +
   'Your task is to respond by pressing' +
   ' a button during the presentation of the <b>second</b> letter.' +
@@ -161,10 +186,10 @@ var pageInstruct = [
   '<div class = centerbox>' +
   '<p class = block-text>' +
   'We\'ll start with a practice round. ' +
-  'During practice, you will receive feedback' +
+  'During practice, you will receive feedback ' +
   'and a reminder of the rules.' +
   ' These will be taken out for test, so make sure you understand' +
-  'the instructions before moving on.</p>' +
+  ' the instructions before moving on.</p>' +
   '<p class = block-text>Remember, press your ' +
   possibleResponses[0][0] +
   ' after you see "A" followed by an "X", and your ' +
@@ -190,7 +215,8 @@ var instructTimeThresh = 1;
 /* ******************************* */
 /* ATTENTION CHECK STUFF  */
 /* ******************************* */
-// var runAttentionChecks = true;
+// eslint-disable-next-line no-unused-vars
+var runAttentionChecks = true;
 // var attentionCheckThresh = 0.65;
 
 /* ******************************* */
@@ -198,7 +224,6 @@ var instructTimeThresh = 1;
 /* ******************************* */
 
 var practiceThresh = 3; // 3 blocks max
-
 var accuracyThresh = 0.75;
 var rtThresh = 1000;
 var missedResponseThresh = 0.1;
@@ -207,6 +232,7 @@ var missedResponseThresh = 0.1;
 /* CHARACTERS USED  IN TASK */
 /* ******************************* */
 var chars = 'BCDEFGHIJLMNOPQRSTUVWZ';
+
 var trialProportions = [
   'AX',
   'AX',
@@ -217,15 +243,42 @@ var trialProportions = [
   'AX',
   'BX',
   'AY',
-  'BY',
-]; // repeats n = 4 times for test block
-var practiceProportions = ['AX', 'AX', 'AX', 'BX', 'AY', 'BY'];
+  'BY']
+
 var numTestBlocks = 3;
-var numTrialsPerBlock = trialProportions.length * 4;
-var numPracticeTrials = practiceProportions.length;
+var numTrialsPerBlock = trialProportions.length * 3; // 30
+var practiceLen = trialProportions.length; // 10
+
+// testing
+trialProportions = [
+  'AX',
+  'AX',
+  'BX',
+  'AY',
+  'BY'
+]
+
+numTestBlocks = 2;
+numTrialsPerBlock = 5; // must be divisible by trialProportions.length
+practiceLen = trialProportions.length;
+
+const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+
+console.log(`Total number of trials: ${numTrialsTotal}`)
+console.log(`Total duration of trials:
+- Fixation: ${fixationDuration} ms
+- Cue duration: ${cueTrialDuration} ms
+- Fixation: ${fixationDuration + 2500} ms
+- Probe: ${probeTrialDuration} ms
+- Average ITI duration: ${meanITI * 1000} ms
+------------------------
+= ${numTrialsTotal * (fixationDuration + cueTrialDuration + fixationDuration + 2500 + meanITI * 1000) / 1000 / 60} min
+`);
+
 
 // set empty and populate later with current trial data
 var currCondition = '';
+// eslint-disable-next-line no-unused-vars
 var expStage = 'practice';
 
 /* ************************************ */
@@ -242,12 +295,33 @@ var fixation = {
     '<div class = centerbox><div class = fixation>+</div></div>',
   choices: ['NO_KEYS'],
   data: {
-    trialID: 'fixation',
+    trial_id: 'fixation',
     exp_stage: 'test',
   },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
+  prompt: function() {
+    if (getExpStage() == 'practice') {
+      return promptText
+    } else {
+      return ''
+    }
+  }
+};
+
+var fixation2 = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus:
+    '<div class = centerbox><div class = fixation>+</div></div>',
+  choices: ['NO_KEYS'],
+  data: {
+    trial_id: 'fixation',
+    exp_stage: 'test',
+  },
+  post_trial_gap: 0,
+  stimulus_duration: fixationDuration + 2500, // 3000
+  trial_duration: fixationDuration + 2500, // 3000
   prompt: function() {
     if (getExpStage() == 'practice') {
       return promptText
@@ -345,7 +419,7 @@ var practiceFeedbackBlock = {
         '<div class = center-text>' +
         '<font size =20>Respond Faster!</font></div></div>'
       );
-    } else if (last.correctTrial == 1) {
+    } else if (last.correct_trial == 1) {
       return (
         '<div class = fb_box>' +
         '<div class = center-text><font size =20>Correct!</font></div></div>'
@@ -409,26 +483,6 @@ var setStimsBlock = {
   type: jsPsychCallFunction,
   func: setStims,
 };
-var secondFixation = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
-  data: function() {
-    return {
-      trial_id: 'fixation',
-    };
-  },
-  choices: ['NO_KEYS'],
-  post_trial_gap: 0,
-  stimulus_duration: fixationDuration * 2, // 500 * 2
-  trial_duration: fixationDuration * 2,// 500 * 2
-  prompt: function() {
-    if (getExpStage() == 'practice') {
-      return promptText
-    } else {
-      return ''
-    }
-  }
-};
 
 /* ******************************* */
 /* PRACTICE TRIALS */
@@ -436,7 +490,7 @@ var secondFixation = {
 
 /* trial blocks and nodes */
 practiceTrials = [];
-for (i = 0; i < numPracticeTrials; i++) {
+for (i = 0; i < practiceLen; i++) {
   var cueBlock = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getCue,
@@ -482,7 +536,7 @@ for (i = 0; i < numPracticeTrials; i++) {
     setStimsBlock,
     fixation,
     cueBlock,
-    secondFixation,
+    fixation2,
     probeBlock,
     practiceFeedbackBlock,
     ITIBlock,
@@ -509,7 +563,7 @@ var practiceNode = {
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
           sumResponses += 1;
-          if (data.trials[i].correctTrial == 1) {
+          if (data.trials[i].correct_trial == 1) {
             correct += 1;
           }
         }
@@ -534,8 +588,9 @@ var practiceNode = {
         '</p>' +
         '<p class = center-block-text>' +
         'Press <i>enter</i> to continue.</p></div>';
-      blockList = jsPsych.randomization.repeat(trialProportions, 4);
+      blockList = jsPsych.randomization.repeat(trialProportions, numTrialsPerBlock / trialProportions.length);
       expStage = 'test'
+      console.log('test trial proportions', blockList)
       return false;
     } else {
       feedbackText =
@@ -561,7 +616,7 @@ var practiceNode = {
       feedbackText +=
         '<p class = block-text>We are going to repeat the practice round now.' +
         ' Press <i>enter</i> to begin.</p>';
-      blockList = jsPsych.randomization.repeat(practiceProportions, 1);
+      blockList = jsPsych.randomization.repeat(trialProportions, 1);
       return true;
     }
   },
@@ -614,7 +669,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     setStimsBlock,
     fixation,
     cueBlock,
-    secondFixation,
+    fixation2,
     probeBlock,
     ITIBlock,
   );
@@ -642,7 +697,7 @@ var testNode = {
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
           sumResponses += 1;
-          if (data.trials[i].correctTrial == 1) {
+          if (data.trials[i].correct_trial == 1) {
             correct += 1;
           }
         }
@@ -698,7 +753,7 @@ var testNode = {
       }
       feedbackText +=
         '<p class = block-text>Press <i>enter</i> to continue.</p>';
-      blockList = jsPsych.randomization.repeat(trialProportions, 4);
+      blockList = jsPsych.randomization.repeat(trialProportions, numTrialsPerBlock / trialProportions.length);
       return true;
     }
   },
@@ -729,7 +784,7 @@ var postTaskBlock = {
     {
       prompt:
         '<p class = center-block-text' +
-        'style = "font-size: 20px">You have completed this task!' +
+        'style = "font-size: 20px">You have completed this task! ' +
         'Please summarize what you were asked to do in this task.</p>',
       rows: 15,
       columns: 60,
@@ -762,7 +817,6 @@ var endBlock = {
   },
 };
 
-
 /* ************************************ */
 /* Set up experiment */
 /* ************************************ */
@@ -771,8 +825,8 @@ var endBlock = {
 var ax_cpt_rdoc_experiment = [];
 // eslint-disable-next-line no-unused-vars
 var ax_cpt_rdoc_init = () => {
-  blockList = jsPsych.randomization.repeat(practiceProportions, 1);
-
+  blockList = jsPsych.randomization.repeat(trialProportions, 1);
+  console.log('practice block list', blockList)
   ax_cpt_rdoc_experiment.push(fullscreen);
   ax_cpt_rdoc_experiment.push(instructionNode);
   ax_cpt_rdoc_experiment.push(practiceNode);

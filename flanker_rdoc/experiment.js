@@ -95,6 +95,7 @@ var getStimData = function() {
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
+// eslint-disable-next-line no-unused-vars
 var expStage = 'practice'
 // *: Timing
 const stimStimulusDuration = 1000;
@@ -111,7 +112,8 @@ var practiceThresh = 3; // 3 blocks of 12 trials
 /* ******************************* */
 /* ATTENTION CHECK STUFF  */
 /* ******************************* */
-// var runAttentionChecks = true;
+// eslint-disable-next-line no-unused-vars
+var runAttentionChecks = true;
 // var attention_check_thresh = 0.45;
 
 var currStim = "";
@@ -257,12 +259,24 @@ var testStimuli = [
   },
 ];
 
-var practiceLen = 12 / 12; // must be divisible by 4
-// var expLen = 96; // must be divisible by 4, 100 in original
-var numTrialsPerBlock = 48; // must be divisible by 4
-// var numTestBlocks = expLen / numTrialsPerBlock;
-var numTestBlocks = 2;
+var practiceLen = 12; // must be divisible by 4
+var numTrialsPerBlock = 64; // must be divisible by 4
+var numTestBlocks = 3;
 
+practiceLen = 1
+numTrialsPerBlock = 1
+numTestBlocks = 1
+
+const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+
+console.log(`Total number of trials: ${numTrialsTotal}`)
+console.log(`Total duration of trials:
+- Fixation: ${fixationDuration} ms
+- Stimulus: ${stimTrialDuration} ms
+- Average ITI duration: ${meanITI * 1000} ms
+------------------------
+= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min
+`);
 
 var promptTextList =
   '<ul style="text-align:left;">' +

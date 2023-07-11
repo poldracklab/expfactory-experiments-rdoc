@@ -35,7 +35,7 @@ body {
   top: 50%;
   transform: translateY(-50%);
   -webkit-transform: translateY(-50%);
-  color: black;
+  color: white;
 }
 
 .cue-text {
@@ -76,8 +76,8 @@ body {
   width: 75%;
   height: 20%;
   position: absolute;
-  top: 10%;
-  left: 20%;
+  top: 15%;
+  left: 15%;
   transform: translate(-50%, -45%);
   margin-right: 0%;
   background-color: none;
@@ -86,7 +86,8 @@ body {
 
 img.center {
   height: auto;
-  width: auto\9; /* ie8 */
+  width: auto\9;
+  /* ie8 */
   position: absolute;
   top: 0;
   bottom: 0;
@@ -110,7 +111,7 @@ img.center {
   -ms-transform: translateY(-50%);
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
-  color: black;
+  color: white;
   /* color: white !important; */
 }
 
