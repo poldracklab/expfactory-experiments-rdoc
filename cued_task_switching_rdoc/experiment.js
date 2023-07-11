@@ -49,7 +49,7 @@ function assessPerformance() {
   });
   var missedPercent = missedCount / trialCount;
   var accuracy = correct / trialCount;
-  var creditVar = missedPercent < 0.25 && avgRT > 200 && responsesOK && accuracy > 0.6;
+  creditVar = missedPercent < 0.25 && avgRT > 200 && responsesOK && accuracy > 0.6;
 
   jsPsych.data.get().addToLast({
     final_creditVar: creditVar,
