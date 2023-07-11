@@ -78,14 +78,15 @@ function getStim() {
   const boxHeight = 80; // Adjust the height as desired
 
   const targetIndex = Math.floor(Math.random() * n); // Randomly select an index for the target div
-  const targetPresent = isTargetPresent(targetIndex);
+  const targetPresent = isTargetPresent();
+  trialTargetPresent = targetPresent
   const html = generateHTML(containerWidth, containerHeight, targetPresent, targetIndex, boxWidth, boxHeight);
 
   return html;
 }
 
-function isTargetPresent(targetIndex) {
-  return targetIndex === 1 && Math.random() < 0.5; // Modify the condition for your target logic
+function isTargetPresent() {
+  return Math.random() < 0.5; // Modify the condition for your target logic
 }
 
 function generateHTML(containerWidth, containerHeight, targetPresent, targetIndex, boxWidth, boxHeight) {
@@ -182,7 +183,7 @@ var getFeedback = function() {
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000;
 
-var numConditions = 3;
+var numConditions = 2;
 var numBlocksPerCondition = 2;
 const instructTimeThresh = 0; // /in seconds
 let sumInstructTime = 0; // ms
@@ -190,9 +191,12 @@ const accuracyThresh = 0.6;
 const rtThresh = 1000;
 const missedResponseThresh = 0.1;
 // practice
-const numPracticeTrials = 4; // num practice trials for each block in each condition
-const numTrialsPerBlock = 12; // num test trials for each block in each condition
-const numTestBlocks = 3;
+// const numPracticeTrials = 12; // num practice trials for each block in each condition
+// const numTrialsPerBlock = 24; // num test trials for each block in each condition
+// const numTestBlocks = 3;
+const numPracticeTrials = 1; // num practice trials for each block in each condition
+const numTrialsPerBlock = 1; // num test trials for each block in each condition
+const numTestBlocks = 1;
 
 const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
 const numTrialsTotal = numTrialsPerCondition * numConditions;
@@ -567,25 +571,11 @@ var testNode = {
         } else {
           n = 8;
           blockCount = 0;
-          blockType = 'orientation'
-          feedbackText =
-            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
-        }
-
-      } else if (getCurrBlockType() == 'orientation') {
-        testCount = 0;
-        if (blockCount == 0) {
-          n = 24;
-          blockCount += 1
-          feedbackText =
-            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-        } else {
-          n = 8;
-          blockCount = 0;
           blockType = 'conjunction'
           feedbackText =
             "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
         }
+
       } else if (getCurrBlockType() == 'conjunction') {
         testCount = 0;
         if (blockCount == 0) {
