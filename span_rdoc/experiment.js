@@ -5,7 +5,7 @@
 function assessPerformance() {
   var experimentData = jsPsych.data
     .get()
-    .filter({ expStage: "test", trial_id: "response" }).trials;
+    .filter({ exp_stage: "test", trial_id: "response" }).trials;
   var missedCount = 0;
   var trialCount = experimentData.length;
   var rtArray = [];
@@ -22,7 +22,7 @@ function assessPerformance() {
 
   var equations = jsPsych.data
     .get()
-    .filter({ expStage: "test", trial_id: "equation" }).trials;
+    .filter({ exp_stage: "test", trial_id: "equation" }).trials;
   var equationCount = equations.length;
   var equationCorrect = 0;
   var missedEquations = 0;
@@ -64,6 +64,21 @@ function shuffleArray(array) {
   }
 
   return shuffledArray;
+}
+
+var setBlocks = function() {
+  if (getCurrBlockType() == conditions[0]) {
+    feedbackText =
+      "<div class = centerbox><p class = center-block-text>Done this condition. Moving onto next task. Press <i>enter</i> to continue.</p>" +
+      '</div>';
+    blockType = conditions[1]
+    expStage = 'practice'
+    testCount = 0;
+  } else {
+    feedbackText =
+      "<div class = centerbox><p class = center-block-text>Done this task. Press <i>enter</i> to continue.</p>" +
+      '</div>';
+  }
 }
 
 
@@ -203,7 +218,7 @@ const stimTrialDuration = 2000;
 const equationStimulusDuration = 3000;
 const equationTrialDuration = 3000;
 // wait block (fixation or equation)
-const responseBlockDuration = 8000;
+const responseBlockDuration = 10000;
 const numStimuli = 4;
 
 // generic task variables
@@ -221,8 +236,14 @@ var equationChoices = ["t", "f"];
 var possibleStimuli = "BCDFGJKLMNPSTVXZ".split("");
 
 var practiceLen = 4;
-var numTrialsPerBlock = 16;
+var numTrialsPerBlock = 12;
 var numTestBlocks = 3;
+
+const conditions = ['simple', 'operation']
+conditions.sort(() => Math.random() - 0.5);
+
+var blockType = conditions[0]
+
 
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 const totalTrialDuration = fixationDuration + stimTrialDuration + equationTrialDuration + meanITI * 1000 + responseBlockDuration
@@ -271,10 +292,8 @@ TOTAL DURATIONS:
 
 // important variables used throughout
 var expStage = "practice";
-var blockType = "simple";
 var currSeq = [];
 
-var equationAns = "";
 
 var practicePromptText =
   "<div class = prompt_box>" +
@@ -394,7 +413,6 @@ var feedbackBlock = {
 };
 
 var expStage = 'practice'
-var blockType = 'simple'
 
 var stimulusBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -405,7 +423,7 @@ var stimulusBlock = {
   data: function() {
     return {
       trial_id: "stim",
-      expStage: getExpStage(),
+      exp_stage: getExpStage(),
     };
   },
   choices: ["NO_KEYS"],
@@ -424,33 +442,64 @@ var equationAns;
 var equationType = 'complex'
 
 function getRandomEquation() {
-  // Generate random operands and operator
-  const operand1 = Math.floor(Math.random() * 8) + 3; // Random number between 3 and 10 to ensure operand1 is positive
-  const operand2 = Math.floor(Math.random() * (10 / operand1 + 1)); // Random number from 0 to the maximum value that divides into 10
+  // Generate random operands and operators
+  const operand1 = Math.floor(Math.random() * 10); // Random number between 0 and 9 (inclusive)
+  let operand2;
+  let operand3;
 
-  // Adjust the operator to always be '+'
-  const operator = '+';
+  let operator1;
+  const operator2 = '/';
+
+  if (Math.random() < 0.5) {
+    operator1 = '+';
+    operand2 = Math.floor(Math.random() * 10); // Random number between 0 and 9 (inclusive)
+    operand3 = Math.floor(Math.random() * 9) + 1; // Random number between 1 and 9 (inclusive)
+  } else {
+    operator1 = '-';
+    operand2 = Math.floor(Math.random() * (operand1 + 1)); // Random number between 0 and operand1 (inclusive)
+    operand3 = Math.floor(Math.random() * 9) + 1; // Random number between 1 and 9 (inclusive)
+  }
 
   // Calculate the correct answer
-  const correctAnswer = operand1 + operand2;
+  let correctAnswer;
 
-  // Generate the equation string with an additional operand
-  const additionalOperand = Math.floor(Math.random() * 9) + 2; // Random number between 2 and 10
-  const equation = `(${operand1} ${operator} ${operand2}) * ${additionalOperand}`;
+  if (operator2 === '/') {
+    do {
+      operand2 = Math.floor(Math.random() * 9) + 1; // Random number between 1 and 9 (inclusive)
+      correctAnswer = Math.floor((operand1 >= operand2 ? operand1 - operand2 : operand2 - operand1) / operand3);
+    } while (
+      (operand1 >= operand2 ? operand1 - operand2 : operand2 - operand1) % operand3 !== 0 ||
+      correctAnswer !== (operand1 >= operand2 ? operand1 - operand2 : operand2 - operand1) / operand3
+    );
+  } else {
+    correctAnswer = eval(`(${operand1} ${operator1} ${operand2}) ${operator2} ${operand3}`);
+  }
 
   // Generate a random value for the question
-  const randomValue = Math.floor(Math.random() * 10) + 1; // Random number between 1 and 10
+  const randomValue = Math.random() < 0.5 ? correctAnswer : Math.floor(Math.random() * 10); // Randomly select either correctAnswer or a random number between 0 and 9
 
-  // Determine if the randomly selected value is the correct answer
-  const isCorrect = randomValue === correctAnswer;
+  const values = [correctAnswer, randomValue];
+  values.sort(() => Math.random() - 0.5);
+
+  // Determine if the left side of the equation is equal to the right side
+
+
+  if (operator1 === '+' && operator2 === '*') {
+    equationAns = (operand1 + operand2) * operand3 === values[0] ? 1 : 0;
+  } else if (operator1 === '-' && operator2 === '*') {
+    equationAns = (operand1 - operand2) * operand3 === values[0] ? 1 : 0;
+  } else if (operator1 === '+' && operator2 === '/') {
+    equationAns = (operand1 + operand2) === values[0] * operand3 ? 1 : 0;
+  } else if (operator1 === '-' && operator2 === '/') {
+    equationAns = (operand1 - operand2) === values[0] * operand3 ? 1 : 0;
+  }
 
   // Construct the HTML string with the equation and question
-  const html = `<div>Does ${equation} = ${randomValue}?</div>`;
+  const equation = `(${operand1} ${operator1} ${operand2}) ${operator2} ${operand3}`;
+  const html = `<div>Does ${equation} = ${values[0]}?</div>`;
 
-  equationAns = isCorrect ? 1 : 0;
   return html;
 }
-
 
 function extractValueFromHTML(html) {
   const divElement = document.createElement('div');
@@ -483,12 +532,13 @@ var waitBlock = {
   data: function() {
     return {
       trial_id: getCurrBlockType() == "operation" ? 'equation' : 'simple',
-      expStage: getExpStage(),
+      exp_stage: getExpStage(),
     };
   },
   post_trial_gap: 0,
   on_finish: function(data) {
     var logResponse;
+    console.log('equation answer', equationAns)
     if (data.response == 't') {
       if (equationAns == 1) {
         logResponse = 1;
@@ -503,7 +553,7 @@ var waitBlock = {
       }
     }
     console.log(logResponse)
-    data['correctResponse'] = logResponse
+    data['correct_response'] = logResponse
     data['equationType'] = equationType
   },
   prompt: function() {
@@ -540,11 +590,11 @@ var responseBlock = {
     return activeGrid.html
   },
   choices: [",", "."],
-  data: function(data) {
+  data: function() {
     return {
       trial_id: "response",
-      expStage: getExpStage(),
-      correctResponse: getCurrSeq(),
+      exp_stage: getExpStage(),
+      correct_response: getCurrSeq(),
     };
   },
   trial_duration: responseBlockDuration,
@@ -561,12 +611,12 @@ var responseBlock = {
     }
 
     if (submittedAnswers == undefined) {
-      data['correctResponse'] = null
+      data['correct_trial'] = null
     } else {
       if (submittedAnswers.length == 5) {
         submittedAnswers = submittedAnswers.slice(1, 5);
         const correct = arraysAreEqual(correctAnswerArray, submittedAnswers)
-        data['correctResponse'] = correct ? 1 : 0
+        data['correct_trial'] = correct ? 1 : 0
       }
     }
     console.log('trial grid data', data)
@@ -627,17 +677,27 @@ var practiceFeedbackBlock = {
     console.log(last);
     if (getCurrBlockType() !== 'operation') return "<div class = centerbox><div class = fixation>+</div></div>"
 
-    if (last.correctResponse == 1) {
-      return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
-    } else if (last.correctResponse == 0) {
-      return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
-    } else {
-      return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
+    if (last.trial_id == 'response') {
+      if (last.correct_trial == 1) {
+        return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
+      } else if (last.correct_trial == 0) {
+        return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
+      } else {
+        return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
+      }
+    } else if (last.trial_id == 'equation') {
+      if (last.correct_response == 1) {
+        return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
+      } else if (last.correct_response == 0) {
+        return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
+      } else {
+        return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
+      }
     }
 
   },
   data: {
-    expStage: "practice",
+    exp_stage: "practice",
     trial_id: "practice_feedback",
   },
   choices: ["NO_KEYS"],
@@ -652,7 +712,7 @@ var practiceFeedbackBlock = {
     }
   },
 };
-var rtThresh = 1000
+// var rtThresh = 1000
 var practiceTrials = [];
 for (let i = 0; i < practiceLen; i++) { // number of trials
   // length of difficulty 
@@ -675,39 +735,45 @@ var practiceNode = {
   loop_function: function(data) {
     practiceCount += 1;
 
-    var sumRT = 0;
+    // set rts for this task
+    // var sumRT = 0;
     var sumResponses = 0;
     var correct = 0;
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "response") {
+      if (data.trials[i].trial_id == "response" && data.trials[i].exp_stage == 'practice') {
+        console.log(data.trials[i])
         totalTrials += 1;
-        if (data.trials[i].rt != null) {
-          sumRT += data.trials[i].rt;
-          sumResponses += 1;
-          if (data.trials[i].correctTrial == 1) {
-            correct += 1;
-          }
+        // if (data.trials[i].rt != null) {
+        // sumRT += data.trials[i].rt;
+        sumResponses += 1;
+        if (data.trials[i].correct_trial == 1) {
+          correct += 1;
         }
+        // }
       }
     }
+    console.log(correct)
+    console.log(totalTrials)
+
     var accuracy = correct / totalTrials;
+    console.log(accuracy)
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
-    var avgRT = sumRT / sumResponses;
+    // var avgRT = sumRT / sumResponses;
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
-        "<p class = block-text>Keep your gaze on the central '+', your right index finger on the" +
+        "<p class = block-text>Keep your gaze on the central '+', your right index finger on the " +
         spanResponses[0] +
-        "and your right middle finger on the " +
+        " and your right middle finger on the " +
         spanResponses[1] +
-        "and your right ring finger on the " +
+        " and your right ring finger on the " +
         spanResponses[2] +
-        "and your left index finger on the " +
+        " and your left index finger on the " +
         spanResponses[3] +
-        "</p>" +
+        ".</p>" +
         "<p class = center-block-text>Press <i>enter</i> to continue.</p></div>";
       expStage = 'test'
       practiceCount = 0;
@@ -722,10 +788,10 @@ var practiceNode = {
           "<p class = block-text>Try your best to recall the letters.</p>"
       }
 
-      if (avgRT > rtThresh) {
-        feedbackText +=
-          "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
-      }
+      // if (avgRT > rtThresh) {
+      //   feedbackText +=
+      //     "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
+      // }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
           "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
@@ -759,7 +825,7 @@ var testNode = {
   loop_function: function(data) {
     testCount += 1;
 
-    var sumRT = 0;
+    // var sumRT = 0;
     var sumResponses = 0;
     var correct = 0;
     var totalTrials = 0;
@@ -767,32 +833,21 @@ var testNode = {
     for (var i = 0; i < data.trials.length; i++) {
       if (data.trials[i].trial_id == "response") {
         totalTrials += 1;
-        if (data.trials[i].rt != null) {
-          sumRT += data.trials[i].rt;
-          sumResponses += 1;
-          if (data.trials[i].correctTrial == 1) {
-            correct += 1;
-          }
+        // if (data.trials[i].rt != null) {
+        // sumRT += data.trials[i].rt;
+        sumResponses += 1;
+        if (data.trials[i].correct_trial == 1) {
+          correct += 1;
         }
+        // }
       }
     }
     var accuracy = correct / totalTrials;
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
-    var avgRT = sumRT / sumResponses;
+    // var avgRT = sumRT / sumResponses;
 
     if (testCount == numTestBlocks) {
-      if (getCurrBlockType() !== 'operation') {
-        feedbackText =
-          "<div class = centerbox><p class = center-block-text>Done this condition. Now starting operation span.</p>" +
-          '</div>';
-        blockType = 'operation'
-        expStage = 'practice'
-        testCount = 0;
-      } else {
-        feedbackText =
-          "<div class = centerbox><p class = center-block-text>Done this task.</p>" +
-          '</div>';
-      }
+      setBlocks()
       return false;
     } else {
       feedbackText =
@@ -804,10 +859,10 @@ var testNode = {
           '<p class = block-text>Try to recall all the letters. </p>'
       }
 
-      if (avgRT > rtThresh) {
-        feedbackText +=
-          "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
-      }
+      // if (avgRT > rtThresh) {
+      //   feedbackText +=
+      //     "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
+      // }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
           "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";

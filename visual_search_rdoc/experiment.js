@@ -4,7 +4,7 @@
 function assessPerformance() {
   var experimentData = jsPsych.data
     .get()
-    .filter({ expStage: "test", trial_id: "stim" }).trials;
+    .filter({ exp_stage: "test", trial_id: "stim" }).trials;
   var missedCount = 0;
   var trialCount = 0;
   var rtArray = [];
@@ -60,14 +60,10 @@ function assessPerformance() {
   });
 }
 
+const nArray = [8, 24]
+nArray.sort(() => Math.random() - 0.5);
+n = nArray[0];
 
-function appendData() {
-  jsPsych.data.get().addToLast({
-    correct_trial: 'fix this',
-  });
-}
-
-var n = 8;
 var blockCount = 0;
 
 var trialTargetPresent;
@@ -152,10 +148,46 @@ var getExpStage = function() {
 };
 
 
-var blockType = 'color' // starting with feature
 var getCurrBlockType = function() {
   return blockType;
 };
+
+var setBlocks = function() {
+  if (getCurrBlockType() == conditions[0]) {
+    practiceCount = 0;
+    testCount = 0;
+    expStage = 'practice'
+    if (blockCount == 0) {
+      n = nArray[1];
+      blockCount += 1
+      feedbackText =
+        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
+    } else {
+      nArray.sort(() => Math.random() - 0.5);
+      n = nArray[0];
+      blockCount = 0;
+      blockType = conditions[1]
+      feedbackText =
+        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
+    }
+
+  } else if (getCurrBlockType() == conditions[1]) {
+    practiceCount = 0;
+    testCount = 0;
+    if (blockCount == 0) {
+      n = nArray[1];
+      blockCount += 1
+      expStage = 'practice'
+      feedbackText =
+        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
+    } else {
+      nArray.sort(() => Math.random() - 0.5);
+      n = nArray[0];
+      feedbackText =
+        "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
+    }
+  }
+}
 
 var getInstructFeedback = function() {
   return (
@@ -182,6 +214,11 @@ var getFeedback = function() {
 // const attention_check_thresh = 0.65;
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000;
+const conditions = ['color', 'conjunction']
+conditions.sort(() => Math.random() - 0.5);
+// Remove one element without replacement
+var blockType = conditions[0];
+
 
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
@@ -197,6 +234,8 @@ const missedResponseThresh = 0.1;
 const practiceLen = 6; // num practice trials for each block in each condition
 const numTrialsPerBlock = 24; // num test trials for each block in each condition
 const numTestBlocks = 3;
+
+
 
 const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
 const numTrialsTotal = numTrialsPerCondition * numConditions;
@@ -310,7 +349,6 @@ var stimulusBlock = {
   trial_duration: stimTrialDuration, // 2000
   post_trial_gap: 0,
   response_ends_trial: false,
-  on_finish: appendData,
   prompt: function() {
     if (getExpStage() == 'practice') {
       return promptText
@@ -320,25 +358,17 @@ var stimulusBlock = {
   },
   data: {
     trial_id: "stim",
-    expStage: getExpStage(),
-    blockType: getCurrBlockType()
+    exp_stage: getExpStage(),
   },
   on_finish: function(data) {
-    data['targetPresent'] = trialTargetPresent ? 1 : 0
-    data['numElements'] = n;
-    if (trialTargetPresent) {
-      if (data.response == possibleResponses[0][1]) {
-        data['correctResponse'] = 1
-      } else if (data.response == possibleResponses[1][1]) {
-        data['correctResponse'] = 0
-      }
-    } else {
-      if (data.response == possibleResponses[0][1]) {
-        data['correctResponse'] = 0
-      } else if (data.response == possibleResponses[1][1]) {
-        data['correctResponse'] = 1
-      }
-    }
+    data['target_present'] = trialTargetPresent ? 1 : 0
+    data['num_stimuli'] = n;
+    data['block_type'] = getCurrBlockType()
+
+    data['correct_response'] = trialTargetPresent ?
+      (data.response == possibleResponses[0][1] ? 1 : 0) :
+      (data.response == possibleResponses[0][1] ? 0 : 1);
+
   }
 };
 
@@ -463,17 +493,16 @@ var practiceFeedbackBlock = {
     // var last = jsPsych.data.get().last(1).values()[0];
     var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block
-    console.log(last);
-    if (last.correctResponse == 1) {
+    if (last.correct_response == 1) {
       return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
-    } else if (last.correctResponse == 0) {
+    } else if (last.correct_response == 0) {
       return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
     } else {
       return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
     }
   },
   data: {
-    expStage: "practice",
+    exp_stage: "practice",
     trial_id: "practice_feedback",
   },
   choices: ["NO_KEYS"],
@@ -509,13 +538,13 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].expStage == 'practice' && data.trials[i].blockType == getCurrBlockType()) {
+      if (data.trials[i].exp_stage == 'practice' && data.trials[i].block_type == getCurrBlockType() && data.trials[i].num_stimuli == n) {
         if (data.trials[i].trial_id == "stim") {
           totalTrials += 1;
           if (data.trials[i] != null) {
             sumRT += data.trials[i].rt;
             sumResponses += 1;
-            if (data.trials[i].correctResponse == 1) {
+            if (data.trials[i].correct_response == 1) {
               correct += 1
             }
           }
@@ -526,8 +555,8 @@ var practiceNode = {
     var accuracy = correct / totalTrials;
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
+    console.log(accuracy)
 
-    console.log(practiceCount)
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
@@ -571,13 +600,13 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].expStage == 'test' && data.trials[i].blockType == getCurrBlockType()) {
+      if (data.trials[i].exp_stage == 'test' && data.trials[i].block_type == getCurrBlockType() && data.trials[i].num_stimuli == n) {
         if (data.trials[i].trial_id == "stim") {
           totalTrials += 1;
           if (data.trials[i] != null) {
             sumRT += data.trials[i].rt;
             sumResponses += 1;
-            if (data.trials[i].correctResponse == 1) {
+            if (data.trials[i].correct_response == 1) {
               correct += 1
             }
           }
@@ -594,37 +623,7 @@ var testNode = {
     var avgRT = sumRT / sumResponses;
 
     if (testCount == numTestBlocks) {
-      if (getCurrBlockType() == 'color') {
-        practiceCount = 0;
-        testCount = 0;
-        expStage = 'practice'
-        if (blockCount == 0) {
-          n = 24;
-          blockCount += 1
-          feedbackText =
-            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-        } else {
-          n = 8;
-          blockCount = 0;
-          blockType = 'conjunction'
-          feedbackText =
-            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
-        }
-
-      } else if (getCurrBlockType() == 'conjunction') {
-        practiceCount = 0;
-        testCount = 0;
-        if (blockCount == 0) {
-          n = 24;
-          blockCount += 1
-          expStage = 'practice'
-          feedbackText =
-            "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-        } else {
-          feedbackText =
-            "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
-        }
-      }
+      setBlocks()
       return false;
     } else {
       feedbackText =
