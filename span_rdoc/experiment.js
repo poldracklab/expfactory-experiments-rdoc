@@ -74,6 +74,8 @@ var setBlocks = function() {
     blockType = conditions[1]
     expStage = 'practice'
     testCount = 0;
+    equationTruthList = generateEquationTruthList(practiceLen * numStimuli)
+    equations = generateEquations(practiceLen * numStimuli, equationTruthList)
   } else {
     feedbackText =
       "<div class = centerbox><p class = center-block-text>Done this task. Press <i>enter</i> to continue.</p>" +
@@ -87,6 +89,12 @@ var getStim = function() {
   const randomValue = possibleStimuli[randomIndex];
   const randomValueHTML = `<div class = centerbox><div class = center-text>${randomValue}</div></div>`
   return randomValueHTML
+}
+
+var getRandomEquation = function() {
+  const stim = equations.shift()
+  equationAns = equationTruthList.shift()
+  return `<div class=centerbox><div class=center-text>${stim}</div></div>`
 }
 
 var submittedAnswers;
@@ -438,68 +446,68 @@ var stimulusBlock = {
   on_finish: (data) => console.log(extractValueFromHTML(data.stimulus))
 };
 
+function generateEquationTruthList(length) {
+  const equationTruthList = [];
+
+  for (let i = 0; i < length; i++) {
+    const binaryDigit = Math.floor(Math.random() * 2);
+    equationTruthList.push(binaryDigit);
+  }
+
+  return equationTruthList;
+}
+
+var generateEquations = function(length, equationTruthList) {
+  var equations = []
+  let tempEquation;
+
+  for (let i = 0; i < length; i++) {
+    const truthValue = equationTruthList[i]
+
+    let A = Math.floor(Math.random() * 5) + 2;
+    let B = Math.floor(Math.random() * (A - 1)) + 1;
+    let C = Math.floor(Math.random() * 5) + 1;
+
+    const operator1 = Math.random() < 0.5 ? '+' : '-';
+    const operator2 = Math.random() < 0.5 ? '*' : '/';
+
+    let evalValue = eval(`(${A} ${operator1} ${B}) ${operator2} ${C}`)
+
+
+    if (operator2 === '/') {
+      do {
+        A = Math.floor(Math.random() * 9) + 2;
+        B = Math.floor(Math.random() * (A - 1)) + 1;
+        C = Math.floor(Math.random() * 9) + 1;
+        evalValue = eval(`(${A} ${operator1} ${B}) ${operator2} ${C}`)
+        console.log(evalValue)
+      } while (!Number.isInteger(evalValue));
+    }
+
+
+    console.log(evalValue)
+    let D;
+
+    if (truthValue === 1) {
+      D = evalValue
+    } else if (truthValue === 0) {
+      D = Math.floor(Math.random() * 9) + 1;
+    }
+
+    tempEquation = `Does (${A} ${operator1} ${B}) ${operator2} ${C} = ${D}?`
+    equations.push(tempEquation)
+  }
+  return equations
+}
+
+var equationTruthList = generateEquationTruthList(practiceLen * numStimuli)
+var equations = generateEquations(practiceLen * numStimuli, equationTruthList)
+console.log(equationTruthList)
+console.log(equations)
+
 var equationAns;
 var equationType = 'complex'
 
-function getRandomEquation() {
-  // Generate random operands and operators
-  const operand1 = Math.floor(Math.random() * 10); // Random number between 0 and 9 (inclusive)
-  let operand2;
-  let operand3;
-
-  let operator1;
-  const operator2 = '/';
-
-  if (Math.random() < 0.5) {
-    operator1 = '+';
-    operand2 = Math.floor(Math.random() * 10); // Random number between 0 and 9 (inclusive)
-    operand3 = Math.floor(Math.random() * 9) + 1; // Random number between 1 and 9 (inclusive)
-  } else {
-    operator1 = '-';
-    operand2 = Math.floor(Math.random() * (operand1 + 1)); // Random number between 0 and operand1 (inclusive)
-    operand3 = Math.floor(Math.random() * 9) + 1; // Random number between 1 and 9 (inclusive)
-  }
-
-  // Calculate the correct answer
-  let correctAnswer;
-
-  if (operator2 === '/') {
-    do {
-      operand2 = Math.floor(Math.random() * 9) + 1; // Random number between 1 and 9 (inclusive)
-      correctAnswer = Math.floor((operand1 >= operand2 ? operand1 - operand2 : operand2 - operand1) / operand3);
-    } while (
-      (operand1 >= operand2 ? operand1 - operand2 : operand2 - operand1) % operand3 !== 0 ||
-      correctAnswer !== (operand1 >= operand2 ? operand1 - operand2 : operand2 - operand1) / operand3
-    );
-  } else {
-    correctAnswer = eval(`(${operand1} ${operator1} ${operand2}) ${operator2} ${operand3}`);
-  }
-
-  // Generate a random value for the question
-  const randomValue = Math.random() < 0.5 ? correctAnswer : Math.floor(Math.random() * 10); // Randomly select either correctAnswer or a random number between 0 and 9
-
-  const values = [correctAnswer, randomValue];
-  values.sort(() => Math.random() - 0.5);
-
-  // Determine if the left side of the equation is equal to the right side
-
-
-  if (operator1 === '+' && operator2 === '*') {
-    equationAns = (operand1 + operand2) * operand3 === values[0] ? 1 : 0;
-  } else if (operator1 === '-' && operator2 === '*') {
-    equationAns = (operand1 - operand2) * operand3 === values[0] ? 1 : 0;
-  } else if (operator1 === '+' && operator2 === '/') {
-    equationAns = (operand1 + operand2) === values[0] * operand3 ? 1 : 0;
-  } else if (operator1 === '-' && operator2 === '/') {
-    equationAns = (operand1 - operand2) === values[0] * operand3 ? 1 : 0;
-  }
-
-  // Construct the HTML string with the equation and question
-  const equation = `(${operand1} ${operator1} ${operand2}) ${operator2} ${operand3}`;
-  const html = `<div>Does ${equation} = ${values[0]}?</div>`;
-
-  return html;
-}
 
 function extractValueFromHTML(html) {
   const divElement = document.createElement('div');
@@ -516,7 +524,7 @@ var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
     return getCurrBlockType() == "operation"
-      ? getRandomEquation(equationType)
+      ? getRandomEquation()
       : "<div class = centerbox><div class = fixation>+</div></div>";
   },
   choices: function() {
@@ -775,6 +783,8 @@ var practiceNode = {
         spanResponses[3] +
         ".</p>" +
         "<p class = center-block-text>Press <i>enter</i> to continue.</p></div>";
+      equationTruthList = generateEquationTruthList(numTrialsPerBlock * numStimuli)
+      equations = generateEquations(numTrialsPerBlock * numStimuli, equationTruthList)
       expStage = 'test'
       practiceCount = 0;
       return false;
@@ -799,6 +809,8 @@ var practiceNode = {
 
       feedbackText +=
         "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p>";
+      equationTruthList = generateEquationTruthList(practiceLen * numStimuli)
+      equations = generateEquations(practiceLen * numStimuli, equationTruthList)
       return true;
     }
   },
@@ -867,6 +879,8 @@ var testNode = {
         feedbackText +=
           "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
       }
+      equationTruthList = generateEquationTruthList(numTrialsPerBlock * numStimuli)
+      equations = generateEquations(numTrialsPerBlock * numStimuli, equationTruthList)
       return true;
     }
   },
