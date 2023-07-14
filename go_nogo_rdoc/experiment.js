@@ -239,24 +239,51 @@ var accuracyThresh = 0.75;
 var rtThresh = 1000;
 var missedResponseThresh = 0.1;
 
-var practiceLen = 14;
+var practiceLen = 7;
 var practiceThresh = 3;
-var numTrialsPerBlock = 63; // multiple of 7 (6go:1nogo)
+var numTrialsPerBlock = 70; // multiple of 7 (6go:1nogo)
 var numTestBlocks = 3;
 
-practiceLen = 1
-numTrialsPerBlock = 1
-numTestBlocks = 1
-
+const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+console.log(`
+
+TRIAL PROPORTIONS:
+------------------------
+7 NO-GO: 1 GO
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus: ${stimTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
 
 var promptTextList =
@@ -273,7 +300,7 @@ var promptText =
   "<div class = prompt_box>" +
   '<p class = center-block-text style = "font-size:16px; line-height:80%%;">' +
   stims[0][0] +
-  " square: respond.</p>" +
+  " square: spacebar</p>" +
   '<p class = center-block-text style = "font-size:16px; line-height:80%%;">' +
   stims[1][0] +
   " square: do not respond</li>";

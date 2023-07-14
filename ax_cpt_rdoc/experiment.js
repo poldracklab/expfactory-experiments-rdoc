@@ -58,7 +58,6 @@ function assessPerformance() {
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
 
-  console.log(data)
   correctTrial = 0;
   if (data.response == data.correct_response) {
     correctTrial = 1;
@@ -93,7 +92,7 @@ var getStim = function() {
 
 var setStims = function() {
   currCondition = blockList.pop();
-  console.log('block list', blockList)
+
   switch (currCondition) {
     case 'AX':
       currStim = '<div class = centerbox><div class = AX_text>X</div></div>';
@@ -233,46 +232,67 @@ var missedResponseThresh = 0.1;
 /* ******************************* */
 var chars = 'BCDEFGHIJLMNOPQRSTUVWZ';
 
+// 4: 2: 2: 2
 var trialProportions = [
   'AX',
   'AX',
   'AX',
   'AX',
-  'AX',
-  'AX',
-  'AX',
+  'BX',
   'BX',
   'AY',
+  'AY',
+  'BY',
   'BY']
 
 var numTestBlocks = 3;
-var numTrialsPerBlock = trialProportions.length * 3; // 30
+var numTrialsPerBlock = trialProportions.length * 4; // 40
 var practiceLen = trialProportions.length; // 10
 
-// testing
-trialProportions = [
-  'AX',
-  'AX',
-  'BX',
-  'AY',
-  'BY'
-]
-
-numTestBlocks = 2;
-numTrialsPerBlock = 5; // must be divisible by trialProportions.length
-practiceLen = trialProportions.length;
-
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+const totalTrialDuration = (fixationDuration + cueTrialDuration + (fixationDuration + 2500) + probeTrialDuration + (meanITI * 1000))
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+
+console.log(`
+
+AX-CPT TRIAL PROPORTIONS
+------------------------
+4AX:2BX:2AY:2BY
+
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Cue duration: ${cueTrialDuration} ms
 - Fixation: ${fixationDuration + 2500} ms
 - Probe: ${probeTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + cueTrialDuration + fixationDuration + 2500 + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 blocks)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration} ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 block)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration}ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
 
 
@@ -590,7 +610,6 @@ var practiceNode = {
         'Press <i>enter</i> to continue.</p></div>';
       blockList = jsPsych.randomization.repeat(trialProportions, numTrialsPerBlock / trialProportions.length);
       expStage = 'test'
-      console.log('test trial proportions', blockList)
       return false;
     } else {
       feedbackText =

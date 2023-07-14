@@ -131,12 +131,12 @@ var expStage = 'practice'
 
 // Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
+const stimTrialDuration = stimStimulusDuration; // no pause now
 const cueStimulusDuration = 500;
 const cueTrialDuration = 500;
 // initialize
 var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
-var blankBlockDuration = 1000;
+
 
 // generic task variables
 var runAttentionChecks = false;
@@ -147,26 +147,49 @@ var rtThresh = 1000;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3; // 3 blocks max
 
-var numPracticeTrials = 12; // 12
+var practiceLen = 12; // 12
 var numTestBlocks = 3;
-var numTrialsPerBlock = 48; // should be multiple of 24
+var numTrialsPerBlock = 72; // should be multiple of 24
 
-numPracticeTrials = 1
-numTestBlocks = 1
-numTrialsPerBlock = 1
 
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+const totalTrialDuration = fixationDuration + cueTrialDuration + fixationDuration + stimTrialDuration + meanITI * 1000
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Cue: ${cueTrialDuration} ms
 - Fixation: ${fixationDuration} ms
 - Probe: ${stimTrialDuration} ms
-- Blank: ${blankBlockDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + cueTrialDuration + fixationDuration + stimTrialDuration + blankBlockDuration + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
 
 const responseKeys = `<p class='block-text'>Press your <b>${possibleResponses[0][0]}</b> if the star ('+') appears in the left box and press your <b>${possibleResponses[1][0]}</b> if the star ('+') appears in the right box.</p>`;
@@ -345,7 +368,7 @@ var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
     // var last = jsPsych.data.get().last(1).values()[0];
-    var last = jsPsych.data.get().last(2).trials[0];
+    var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block
     console.log(last);
     if (last.response == null) {
@@ -421,35 +444,10 @@ var ITIBlock = {
   }
 };
 
-var blankPracticeBlock = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: "",
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "fixation",
-    expStage: "practice",
-  },
-  post_trial_gap: 0,
-  stimulus_duration: blankBlockDuration,
-  trial_duration: blankBlockDuration,
-  prompt: promptText,
-};
 
-var blankBlock = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: "",
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "fixation",
-    expStage: "practice",
-  },
-  post_trial_gap: 0,
-  stimulus_duration: blankBlockDuration,
-  trial_duration: blankBlockDuration,
-};
 var practiceTrials = [];
 var trialNum = 0;
-for (let i = 0; i < numPracticeTrials; i++) {
+for (let i = 0; i < practiceLen; i++) {
   trialNum += 1;
   var firstFixationBlock = {
     type: jsPsychHtmlKeyboardResponse,
@@ -506,7 +504,7 @@ for (let i = 0; i < numPracticeTrials; i++) {
       });
     },
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1000
     response_ends_trial: false,
     post_trial_gap: 0,
     on_finish: appendData,
@@ -517,7 +515,6 @@ for (let i = 0; i < numPracticeTrials; i++) {
     cueBlock,
     secondFixationBlock,
     trialBlock,
-    blankPracticeBlock,
     practiceFeedbackBlock,
     ITIBlock
   );
@@ -594,7 +591,7 @@ var practiceNode = {
         "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p>";
       blockStims = jsPsych.randomization
         .repeat(stimuli, 1)
-        .slice(0, numPracticeTrials);
+        .slice(0, practiceLen);
       return true;
     }
   },
@@ -668,7 +665,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     cueBlock,
     secondFixationBlock,
     trialBlock,
-    blankBlock,
     ITIBlock
   );
 }
@@ -807,7 +803,7 @@ var spatial_cueing_rdoc_init = () => {
   /* 24 practice trials. Included all no-cue up trials, center cue up trials, double cue down trials, and 6 spatial trials (3 up, 3 down) */
   blockStims = jsPsych.randomization
     .repeat(stimuli, 1)
-    .slice(0, numPracticeTrials);
+    .slice(0, practiceLen);
 
   spatial_cueing_rdoc_experiment.push(fullscreen);
   spatial_cueing_rdoc_experiment.push(instructionNode);

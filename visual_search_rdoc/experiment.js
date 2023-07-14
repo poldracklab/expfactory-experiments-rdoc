@@ -187,29 +187,60 @@ const stimTrialDuration = 1000;
 var runAttentionChecks = true;
 var numConditions = 2;
 var numBlocksPerCondition = 2;
+
 const instructTimeThresh = 0; // /in seconds
 let sumInstructTime = 0; // ms
 const accuracyThresh = 0.6;
 const rtThresh = 1000;
 const missedResponseThresh = 0.1;
 // practice
-// const numPracticeTrials = 12; // num practice trials for each block in each condition
-// const numTrialsPerBlock = 24; // num test trials for each block in each condition
-// const numTestBlocks = 3;
-const numPracticeTrials = 3; // num practice trials for each block in each condition
-const numTrialsPerBlock = 3; // num test trials for each block in each condition
-const numTestBlocks = 2;
+const practiceLen = 6; // num practice trials for each block in each condition
+const numTrialsPerBlock = 24; // num test trials for each block in each condition
+const numTestBlocks = 3;
 
 const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
 const numTrialsTotal = numTrialsPerCondition * numConditions;
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total estimated duration:
+const totalTrialDuration = fixationDuration + stimTrialDuration + meanITI * 1000
+
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus duration: ${stimTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min`);
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+${practiceLen * 3 * numConditions} (feature and conjunction)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+${numTrialsPerBlock * 3 * numConditions} (feature and conjunction)
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3 * numConditions} min max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min (feature or condition)
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60 * numConditions} min (feature and condition)
+
+`);
 
 
 var practiceCount = 0;
@@ -458,7 +489,7 @@ var practiceFeedbackBlock = {
 };
 
 var practiceTrials = [];
-for (let i = 0; i < numPracticeTrials; i++) {
+for (let i = 0; i < practiceLen; i++) {
   practiceTrials.push(
     fixationBlock,
     stimulusBlock,

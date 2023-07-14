@@ -259,16 +259,11 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 0; // /in seconds
 var creditVar = 0;
 
-
-
-var practiceLen = 15; // must be divisible by 5
+var practiceLen = 10; // must be divisible by 5
 var numTrialsPerBlock = 65; // 50, must be divisible by 5 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
 var numTestBlocks = 3;
 var practiceThresh = 3; // 3 blocks of 15 trials
 
-practiceLen = 5
-numTrialsPerBlock = 5
-numTestBlocks = 3
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -284,16 +279,49 @@ var delay = delays[0]
 var nbackConditions = shuffleArray(["mismatch", "mismatch", "match", "mismatch", "mismatch"])
 var stims = createTrialTypes(practiceLen, delay);
 console.log(stims)
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
+
+
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus: ${stimTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min for one delay block
-= ${2 * numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min for both delay blocks
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block per delay)
+${practiceLen * 3} (3 block max per delay)
+${practiceLen * 2 * 3} (6 blocks max)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block per delay)
+${numTrialsPerBlock * 3 * 2} (6 block total)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks per delay)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3 * 2} max (6 blocks total)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60 * 2} min total (all trials for all test blocks of both delays)
+
 `);
 
 var accuracyThresh = 0.75;
@@ -471,7 +499,7 @@ var fixationBlock = {
   post_trial_gap: 0,
   prompt: function() {
     if (getExpStage() == 'practice') {
-      return getPromptText
+      return getPromptText()
     } else {
       return ''
     }
@@ -479,7 +507,7 @@ var fixationBlock = {
 };
 
 var feedbackText =
-  "<p class = center-block-text><b>Your delay for this practice round is 1</b>.<br>Press <i>enter</i> to begin practice.</p>";
+  `<p class = center-block-text><br>Press <i>enter</i> to begin practice.</p>`;
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -502,7 +530,7 @@ var ITIBlock = {
   },
   prompt: function() {
     if (getExpStage() == 'practice') {
-      return getPromptText
+      return getPromptText()
     } else {
       return ''
     }
@@ -851,6 +879,7 @@ var n_back_rdoc_init = () => {
   // second delay
   n_back_rdoc_experiment.push(practiceNode);
   n_back_rdoc_experiment.push(testNode);
+  // post task
   n_back_rdoc_experiment.push(postTaskBlock);
   n_back_rdoc_experiment.push(endBlock);
   n_back_rdoc_experiment.push(exitFullscreen);

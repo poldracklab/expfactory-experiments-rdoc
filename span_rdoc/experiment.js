@@ -220,43 +220,59 @@ var equationChoices = ["t", "f"];
 
 var possibleStimuli = "BCDFGJKLMNPSTVXZ".split("");
 
-var numPracticeTrials = 12;
-var numTrialsPerBlock = 64;
+var practiceLen = 4;
+var numTrialsPerBlock = 16;
 var numTestBlocks = 3;
 
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-const nonResponseTrialsDuration = numTrialsTotal * (fixationDuration + equationTrialDuration + meanITI * 1000) / 1000 / 60
-const responseTrialsDuration = responseBlockDuration * numTrialsTotal / numStimuli / 1000 / 60
+const totalTrialDuration = fixationDuration + stimTrialDuration + equationTrialDuration + meanITI * 1000 + responseBlockDuration
 
-
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials without response blocks:
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus duration: ${stimTrialDuration} ms
 - Equation duration: ${equationTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
+- Response block: ${responseBlockDuration}
 ------------------------
-= ${nonResponseTrialsDuration} min
+${totalTrialDuration} ms
 
-Total duration of response blocks:
-- Response duration: ${responseBlockDuration}
-- Number of response blocks: ${numTrialsTotal / numStimuli}
+NUMBER OF PRACTICE TRIALS:
 ------------------------
-= ${responseTrialsDuration}
+${practiceLen} (for span or operation)
+${practiceLen * 3} (max for span or operation)
+${practiceLen * 2 * 3} (max for both span and operation)
 
-Total duration:
-- Non-response trials = ${nonResponseTrialsDuration} min
-- Response trials = ${responseTrialsDuration}
+NUMBER OF TEST TRIALS: 
 ------------------------
-= ${nonResponseTrialsDuration + responseTrialsDuration} min for one block
-= ${2 * nonResponseTrialsDuration + responseTrialsDuration} min for both blocks
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block per span/operation)
+${numTrialsPerBlock * 3 * 2} (6 block total)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks per span/operation)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3 * 2} max (6 blocks total)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60 * 2} min total (all trials for all test blocks of both span and operation)
+
 `);
 
 // important variables used throughout
 var expStage = "practice";
 var blockType = "simple";
 var currSeq = [];
-
 
 var equationAns = "";
 
@@ -325,8 +341,9 @@ var instructionsBlock = {
     equationChoices[1] +
     " key.</b></p>" +
     "<p class = block-text>You will still need to remember and report the sequence of letters!</p>" +
-    "<p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>" +
     "</div>",
+    '<div class="centerbox">' +
+    '<p class = block-text>We\'ll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>' + '</div>'
   ],
   allow_keys: false,
   data: {
@@ -543,10 +560,16 @@ var responseBlock = {
       correctAnswerArray.push(extractValueFromHTML(lastTrials[i].stimulus))
     }
 
-    submittedAnswers = submittedAnswers.slice(1, 5);
-    const correct = arraysAreEqual(correctAnswerArray, submittedAnswers)
-    console.log('response data', data)
-    data['correctResponse'] = correct ? 1 : 0
+    if (submittedAnswers == undefined) {
+      data['correctResponse'] = null
+    } else {
+      if (submittedAnswers.length == 5) {
+        submittedAnswers = submittedAnswers.slice(1, 5);
+        const correct = arraysAreEqual(correctAnswerArray, submittedAnswers)
+        data['correctResponse'] = correct ? 1 : 0
+      }
+    }
+    console.log('trial grid data', data)
     activeGrid.resetGrid()
   }
 };
@@ -631,7 +654,7 @@ var practiceFeedbackBlock = {
 };
 var rtThresh = 1000
 var practiceTrials = [];
-for (let i = 0; i < numPracticeTrials; i++) { // number of trials
+for (let i = 0; i < practiceLen; i++) { // number of trials
   // length of difficulty 
   for (let j = 0; j < 4; j++) {
     practiceTrials.push(

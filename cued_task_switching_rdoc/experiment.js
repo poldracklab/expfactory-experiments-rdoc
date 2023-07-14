@@ -63,7 +63,6 @@ function assessPerformance() {
 /* Append gap and current trial to data and then recalculate for next trial*/
 var appendData = function() {
   var currTrial = jsPsych.getProgress().current_trial_global;
-  console.log(currTrial)
   // eslint-disable-next-line camelcase
   var trialID = jsPsych.data.get().filter({ trial_index: currTrial })
     .trials[0].trial_id;
@@ -290,12 +289,8 @@ var promptText = '<div class="prompt_box">' +
 
 
 var practiceLen = 16; // must be divisible by 4
-var numTrialsPerBlock = 64;
+var numTrialsPerBlock = 72;
 var numTestBlocks = 3;
-
-practiceLen = 1
-numTrialsPerBlock = 1
-numTestBlocks = 1
 
 var practiceThresh = 3; // 3 blocks of 16 trials
 var rtThresh = 1000;
@@ -354,7 +349,7 @@ var pageInstruct = [
   possibleResponses[1][2] +
   '</i> </p>' +
   '<p class = block-text>Your response will depend on the current task, which can change each trial. On some trials, you will have to indicate whether the number is <b>even or odd</b>, and on other trials you will indicate whether the number is <b>higher or lower than 5</b>.' +
-  'Each trial will start with a cue telling you which task to do on that trial.</p>' +
+  ' Each trial will start with a cue telling you which task to do on that trial.</p>' +
   '</div > ',
   '<div class = centerbox>' +
   '<p class = block-text>The cue before the number will be a word indicating the task. There will be <b>four</b> different cues indicating <b>two</b> different tasks. The cues and tasks are described below:</p>' +
@@ -374,17 +369,46 @@ for (i = 0; i < numbersPreload.length; i++) {
 }
 
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+const totalTrialDuration = (fixationDuration + CTI + stimTrialDuration + (meanITI * 1000))
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
-- Cue duration: ${CTI} ms
+- CTI: ${CTI} ms
 - Stimulus: ${stimTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + CTI + stimTrialDuration + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
-// preloaded later, where jsPsych variable is available
+
+
 
 /* ************************************ */
 /* Set up jsPsych blocks */

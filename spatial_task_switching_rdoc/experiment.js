@@ -269,21 +269,45 @@ var practiceLen = 16  // divisible by 4,  2 (switch or stay) by 2 (mag or parity
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
-practiceLen = 1
-numTrialsPerBlock = 1
-numTestBlocks = 1
-
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
+const totalTrialDuration = fixationDuration + 150 + 2000 + meanITI * 1000
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Cue: ${150} ms
 - Probe: ${2000} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + 150 + 2000 + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
+
 
 var accuracy_thresh = 0.75
 var rt_thresh = 1000
@@ -322,12 +346,7 @@ var prompt_text_list = '<ul style="text-align:left;">' +
 
 
 
-// var prompt_text = '<div class = prompt_box>' +
-//     '<p class = center-block-text style = "font-size:16px;">' + predictable_dimensions_list[0].values[0] + ': ' + possibleResponses[0][0] + ' | ' + predictable_dimensions_list[0].values[1] + ': ' + possibleResponses[1][0] + '</p>' +
-//     '<p>+</p>' +
-//     '<p class = center-block-text style = "font-size:16px;">Bottom 2 quadrants: judge number on ' + predictable_dimensions_list[1].dim + '</p>' +
-//     '<p class = center-block-text style = "font-size:16px;">' + predictable_dimensions_list[1].values[0] + ': ' + possibleResponses[0][0] + ' | ' + predictable_dimensions_list[1].values[1] + ': ' + possibleResponses[1][0] + '</p>' +
-//     '</div>'
+
 
 var prompt_text = "<div class = prompt_box>" +
     '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Top 2 quadrants: judge number on ' +

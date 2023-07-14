@@ -78,13 +78,30 @@ body {
   width: 75%;
   height: 20%;
   position: absolute;
-  top: 10%;
+  top: 15%;
   left: 20%;
   transform: translate(-50%, -45%);
   margin-right: 0%;
   background-color: none;
   text-align: center;
 }
+
+/* .prompt_box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centered-content p {
+  margin: 15px 0;
+} */
 
 img.center {
   height: auto;

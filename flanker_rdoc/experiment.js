@@ -260,22 +260,45 @@ var testStimuli = [
 ];
 
 var practiceLen = 12; // must be divisible by 4
-var numTrialsPerBlock = 64; // must be divisible by 4
+var numTrialsPerBlock = 72; // must be divisible by 4
 var numTestBlocks = 3;
 
-practiceLen = 1
-numTrialsPerBlock = 1
-numTestBlocks = 1
-
+const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus: ${stimTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
 
 var promptTextList =

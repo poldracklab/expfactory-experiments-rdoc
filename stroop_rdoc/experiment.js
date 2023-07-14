@@ -175,8 +175,7 @@ colors.forEach(function(color, colorIndex) {
   });
 });
 
-console.log(congruentStim);
-console.log(incongruentStim);
+
 // end generating stimuli
 
 var stims = [].concat(congruentStim, congruentStim, incongruentStim);
@@ -184,20 +183,45 @@ var practiceLen = 18;
 var numTrialsPerBlock = 72;
 var numTestBlocks = 3;
 
-practiceLen = 1
-numTrialsPerBlock = 1
-numTestBlocks = 1
-
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+const totalTrialDuration = fixationDuration + stimTrialDuration + meanITI * 1000
+
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus: ${stimTrialDuration} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + stimTrialDuration + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
+
 
 choices[2] = possibleResponses[2][1]
 

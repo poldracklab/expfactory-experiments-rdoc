@@ -269,20 +269,45 @@ var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditi
 var numTrialsPerBlock = 72; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTestBlocks = 3;
 
-practiceLen = 1
-numTrialsPerBlock = 1
-numTestBlocks = 1
-
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 
-console.log(`Total number of trials: ${numTrialsTotal}`)
-console.log(`Total duration of trials:
+const totalTrialDuration = fixationDuration + 2000 + meanITI * 1000
+
+console.log(`
+TOTAL DURATION OF A TRIAL:
+------------------------
 - Fixation: ${fixationDuration} ms
 - Stimulus: ${2000} ms
 - Average ITI duration: ${meanITI * 1000} ms
 ------------------------
-= ${numTrialsTotal * (fixationDuration + 2000 + meanITI * 1000) / 1000 / 60} min
+${totalTrialDuration} ms
+
+NUMBER OF PRACTICE TRIALS:
+------------------------
+${practiceLen} (1 block)
+${practiceLen * 3} (3 block)
+
+NUMBER OF TEST TRIALS: 
+------------------------
+${numTrialsPerBlock} (1 block)
+${numTrialsPerBlock * 3} (3 block)
+
+
+TOTAL DURATIONS:
+------------------------
+
+# PRACTICE:
+
+(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
+= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
+= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
+
+# TEST: 
+
+(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
 `);
+
 
 var practiceThresh = 3; // max number of times to repeat practice
 var accuracyThresh = 0.75;
