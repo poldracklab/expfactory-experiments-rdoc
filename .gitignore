@@ -1,1 +1,7 @@
-*/.DS_Store
+.DS_Store
+static
+results.txt
+/node_modules
+/package-lock.json
+/results.csv
+/results.pretty.json
