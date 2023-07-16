@@ -1,6 +1,74 @@
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
+// common
+// PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
+var meanITI = 0.5;
+
+function sampleFromDecayingExponential() {
+  // Decay parameter of the exponential distribution λ = 1 / μ
+  var lambdaParam = 1 / meanITI;
+  var minValue = 0;
+  var maxValue = 5;
+
+  /**
+   * Sample one value with replacement
+   * from a decaying exponential distribution within a specified range.
+   *
+   * @param {number} lambdaParam
+   * - The decay parameter lambda of the exponential distribution.
+   * @param {number} minValue - The minimum value of the range.
+   * @param {number} maxValue - The maximum value of the range.
+   * @returns {number}
+   * A single value sampled from the decaying
+   * exponential distribution within the specified range.
+   */
+  var sample;
+  do {
+    sample = -Math.log(Math.random()) / lambdaParam;
+  } while (sample < minValue || sample > maxValue);
+  return sample;
+}
+
+function evalAttentionChecks() {
+  var checkPercent = 1;
+  if (runAttentionChecks) {
+    var attentionChecksTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: 'attention_check' }).trials;
+    var checksPassed = 0;
+    for (var i = 0; i < attentionChecksTrials.length; i++) {
+      if (attentionChecksTrials[i].correct === true) {
+        checksPassed += 1;
+      }
+    }
+    checkPercent = checksPassed / attentionChecksTrials.length;
+  }
+  jsPsych.data.get().addToLast({ att_checkPercent: checkPercent });
+  return checkPercent;
+}
+
+var getInstructFeedback = function() {
+  return (
+    '<div class = centerbox><p class = center-block-text>' +
+    feedbackInstructText +
+    '</p></div>'
+  );
+};
+
+var getFeedback = function() {
+  return (
+    '<div class = bigbox><div class = picture_box><p class = block-text>' +
+    feedbackText +
+    '</font></p></div></div>'
+  ); // <font color="white">
+};
+
+
+var getExpStage = function() {
+  return expStage;
+};
+
 
 function assessPerformance() {
   /* Function to calculate the "creditVar", which is a boolean used to
@@ -126,6 +194,36 @@ var getStimData = function() {
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
+// common variables
+const fixationDuration = 500;
+
+const possibleResponses = [['index finger', ',', 'comma key (,)'],
+['middle finger', '.', 'period key (.)']]
+
+const choices = [possibleResponses[0][1], possibleResponses[1][1]]
+
+var endText = '<div class = centerbox>' +
+  '<p class = center-block-text>Thanks for completing this task!</p>' +
+  '<p class = center-block-text>' +
+  'If you have been completing tasks continuously for an hour or more,' +
+  'please take a 15-minute break before starting again.</p>' +
+  '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
+  '</div>'
+
+var feedbackInstructText =
+  '<p class=center-block-text>' +
+  'Welcome! This experiment will take around 5 minutes.</p>' +
+  '<p class=center-block-text>' +
+  'To avoid technical issues,' +
+  'please keep the experiment tab (on Chrome or Firefox)' +
+  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
+
+// speed reminder
+var speedReminder =
+  '<p class = block-text>' +
+  'Try to respond as quickly and accurately as possible.</p> ';
+
 // eslint-disable-next-line no-unused-vars
 var expStage = 'practice'
 
@@ -783,11 +881,7 @@ var endBlock = {
     exp_id: expID,
   },
   trial_duration: 180000,
-  stimulus:
-    "<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p>" +
-    "<p class = center-block-text>	If you have been completing tasks continuously for an hour or more, please take a 15-minute break before starting again.</p>" +
-    "<p class = center-block-text>Press <i>enter</i> to continue.</p>" +
-    "</div>",
+  stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
