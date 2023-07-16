@@ -1,6 +1,74 @@
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
+// common
+// PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
+var meanITI = 0.5;
+
+function sampleFromDecayingExponential() {
+  // Decay parameter of the exponential distribution λ = 1 / μ
+  var lambdaParam = 1 / meanITI;
+  var minValue = 0;
+  var maxValue = 5;
+
+  /**
+   * Sample one value with replacement
+   * from a decaying exponential distribution within a specified range.
+   *
+   * @param {number} lambdaParam
+   * - The decay parameter lambda of the exponential distribution.
+   * @param {number} minValue - The minimum value of the range.
+   * @param {number} maxValue - The maximum value of the range.
+   * @returns {number}
+   * A single value sampled from the decaying
+   * exponential distribution within the specified range.
+   */
+  var sample;
+  do {
+    sample = -Math.log(Math.random()) / lambdaParam;
+  } while (sample < minValue || sample > maxValue);
+  return sample;
+}
+
+function evalAttentionChecks() {
+  var checkPercent = 1;
+  if (runAttentionChecks) {
+    var attentionChecksTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: 'attention_check' }).trials;
+    var checksPassed = 0;
+    for (var i = 0; i < attentionChecksTrials.length; i++) {
+      if (attentionChecksTrials[i].correct === true) {
+        checksPassed += 1;
+      }
+    }
+    checkPercent = checksPassed / attentionChecksTrials.length;
+  }
+  jsPsych.data.get().addToLast({ att_checkPercent: checkPercent });
+  return checkPercent;
+}
+
+var getInstructFeedback = function() {
+  return (
+    '<div class = centerbox><p class = center-block-text>' +
+    feedbackInstructText +
+    '</p></div>'
+  );
+};
+
+var getFeedback = function() {
+  return (
+    '<div class = bigbox><div class = picture_box><p class = block-text>' +
+    feedbackText +
+    '</font></p></div></div>'
+  ); // <font color="white">
+};
+
+
+var getExpStage = function() {
+  return expStage;
+};
+
 
 function assessPerformance() {
   var experimentData = jsPsych.data
@@ -83,13 +151,18 @@ var setBlocks = function() {
   }
 }
 
-
 var getStim = function() {
-  const randomIndex = Math.floor(Math.random() * possibleStimuli.length);
-  const randomValue = possibleStimuli[randomIndex];
-  const randomValueHTML = `<div class = centerbox><div class = center-text>${randomValue}</div></div>`
-  return randomValueHTML
+  const stim = trialStimuli.shift()
+  const stimHTML = `<div class = centerbox><div class = center-text>${stim}</div></div>`
+  return stimHTML
 }
+
+// var getStim = function() {
+//   const randomIndex = Math.floor(Math.random() * possibleStimuli.length);
+//   const randomValue = possibleStimuli[randomIndex];
+//   const randomValueHTML = `<div class = centerbox><div class = center-text>${randomValue}</div></div>`
+//   return randomValueHTML
+// }
 
 var getRandomEquation = function() {
   const stim = equations.shift()
@@ -117,16 +190,20 @@ var generateGrid = function() {
   html += '</div>';
 
   let spacebarCount = 0;
+  const selectedIndexes = [];
 
   function handleKeyDown(event) {
+    if (spacebarCount === 4) {
+      return; // Ignore any key presses after spacebarCount reaches 4
+    }
+
     const key = event.key;
     const container = document.querySelector(".container");
     const boxes = container.querySelectorAll(".box");
 
-    // Remove active-box class and colored background from all boxes
+    // Remove active-box class from all boxes
     boxes.forEach(function(box) {
       box.classList.remove("active-box");
-      box.style.backgroundColor = "";
     });
 
     // Update activeIndex based on arrow key input
@@ -143,27 +220,25 @@ var generateGrid = function() {
 
     if (newActiveIndex !== activeIndex) {
       activeIndex = newActiveIndex;
-      boxes[activeIndex].style.backgroundColor = "black"; // Add red background color to new active box
+      boxes[activeIndex].classList.add("active-box"); // Add active-box class for arrow key navigation
     }
 
     if (key === " ") {
       // Perform action when spacebar is pressed
+      if (selectedIndexes.includes(activeIndex)) {
+        return; // Ignore if the box was already selected
+      }
+
       if (spacebarCount < 4) {
-        boxes[activeIndex].classList.add("active-box");
-        boxes[activeIndex].style.backgroundColor = "black"; // Add red background color to current active box
+        boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
         activeBoxes.push(possibleStimuli[activeIndex]);
+        selectedIndexes.push(activeIndex);
         spacebarCount++;
       }
 
       if (spacebarCount === 4) {
         console.log("Active boxes:", activeBoxes);
         submittedAnswers = activeBoxes;
-        // Remove active-box class and colored background from all boxes
-        boxes.forEach(function(box) {
-          box.classList.remove("active-box");
-          box.style.backgroundColor = "";
-        });
-
         // Reset the event listener or perform any other necessary action
       }
     }
@@ -174,6 +249,7 @@ var generateGrid = function() {
 
   function resetGrid() {
     activeBoxes.length = 0; // Clear the activeBoxes array
+    selectedIndexes.length = 0; // Clear the selectedIndexes array
     spacebarCount = 0;
 
     // Remove the event listener
@@ -213,9 +289,55 @@ var getExpStage = function() {
   return expStage;
 };
 
+function sampleLetters(characters, sampleSize) {
+  const sampledLetters = [];
+
+  // Make a copy of the characters array to avoid modifying the original
+  const availableLetters = [...characters];
+
+  for (let i = 0; i < sampleSize; i++) {
+    // Generate a random index within the available letters
+    const randomIndex = Math.floor(Math.random() * availableLetters.length);
+
+    // Extract and remove the letter at the random index
+    const sampledLetter = availableLetters.splice(randomIndex, 1)[0];
+
+    // Add the sampled letter to the result array
+    sampledLetters.push(sampledLetter);
+  }
+
+  return sampledLetters;
+}
+
+
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
+// common variables
+const fixationDuration = 500;
+
+
+var endText = '<div class = centerbox>' +
+  '<p class = center-block-text>Thanks for completing this task!</p>' +
+  '<p class = center-block-text>' +
+  'If you have been completing tasks continuously for an hour or more,' +
+  'please take a 15-minute break before starting again.</p>' +
+  '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
+  '</div>'
+
+var feedbackInstructText =
+  '<p class=center-block-text>' +
+  'Welcome! This experiment will take around 5 minutes.</p>' +
+  '<p class=center-block-text>' +
+  'To avoid technical issues,' +
+  'please keep the experiment tab (on Chrome or Firefox)' +
+  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
+
+// speed reminder
+var speedReminder =
+  '<p class = block-text>' +
+  'Try to respond as quickly and accurately as possible.</p> ';
 
 var spanResponses = ['left arrow key', 'right arrow key', 'up arrow key', 'down arrow key', 'spacebar']
 // *Timing:
@@ -242,6 +364,7 @@ var equationChoices = ["t", "f"];
 
 
 var possibleStimuli = "BCDFGJKLMNPSTVXZ".split("");
+var trialStimuli = [];
 
 var practiceLen = 4;
 var numTrialsPerBlock = 12;
@@ -360,7 +483,8 @@ var instructionsBlock = {
     '<div class="centerbox">' +
     '<p class="block-text">In this task, you will be presented with a sequence of letters. Each letter will appear one at a time, and a fixation symbol ' + ' will appear between each letter.</p>' +
     '<p class="block-text">After each trial, a grid will appear with 16 letters on it. Your goal is to move through the grid using the left, right, up, and down arrow keys to select the letters in the order they appeared during the trial.</p>' +
-    '<p class="block-text">To select a letter, use the spacebar.</p>' +
+    '<p class="block-text">To select a letter, press the spacebar.</p>' + '</div>',
+    '<div class="centerbox">' +
     "<p class = block-text>On some trials, the '+' in between each letter will be replaced by a mathematical equation. You will have a few seconds to decide if the equation is true or false.</p>" +
     "<p class = block-text><b>If the equation is true, press the " +
     equationChoices[0] +
@@ -368,8 +492,7 @@ var instructionsBlock = {
     equationChoices[1] +
     " key.</b></p>" +
     "<p class = block-text>You will still need to remember and report the sequence of letters!</p>" +
-    "</div>",
-    '<div class="centerbox">' +
+    speedReminder +
     '<p class = block-text>We\'ll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>' + '</div>'
   ],
   allow_keys: false,
@@ -445,6 +568,7 @@ var stimulusBlock = {
   },
   on_finish: (data) => console.log(extractValueFromHTML(data.stimulus))
 };
+
 
 function generateEquationTruthList(length) {
   const equationTruthList = [];
@@ -651,6 +775,11 @@ var fixation = {
       return practicePromptText
     }
   },
+  on_finish: function() {
+    if (jsPsych.data.get().last(2).trials[0].trial_id == 'response' || jsPsych.data.get().last(2).trials[0].trial_id == 'feedback') {
+      trialStimuli = sampleLetters(possibleStimuli, numStimuli)
+    }
+  }
 };
 
 var ITIBlock = {
@@ -925,16 +1054,12 @@ var endBlock = {
     exp_id: "span_rdoc",
   },
   trial_duration: 180000,
-  stimulus:
-    "<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p>" +
-    "<p class = center-block-text>	If you have been completing tasks continuously for an hour or more, please take a 15-minute break before starting again.</p>" +
-    "<p class = center-block-text>Press <i>enter</i> to continue.</p>" +
-    "</div>",
+  stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
     assessPerformance();
-    // evalAttentionChecks();
+    evalAttentionChecks();
   },
 };
 

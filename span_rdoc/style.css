@@ -133,6 +133,24 @@ img.center {
   background-color: red;
 }
 
+.box {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.active-box {
+  background-color: black;
+  /* Color for arrow key navigation */
+}
+
+.spacebar-box {
+  background-color: red;
+  /* Color for spacebar selection */
+}
+
 .numbox {
   width: 30vw;
   height: 30vw;
