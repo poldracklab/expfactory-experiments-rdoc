@@ -3,8 +3,6 @@
     "name": "AX-CPT RDoC",
     "template": "jspsych",
     "run": [
-      "static/jspsych7/poldrack-plugins/utils/common.js",
-      "static/jspsych7/poldrack-plugins/utils/helpers.js",
       "static/jspsych7/jspsych.js",
       "static/jspsych7/plugin-instructions.js",
       "static/jspsych7/plugin-html-keyboard-response.js",
