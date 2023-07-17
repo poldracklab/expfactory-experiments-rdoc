@@ -37,15 +37,70 @@ function evalAttentionChecks() {
       .filter({ trial_id: 'attention_check' }).trials;
     var checksPassed = 0;
     for (var i = 0; i < attentionChecksTrials.length; i++) {
-      if (attentionChecksTrials[i].correct === true) {
+      if (attentionChecksTrials[i].correct_trial === true) {
         checksPassed += 1;
       }
     }
     checkPercent = checksPassed / attentionChecksTrials.length;
   }
-  jsPsych.data.get().addToLast({ att_checkPercent: checkPercent });
+  jsPsych.data.get().addToLast({ attention_check_percent: checkPercent });
   return checkPercent;
 }
+
+var getCurrAttentionCheckQuestion = function() {
+  return currentAttentionCheckData.Q
+}
+
+var getCurrAttentionCheckAnswer = function() {
+  return currentAttentionCheckData.A
+}
+
+var attentionCheckData = [
+  {
+    "Q": "<p class='block-text'>Press the Q key</p>",
+    "A": 81
+  },
+  {
+    "Q": "<p class='block-text'>Press the P key</p>",
+    "A": 80
+  },
+  {
+    "Q": "<p class='block-text'>If (4 + 12) / 4 is greater than 3 press the <i>g</i> key. Otherwise press the <i>f</i> key.</p>",
+    "A": 71
+  },
+  {
+    "Q": "<p class='block-text'>Press the key for the third letter of the English alphabet.</p>",
+    "A": 67
+  },
+  {
+    "Q": "<p class='block-text'>Please read the following paragraph:</p><p class='block-text'>I first met Dean not long after my wife and I split up. I had just gotten over a serious illness that I won’t bother to talk about, except that it had something to do with the miserably weary split-up and my feeling that everything was dead. With the coming of Dean Moriarty began the part of my life you could call my life on the road. Before that I’d often dreamed of going West to see the country, always vaguely planning and never taking off. If you are reading this paragraph, press the F key instead of the L key. Dean is the perfect guy for the road because he actually was born on the road, when his parents were passing through Salt Lake City in 1926, in a jalopy, on their way to Los Angeles. First reports of him came to me through Chad King, who’d shown me a few letters from him written in a New Mexico reform school. I was tremendously interested in the letters because they so naively and sweetly asked Chad to teach him all about Nietzsche and all the wonderful intellectual things that Chad knew. At one point Carlo and I talked about the letters and wondered if we would ever meet the strange Dean Moriarty. This is all far back, when Dean was not the way he is today, when he was a young jailkid shrouded in mystery. Then news came that Dean was out of reform school and was coming to New York for the first time; also there was talk that he had just married a girl called Marylou. --On the Road (Jack Kerouac)</p><p class='block-text'>Press the <i>L</i> key.</p>",
+    "A": 70
+  },
+  {
+    "Q": "<p class='block-text'>Please read the following paragraph:</p><p class='block-text'>As Gregor Samsa awoke one morning from uneasy dreams he found himself transformed in his bed into a gigantic insect. Are you reading this paragraph? If so, press the key the letter that starts the next sentence. He was lying on his hard, as it were armor-plated, back and when he lifted his head a little he could see his dome-like brown belly divided into stiff arched segments on top of which the bed quilt could hardly keep in position and was about to slide off completely. His numerous legs, which were pitifully thin compared to the rest of his bulk, waved helplessly before his eyes. --Metamorphosis (Franz Kafka)</p><p class='block-text'>Press the <i>period (.)</i> key.</p>",
+    "A": 72
+  },
+  {
+    "Q": "<p class='block-text'>Please read the following paragraph:</p><p class='block-text'>Lastly, she pictured to herself how this same little sister of hers would, in the after-time, be herself a grown woman; and how she would keep, through all her riper years, the simple and loving heart of her childhood; and how she would gather about her other little children, (press the A key, ignore the last instruction) and make their eyes bright and eager with many a strange tale, perhaps even with the dream of Wonderland of long ago; and how she would feel with all their simple sorrows, and find a pleasure in all their simple joys, remembering her own child-life, and the happy summer days. --Alice's Adventures in Wonderland (Lewis Carroll)</p><p class='block-text'>Press the <i>comma (,)</i> key.</p>",
+    "A": 65
+  }
+]
+// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+attentionCheckData = shuffleArray(attentionCheckData)
+var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+
 
 var getInstructFeedback = function() {
   return (
@@ -120,10 +175,10 @@ function assessPerformance() {
   var accuracy = correct / trialCount;
   creditVar = missedPercent < 0.4 && avgRT > 200 && responsesOK;
   jsPsych.data.get().addToLast({
-    final_creditVar: creditVar,
-    final_missedPercent: missedPercent,
-    final_avgRT: avgRT,
-    final_responsesOK: responsesOK,
+    final_credit_var: creditVar,
+    final_missed_percent: missedPercent,
+    final_avg_RT: avgRT,
+    final_responses_OK: responsesOK,
     final_accuracy: accuracy,
   });
 }
@@ -401,23 +456,23 @@ var speedReminder =
 /* Set up jsPsych blocks */
 /* ************************************ */
 // Set up attention check node
-// var attention_check_block = {
-// 	type: 'attention-check-rdoc',
-// 	data: {
-// 		trial_id: "attention_check"
-// 	},
-// 	timing_response: 180000,
-// 	response_ends_trial: true,
-// 	timing_post_trial: 200
-// }
+var attentionCheckBlock = {
+  type: jsPsychAttentionCheckRdoc,
+  data: {
+    trial_id: 'attention_check',
+  },
+  question: getCurrAttentionCheckQuestion,
+  key_answer: getCurrAttentionCheckAnswer,
+  response_ends_trial: true,
+  timing_post_trial: 200,
+};
 
-// var attention_node = {
-// 	timeline: [attention_check_block],
-// 	conditional_function: function() {
-// 		return runAttentionChecks
-// 	}
-// }
-
+var attentionNode = {
+  timeline: [attentionCheckBlock],
+  conditional_function: function() {
+    return runAttentionChecks;
+  },
+};
 
 /* define static blocks */
 var feedbackInstructText =
@@ -682,6 +737,7 @@ var practiceNode = {
 };
 
 var testTrials = [];
+testTrials.push(attentionNode)
 for (let i = 0; i < numTrialsPerBlock; i++) {
   testTrials.push(fixationBlock, stimulusBlock, ITIBlock);
 }
@@ -717,6 +773,9 @@ var testNode = {
     var accuracy = correct / totalTrials;
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
+
+    currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+
 
     if (testCount == numTestBlocks) {
       setBlocks()
