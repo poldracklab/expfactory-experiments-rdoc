@@ -5,13 +5,13 @@
 /* ************************************ */
 // common
 // PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
-var meanITI = 0.5;
+var meanITI = 5;
 
 function sampleFromDecayingExponential() {
   // Decay parameter of the exponential distribution λ = 1 / μ
   var lambdaParam = 1 / meanITI;
-  var minValue = 0;
-  var maxValue = 5;
+  var minValue = 2;
+  var maxValue = 20;
 
   /**
    * Sample one value with replacement
@@ -49,6 +49,7 @@ function evalAttentionChecks() {
   jsPsych.data.get().addToLast({ attention_check_percent: checkPercent });
   return checkPercent;
 }
+
 var getCurrAttentionCheckQuestion = function() {
   return currentAttentionCheckData.Q
 }
@@ -169,9 +170,11 @@ var attentionCheckData = [
     "A": 85
   }
 ]
+
 // TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleChecksArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+
 
 var getInstructFeedback = function() {
   return (
@@ -270,63 +273,138 @@ function shuffleArray(array) {
   return shuffledArray;
 }
 
-var setBlocks = function() {
-  if (getCurrBlockType() == conditions[0]) {
-    feedbackText =
-      "<div class = centerbox><p class = center-block-text>Done this condition. Moving onto next task. Press <i>enter</i> to continue.</p>" +
-      '</div>';
-    blockType = conditions[1]
-    expStage = 'practice'
-    testCount = 0;
-  } else {
-    feedbackText =
-      "<div class = centerbox><p class = center-block-text>Done this task. Press <i>enter</i> to continue.</p>" +
-      '</div>';
+
+
+function generateSpatialTrialValues(n) {
+  const randomList = [];
+
+  for (let i = 0; i < n; i++) {
+    const randomValue = Math.floor(Math.random() * 16);
+    randomList.push(randomValue);
   }
+
+  return randomList;
 }
+
+var trialValue;
 
 var getStim = function() {
-  const stim = trialStimuli.shift()
-  const stimHTML = `<div class = centerbox><div class = center-text>${stim}</div></div>`
-  return stimHTML
+
+  let html = '<div class="container">';
+
+
+  const trialIndex = trialList.shift()
+
+  for (var i = 0; i < 16; i++) {
+    if (i === trialIndex) {
+      html += '<div class="box active-box"></div>';
+    } else {
+      html += '<div class="box"></div>';
+    }
+  }
+  trialValue = trialIndex
+  html += '</div>';
+  return html
+
 }
 
-// var getStim = function() {
-//   const randomIndex = Math.floor(Math.random() * possibleStimuli.length);
-//   const randomValue = possibleStimuli[randomIndex];
-//   const randomValueHTML = `<div class = centerbox><div class = center-text>${randomValue}</div></div>`
-//   return randomValueHTML
-// }
+function generateRandomGrid(size) {
+  const grid = new Array(size);
+  for (let i = 0; i < size; i++) {
+    grid[i] = Math.random() < 0.5 ? 0 : 1;
+  }
+  return grid;
+}
 
-// var getRandomEquation = function() {
-//   const stim = equations.shift()
-//   equationAns = equationTruthList.shift()
-//   return `<div class=centerbox><div class=center-text>${stim}</div></div>`
-// }
+function createSymmetricGrid(leftArray) {
+  if (leftArray.length % 4 !== 0) {
+    throw new Error('The array length must be a multiple of 4.');
+  }
 
-var getRandomString = function() {
-  const stim = distractorStrings.shift()
-  wordAns = stim.real
-  return `<div class=centerbox><div class=center-text>${stim.word}</div></div>`
+  const symmetricArray = [];
+
+
+  for (let i = 0; i < leftArray.length; i += 4) {
+    const group = leftArray.slice(i, i + 4);
+    const symmetricGroup = [group[3], group[2], group[1], group[0]];
+    symmetricArray.push(...symmetricGroup);
+  }
+
+  return symmetricArray;
+}
+
+function makeSymmetricArrays() {
+  const size = 32;
+  const firstGrid = generateRandomGrid(size);
+  const secondGrid = createSymmetricGrid(firstGrid);
+
+  return [{ firstGrid: firstGrid, secondGrid: secondGrid, symmetric: true }];
+}
+
+function areArraysAsymmetric(arr1, arr2) {
+  // Check if arrays are asymmetric (values at each index are not the same)
+  return !arr1.every((val, index) => val === arr2[index]);
+}
+
+function makeAsymmetricArrays() {
+  const size = 32;
+  let firstGrid = generateRandomGrid(size);
+  let secondGrid = generateRandomGrid(size);
+
+  while (areArraysAsymmetric(firstGrid, secondGrid) === false) {
+    // Keep generating new arrays until they become asymmetric
+    firstGrid = generateRandomGrid(size);
+    secondGrid = generateRandomGrid(size);
+  }
+  return [firstGrid, secondGrid];
+}
+
+
+function makeAsymmetricArrays() {
+  const size = 32;
+  const firstGrid = generateRandomGrid(size);
+  const secondGrid = generateRandomGrid(size);
+
+  return [{ firstGrid: firstGrid, secondGrid: secondGrid, symmetric: false }];
+}
+
+function generateHalfOnesAndZerosArray(length) {
+  if (length % 2 !== 0) {
+    throw new Error("Length must be an even number.");
+  }
+
+  const halfLength = length / 2;
+  return Array.from({ length: halfLength }, () => 1).concat(Array.from({ length: halfLength }, () => 0));
+}
+
+
+var getRandomSpatial = function() {
+  if (distractorSpatial.length == 0) {
+    distractorSpatial = makeDistractorSpatial()
+  }
+  const stim = distractorSpatial.shift()
+  spatialAns = stim[0].symmetric
+  return generateDistractorGrid(stim)
 }
 
 var submittedAnswers;
 
+
+
 var generateGrid = function() {
-  possibleStimuli = shuffleArray(possibleStimuli); // Assuming `possibleStimuli` is a global array
-  const randomIndex = Math.floor(Math.random() * possibleStimuli.length);
+  const randomIndex = Math.floor(Math.random() * 16);
   let activeIndex = randomIndex;
   const activeBoxes = [];
 
   let html = '<div class="container">';
-  possibleStimuli.forEach(function(letter, index) {
-    if (index === randomIndex) {
-      html += '<div class="box active-box">' + letter + '</div>';
-      activeBoxes.push(letter);
+  for (var i = 0; i < 16; i++) {
+    if (i === randomIndex) {
+      html += '<div class="box response-active"></div>';
+      activeBoxes.push(i);
     } else {
-      html += '<div class="box">' + letter + '</div>';
+      html += '<div class="box"></div>';
     }
-  });
+  }
   html += '</div>';
 
   let spacebarCount = 0;
@@ -360,25 +438,24 @@ var generateGrid = function() {
     if (newActiveIndex !== activeIndex) {
       // Remove active-box class from all boxes
       boxes.forEach(function(box) {
-        box.classList.remove("active-box");
+        box.classList.remove("response-active");
       });
     }
 
     if (newActiveIndex !== activeIndex) {
       activeIndex = newActiveIndex;
-      boxes[activeIndex].classList.add("active-box"); // Add active-box class for arrow key navigation
+      boxes[activeIndex].classList.add("response-active"); // Add active-box class for arrow key navigation
     }
 
     if (key === " ") {
       if (spacebarCount < 4) {
         boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
-        activeBoxes.push(possibleStimuli[activeIndex]);
+        activeBoxes.push(activeIndex);
         selectedIndexes.push(activeIndex);
         spacebarCount++;
       }
 
       if (spacebarCount === 4) {
-        console.log("Active boxes:", activeBoxes);
         submittedAnswers = activeBoxes;
         // Reset the event listener or perform any other necessary action
       }
@@ -386,19 +463,14 @@ var generateGrid = function() {
       // Clear any existing setTimeout calls
       clearTimeout(timeoutId);
 
-      console.log(boxes[activeIndex]);
       timeoutId = setTimeout(() => {
         if (key !== " ") {
-          boxes[activeIndex].classList.remove("active-box"); // Remove active-box class if the arrow key was pressed
+          boxes[activeIndex].classList.remove("response-active"); // Remove active-box class if the arrow key was pressed
         }
         boxes[activeIndex].classList.remove("spacebar-box"); // Remove spacebar-box class for spacebar selection
       }, 200);
     }
   }
-
-
-
-
   // Attach the event listener
   document.addEventListener("keydown", handleKeyDown);
 
@@ -415,99 +487,40 @@ var generateGrid = function() {
 
   return { html, resetGrid };
 };
-// var generateGrid = function() {
-//   possibleStimuli = shuffleArray(possibleStimuli); // Assuming `possibleStimuli` is a global array
-//   const randomIndex = Math.floor(Math.random() * possibleStimuli.length);
-//   let activeIndex = randomIndex;
-//   const activeBoxes = [];
 
-//   let html = '<div class="container">';
-//   possibleStimuli.forEach(function(letter, index) {
-//     if (index === randomIndex) {
-//       html += '<div class="box active-box">' + letter + '</div>';
-//       activeBoxes.push(letter);
-//     } else {
-//       html += '<div class="box">' + letter + '</div>';
-//     }
-//   });
-//   html += '</div>';
+function combineArrays(array1, array2) {
+  if (array1.length % 4 !== 0 || array2.length % 4 !== 0) {
+    throw new Error('Both arrays must have a length that is a multiple of 4.');
+  }
 
-//   let spacebarCount = 0;
-//   const selectedIndexes = [];
+  const combinedArray = [];
 
-//   function handleKeyDown(event) {
-//     if (spacebarCount === 4) {
-//       return; // Ignore any key presses after spacebarCount reaches 4
-//     }
+  for (let i = 0; i < array1.length; i += 4) {
+    combinedArray.push(...array1.slice(i, i + 4), ...array2.slice(i, i + 4));
+  }
 
-//     const key = event.key;
-//     const container = document.querySelector(".container");
-//     const boxes = container.querySelectorAll(".box");
+  return combinedArray;
+}
 
-//     // Remove active-box class from all boxes
-//     boxes.forEach(function(box) {
-//       box.classList.remove("active-box"); // TODO: Maybe disable coloring
-//     });
+var generateDistractorGrid = function(stim) {
+  let html = '<div class="container">';
+  const gridLen = 64;
+  const firstGrid = stim[0].firstGrid;
+  const secondGrid = stim[0].secondGrid;
+  const gridValues = combineArrays(firstGrid, secondGrid)
 
-//     // Update activeIndex based on arrow key input
-//     let newActiveIndex = activeIndex;
-//     if (key === "ArrowLeft" && activeIndex % 4 !== 0) {
-//       newActiveIndex = activeIndex - 1;
-//     } else if (key === "ArrowRight" && activeIndex % 4 !== 3) {
-//       newActiveIndex = activeIndex + 1;
-//     } else if (key === "ArrowUp" && activeIndex >= 4) {
-//       newActiveIndex = activeIndex - 4;
-//     } else if (key === "ArrowDown" && activeIndex < 12) {
-//       newActiveIndex = activeIndex + 4;
-//     }
+  for (let i = 0; i < gridLen; i++) {
+    if (gridValues[i] == 1) {
+      html += '<div class="distractor-box active-box"></div>';
+    } else {
+      html += '<div class="distractor-box"></div>';
+    }
+  }
 
-//     if (newActiveIndex !== activeIndex) {
-//       activeIndex = newActiveIndex;
-//       boxes[activeIndex].classList.add("active-box"); // Add active-box class for arrow key navigation
-//     }
+  html += '</div>';
 
-//     if (key === " ") {
-//       // Perform action when spacebar is pressed
-//       // if (selectedIndexes.includes(activeIndex)) {
-//       //   return; // Ignore if the box was already selected
-//       // }
-
-//       if (spacebarCount < 4) {
-//         boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
-//         activeBoxes.push(possibleStimuli[activeIndex]);
-//         selectedIndexes.push(activeIndex);
-//         spacebarCount++;
-//         setTimeout(function() {
-//           boxes[activeIndex].classList.remove("spacebar-box"); // Remove spacebar-box class after 200ms
-//         }, 200);
-//       }
-
-//       if (spacebarCount === 4) {
-//         console.log("Active boxes:", activeBoxes);
-//         submittedAnswers = activeBoxes;
-//         // Reset the event listener or perform any other necessary action
-//       }
-//     }
-//   }
-
-//   // Attach the event listener
-//   document.addEventListener("keydown", handleKeyDown);
-
-//   function resetGrid() {
-//     activeBoxes.length = 0; // Clear the activeBoxes array
-//     selectedIndexes.length = 0; // Clear the selectedIndexes array
-//     spacebarCount = 0;
-
-//     // Remove the event listener
-//     document.removeEventListener("keydown", handleKeyDown);
-
-//     // Clear any remaining state or perform other necessary actions
-//   }
-
-//   return { html, resetGrid };
-// };
-
-
+  return html;
+};
 
 var getInstructFeedback = function() {
   return (
@@ -527,121 +540,15 @@ var getFeedback = function() {
 var getCurrSeq = function() {
   return currSeq;
 };
-var getCurrBlockType = function() {
-  return blockType;
+
+// TODO: Change stim block duration?
+var getCurrCondition = function() {
+  return currCondition;
 };
 
 var getExpStage = function() {
   return expStage;
 };
-
-const wordList = [
-  "Angel", "Awake", "Bacon", "Blend", "Brave", "Chain", "Climb", "Cough", "Crash", "Debut",
-  "Diver", "Draft", "Early", "Empty", "Fancy", "Field", "Flash", "Flute", "Frost", "Giant",
-  "Globe", "Grasp", "Guest", "Hobby", "House", "Image", "Ivory", "Jewel", "Joint", "Knife",
-  "Lemon", "Logic", "Lucky", "Maple", "Merry", "Money", "Nerve", "Noble", "Olive", "Order",
-  "Paint", "Party", "Peace", "Power", "Press", "Prize", "Quiet", "Razor", "Rebel", "Scale",
-  "Shade", "Share", "Shift", "Shout", "Sight", "Skate", "Sleep", "Snack", "Solid", "South",
-  "Space", "Spice", "Sport", "Steel", "Store", "Storm", "Swift", "Table", "Taste", "Teach",
-  "Toast", "Track", "Train", "Trust", "Unity", "Valid", "Vital", "Voice", "Water", "Wheel",
-  "White", "Wound", "Youth", "Abyss", "Beach", "Brave", "Broth", "Chill", "Click", "Cloud",
-  "Crown", "Dance", "Dream", "Dress", "Elite", "Faith", "Fence", "Flame", "Fleet", "Flock",
-  "Focus", "Frame", "Ghost", "Globe", "Grass", "Happy", "Heart", "Honey", "Hotel", "Human",
-  "Ivory", "Juice", "Jumbo", "Knife", "Laser", "Linen", "Magma", "March", "Medal", "Melon",
-  "Misty", "Music", "Night", "Noble", "Olive", "Paint", "Peach", "Pearl", "Piano", "Plane",
-  "Prank", "Quiet", "Range", "Razor", "Rebel", "Roast", "Sauce", "Sheep", "Shore", "Sight",
-  "Skill", "Snack", "Solid", "Sport", "Steal", "Steel", "Sunny", "Taste", "Title", "Torch",
-  "Trail", "Trust", "Unity", "Urban", "Valid", "Vital", "Voice", "Water", "Wheel", "White",
-  "Wound", "Youth", "Acorn", "Arrow", "Bench", "Bloom", "Bread", "Brick", "Brown", "Bumpy",
-  "Carve", "Chase", "Cheek", "Chime", "Clown", "Crane", "Crazy", "Cycle", "Dance", "Ditch",
-  "Dream", "Drift", "Eager", "Exact", "Fever", "Fiber", "Flick", "Flour", "Glimp", "Glowy",
-  "Greed", "Groov", "Habit", "Hazzy", "Hinge", "Honor", "Human", "Hymen", "Icebox", "Icily",
-  "Jazzy", "Joker", "Jolly", "Judge", "Kneel", "Knelt", "Laser", "Lemon", "Limit", "Magic",
-  "Mirth", "Moody", "Mouse", "Nacho", "Ninja", "Notch", "Oasis", "Olive", "Pacer", "Party",
-  "Plumb", "Quirk", "Racer", "Ranch", "Rifle", "Shiny", "Shock", "Silly", "Skull", "Snack",
-  "Sneak", "Solar", "Spicy", "Spine", "Storm", "Sugar", "Swift", "Swirl", "Table", "Tasty",
-  "Tenor", "Toxic", "Trail", "Tribe", "Twist", "Unity", "Urban", "Vivid", "Voice", "Wagon",
-  "Windy", "Witch", "Woven", "Yeast", "Yodel", "Zebra", "Zesty"
-];
-
-function createSetWithObjects(array) {
-  const resultSet = new Set();
-
-  array.forEach(word => {
-    const obj = {
-      word: word.toLowerCase(),
-      real: 1
-    };
-    resultSet.add(obj);
-  });
-
-  return resultSet;
-}
-
-
-// Combine the two lists into one big Set called realWords
-const realWords = createSetWithObjects(wordList)
-
-const numStimuli = 4;
-// const numConditions = 2;
-var wordAns;
-function generateRandomStrings() {
-
-
-  const getRandomWord = () => {
-    const randomIndex = Math.floor(Math.random() * realWords.size);
-    const word = Array.from(realWords)[randomIndex];
-    realWords.delete(word); // Remove the selected word from the Set
-    return word;
-  };
-
-  const getRandomString = () => {
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-    let randomString = '';
-
-    for (let i = 0; i < 5; i++) {
-      const randomIndex = Math.floor(Math.random() * alphabet.length);
-      randomString += alphabet[randomIndex];
-    }
-
-    return { word: randomString.toLowerCase(), real: 0 };
-  };
-
-  totalLength = realWords.size * 2
-  const randomStrings = Array.from({ length: totalLength }, (_, i) => {
-    if (i % 2 === 0) {
-      return getRandomWord();
-    } else {
-      return getRandomString();
-    }
-  });
-
-  return randomStrings;
-}
-
-
-
-
-function sampleLetters(characters, sampleSize) {
-  const sampledLetters = [];
-
-  // Make a copy of the characters array to avoid modifying the original
-  const availableLetters = [...characters];
-
-  for (let i = 0; i < sampleSize; i++) {
-    // Generate a random index within the available letters
-    const randomIndex = Math.floor(Math.random() * availableLetters.length);
-
-    // Extract and remove the letter at the random index
-    const sampledLetter = availableLetters.splice(randomIndex, 1)[0];
-
-    // Add the sampled letter to the result array
-    sampledLetters.push(sampledLetter);
-  }
-
-  return sampledLetters;
-}
-
 
 /* ************************************ */
 /* Define experimental variables */
@@ -675,21 +582,21 @@ var speedReminder =
 var spanResponses = ['left arrow key', 'right arrow key', 'up arrow key', 'down arrow key', 'spacebar']
 // *Timing:
 // stimulus and fixaiton
-const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
-// equation
-const equationStimulusDuration = 3000;
-const equationTrialDuration = 3000;
-// wait block (fixation or equation)
-const responseBlockDuration = 10000;
-
-// const stimStimulusDuration = 10;
-// const stimTrialDuration = 10;
+// const stimStimulusDuration = 1000;
+// const stimTrialDuration = 1000; // no blank screen after stim presented
 // // equation
-// const equationStimulusDuration = 100;
-// const equationTrialDuration = 10;
+// const equationStimulusDuration = 3000;
+// const equationTrialDuration = 3000;
 // // wait block (fixation or equation)
-// const responseBlockDuration = 10000;
+// const responseBlockDuration = 8000;
+
+const stimStimulusDuration = 1000
+const stimTrialDuration = 1000 // no blank screen after stim presented
+// equation
+const equationStimulusDuration = 2000;
+const equationTrialDuration = 2000;
+// wait block (fixation or equation)
+const responseBlockDuration = 5000;
 
 // generic task variables
 var runAttentionChecks = true;
@@ -705,24 +612,48 @@ var equationChoices = ["t", "f"];
 var equationAccuracyThresh = .7;
 var equationRTThresh = 1000; // 500ms
 
-var possibleStimuli = "BCDFGJKLMNPSTVXZ".split("");
-var trialStimuli = [];
 
 var practiceLen = 4;
 var numTrialsPerBlock = 12;
 var numTestBlocks = 3;
 
-const conditions = ['simple', 'operation']
-conditions.sort(() => Math.random() - 0.5);
+practiceLen = 1;
+numTrialsPerBlock = 1;
+numTestBlocks = 1;
+practiceThresh = 1;
 
-var blockType = conditions[0]
+var trialList;
+trialList = generateSpatialTrialValues(numStimuli)
 
 
+var booleanArray = shuffleArray(generateHalfOnesAndZerosArray(200))
+
+var spatialAns;
+
+
+function makeDistractorSpatial() {
+  var returnArray = []
+  for (var i = 0; i < 200; i++) {
+    const symmetric = booleanArray.shift()
+    if (symmetric) {
+      returnArray.push(makeSymmetricArrays())
+    } else {
+      returnArray.push(makeAsymmetricArrays())
+    }
+  }
+  return returnArray
+}
+var distractorSpatial = makeDistractorSpatial()
+
+var allConditions = ['processing-only', 'storage-only', 'same-domain']
+allConditions.sort(() => Math.random() - 0.5);
+var currCondition = allConditions.shift()
+console.log('conditions', allConditions)
+console.log('starting condition', currCondition)
 const numTotalTrials = numTestBlocks * numTrialsPerBlock;
 const trialDuration = fixationDuration + stimTrialDuration + equationTrialDuration
 
-const distractorStrings = generateRandomStrings()
-console.log("distractorStrings", distractorStrings)
+var numStimuli = 4
 
 console.log(`
 TOTAL DURATION OF A TRIAL:
@@ -778,8 +709,7 @@ var practicePromptText =
 
 var promptText =
   "<div class = prompt_box>" +
-  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the letters!</p>' +
-  "<p class = center-block-text style = \"font-size:16px; line-height:80%%;\">Equations: 'T' for True and 'F' for False.</p>" +
+  "<p class = center-block-text style = \"font-size:16px; line-height:80%%;\">'T' if symmetric and 'F' if not.</p>" +
   "</div>";
 
 /* ************************************ */
@@ -893,7 +823,13 @@ var expStage = 'practice'
 
 var stimulusBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: getStim,
+  stimulus: function() {
+    if (getCurrCondition() == 'processing-only') {
+      return "<div class = centerbox><div class = fixation>+</div></div>"
+    } else {
+      return getStim()
+    }
+  },
   stimulus_duration: stimStimulusDuration,
   trial_duration: stimTrialDuration,
   post_trial_gap: 0,
@@ -901,74 +837,67 @@ var stimulusBlock = {
     return {
       trial_id: "stim",
       exp_stage: getExpStage(),
+      condition: getCurrCondition(),
     };
   },
   choices: ["NO_KEYS"],
   prompt: function() {
-    if (getExpStage() == 'practice' && getCurrBlockType() == 'operation') {
+    if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only')) {
       return promptText
     }
     if (getExpStage() == 'practice') {
       return practicePromptText
     }
   },
-  on_finish: (data) => console.log(extractValueFromHTML(data.stimulus))
+  on_finish: function(data) {
+    console.log(data)
+    data['correctAnswer'] = trialValue
+  }
 };
 
-// var equationTruthList = generateEquationTruthList(practiceLen * numStimuli)
-// var equations = generateEquations(practiceLen * numStimuli, equationTruthList)
-// console.log(equationTruthList)
-// console.log(equations)
-
-// var equationAns;
 var equationType = 'complex'
-
-
-function extractValueFromHTML(html) {
-  const divElement = document.createElement('div');
-  divElement.innerHTML = html;
-
-  const centerTextElement = divElement.querySelector('.center-text');
-  const value = centerTextElement.textContent.trim();
-
-  return value;
-}
 
 
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
-    return getCurrBlockType() == "operation"
-      ? getRandomString()
-      : "<div class = centerbox><div class = fixation>+</div></div>";
-  },
-  choices: function() {
-    if (getCurrBlockType() == 'operation') {
-      return equationChoices
+    if (getCurrCondition() == 'storage-only') {
+      return "<div class = centerbox><div class = fixation>****</div></div>"
+
     } else {
-      return ["NO_KEYS"]
+      return getRandomSpatial()
     }
   },
+  choices: equationChoices,
   stimulus_duration: equationStimulusDuration,
   trial_duration: equationTrialDuration,
   response_ends_trial: true,
+  on_start: function() {
+    var lastTrial = jsPsych.data.get().last(2).trials[0];
+
+    if (lastTrial.trial_id == 'feedback' || lastTrial.trial_id == 'wait' || lastTrial.trial_id == 'attention_check') {
+      trialList = generateSpatialTrialValues(numStimuli)
+      trialValues = trialList
+    }
+  },
   data: function() {
     return {
-      trial_id: getCurrBlockType() == "operation" ? 'equation' : 'simple',
+      trial_id: 'wait',
       exp_stage: getExpStage(),
+      condition: getCurrCondition()
     };
   },
   post_trial_gap: 0,
   on_finish: function(data) {
     var logResponse;
     if (data.response == 't') {
-      if (wordAns == 1) {
+      if (spatialAns == 1) {
         logResponse = 1;
       } else {
         logResponse = 0;
       }
     } else if (data.response == 'f') {
-      if (wordAns == 0) {
+      if (spatialAns == 0) {
         logResponse = 1;
       } else {
         logResponse = 0;
@@ -978,7 +907,7 @@ var waitBlock = {
     data['equationType'] = equationType
   },
   prompt: function() {
-    if (getExpStage() == 'practice' && getCurrBlockType() == 'operation') {
+    if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only')) {
       return promptText
     }
     if (getExpStage() == 'practice') {
@@ -987,55 +916,12 @@ var waitBlock = {
   },
 };
 
-var practiceFeedbackBlock = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: function() {
-    // var last = jsPsych.data.get().last(1).values()[0];
-    var last = jsPsych.data.get().last(1).trials[0];
-    // ^ changed since we added a fixation block after response block
-    console.log(last);
-    if (getCurrBlockType() !== 'operation') return "<div class = centerbox><div class = fixation>+</div></div>"
 
-    if (last.trial_id == 'response') {
-      if (last.correct_trial == 1) {
-        return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
-      } else if (last.correct_trial == 0) {
-        return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
-      } else {
-        return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
-      }
-    } else if (last.trial_id == 'equation') {
-      if (last.correct_response == 1) {
-        return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
-      } else if (last.correct_response == 0) {
-        return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
-      } else {
-        return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
-      }
-    }
-
-  },
-  data: {
-    exp_stage: "practice",
-    trial_id: "practice_feedback",
-  },
-  choices: ["NO_KEYS"],
-  stimulus_duration: 500, // 500 
-  trial_duration: 500, // 500
-  prompt: function() {
-    if (getExpStage() == 'practice' && getCurrBlockType() == 'operation') {
-      return promptText
-    }
-    if (getExpStage() == 'practice') {
-      return practicePromptText
-    }
-  },
-};
 
 var startTime = null;
 
 var waitNode = {
-  timeline: [waitBlock, practiceFeedbackBlock],
+  timeline: [waitBlock],
   loop_function: function(data) {
     if (startTime == null) {
       startTime = performance.now();
@@ -1044,9 +930,15 @@ var waitNode = {
     var elapsedTime = (performance.now() - startTime)
 
     // Continue looping as long as elapsed time is less than 10,000 ms
-    return elapsedTime < equationTrialDuration;
-  }
+    if (elapsedTime >= equationTrialDuration) {
+      startTime = null; // Reset startTime for the next trial
+      return false; // End the loop
+    }
+
+    return true; // Continue the loop for the current trial
+  },
 }
+
 
 function arraysAreEqual(array1, array2) {
   if (array1.length !== array2.length) {
@@ -1071,7 +963,7 @@ var responseBlock = {
     activeGrid = generateGrid()
     return activeGrid.html
   },
-  choices: [",", "."],
+  choices: ["NO_KEYS"],
   data: function() {
     return {
       trial_id: "response",
@@ -1082,56 +974,55 @@ var responseBlock = {
   trial_duration: responseBlockDuration,
   stimulus_duration: responseBlockDuration,
   post_trial_gap: 0,
-  // prompt: '',
   on_finish: function(data) {
     var stimTrials = jsPsych.data.get().filter({ trial_id: 'stim' }).trials
     var lastTrials = stimTrials.slice(-4);
-    var correctAnswerArray = []
-
-    for (let i = 0; i < lastTrials.length; i++) {
-      correctAnswerArray.push(extractValueFromHTML(lastTrials[i].stimulus))
-    }
+    var correctResponses = lastTrials.map(trial => trial.correctAnswer);
 
     if (submittedAnswers == undefined) {
       data['correct_trial'] = null
     } else {
+
       if (submittedAnswers.length == 5) {
         submittedAnswers = submittedAnswers.slice(1, 5);
-        const correct = arraysAreEqual(correctAnswerArray, submittedAnswers)
+        console.log(submittedAnswers)
+        console.log(correctResponses)
+        const correct = arraysAreEqual(correctResponses, submittedAnswers)
         data['correct_trial'] = correct ? 1 : 0
       }
     }
-    console.log('trial grid data', data)
     activeGrid.resetGrid()
   }
 };
 
 
-var fixation = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "fixation",
-  },
-  trial_duration: fixationDuration,
-  stimulus_duration: fixationDuration,
-  post_trial_gap: 0,
-  prompt: function() {
-    if (getExpStage() == 'practice' && getCurrBlockType() == 'operation') {
-      return promptText
-    }
-    if (getExpStage() == 'practice') {
-      return practicePromptText
-    }
-  },
-  on_finish: function() {
-    if (jsPsych.data.get().last(2).trials[0].trial_id == 'feedback' || jsPsych.data.get().last(2).trials[0].trial_id == 'wait') {
-      trialStimuli = sampleLetters(possibleStimuli, numStimuli)
-    }
-    startTime = null;
-  }
-};
+// var fixation = {
+//   type: jsPsychHtmlKeyboardResponse,
+//   stimulus: function() {
+//     if (getCurrCondition() == 'storage-only') {
+//       return "<div class = centerbox><div class = fixation>****</div></div>"
+//     } else if (getCurrCondition() == 'processing-only') {
+//       return "<div class = centerbox><div class = fixation>+</div></div>"
+//     }
+//   },
+//   choices: ["NO_KEYS"],
+//   data: {
+//     trial_id: "fixation",
+//   },
+//   trial_duration: fixationDuration,
+//   stimulus_duration: fixationDuration,
+//   post_trial_gap: 0,
+//   on_finish: function() {
+//     var lastTrial = jsPsych.data.get().last(2).trials[0];
+
+//     if (lastTrial.trial_id == 'feedback' || lastTrial.trial_id == 'wait' || lastTrial.trial_id == 'attention_check') {
+//       trialList = generateSpatialTrialValues(numStimuli)
+//       trialValues = trialList
+//     }
+
+//     startTime = null;
+//   }
+// };
 
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -1147,7 +1038,7 @@ var ITIBlock = {
     return ITIms * 1000;
   },
   prompt: function() {
-    if (getExpStage() == 'practice' && getCurrBlockType() == 'operation') {
+    if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only')) {
       return promptText
     }
     if (getExpStage() == 'practice') {
@@ -1157,21 +1048,48 @@ var ITIBlock = {
 };
 
 
-// var rtThresh = 1000
 var practiceTrials = [];
-for (let i = 0; i < practiceLen; i++) { // number of trials
-  // length of difficulty 
-  for (let j = 0; j < 4; j++) {
-    practiceTrials.push(
-      fixation,
-      stimulusBlock,
-      // waitBlock,
-      // practiceFeedbackBlock,
-      waitNode
-    );
+function generatePracticeTrials() {
+  console.log('IN PRACTICE TRIALS')
+  console.log(getCurrCondition())
+  console.log(getCurrCondition())
+  var returnArray = []
+  if (getCurrCondition() == 'same-domain') {
+    for (let i = 0; i < practiceLen; i++) {
+      for (let j = 0; j < numStimuli; j++) {
+        returnArray.push(
+          waitNode,
+          stimulusBlock,
+        );
+      }
+      returnArray.push(responseBlock, ITIBlock)
+    }
+  } else if (getCurrCondition() == 'storage-only') {
+    for (let i = 0; i < practiceLen; i++) {
+      for (let j = 0; j < numStimuli; j++) {
+        returnArray.push(
+          waitNode,
+          stimulusBlock,
+        );
+      }
+      returnArray.push(responseBlock, ITIBlock)
+    }
+  } else if (getCurrCondition() == 'processing-only') {
+
+    for (let i = 0; i < practiceLen; i++) {
+      for (let j = 0; j < numStimuli; j++) {
+        returnArray.push(
+          waitNode,
+          stimulusBlock,
+        );
+      }
+      returnArray.push(responseBlock, ITIBlock)
+    }
   }
-  practiceTrials.push(responseBlock, ITIBlock)
+  return returnArray
 }
+
+practiceTrials = generatePracticeTrials()
 
 // loop based on criteria
 var practiceCount = 0;
@@ -1188,7 +1106,6 @@ var practiceNode = {
 
     for (var i = 0; i < data.trials.length; i++) {
       if (data.trials[i].trial_id == "response" && data.trials[i].exp_stage == 'practice') {
-        console.log(data.trials[i])
         totalTrials += 1;
         // if (data.trials[i].rt != null) {
         // sumRT += data.trials[i].rt;
@@ -1206,7 +1123,8 @@ var practiceNode = {
     var sumRT = 0;
     var rtTrials = 0; // trials that have rt
 
-    if (getCurrBlockType() == 'operation') {
+    // TODO: Check this data logging - shuold only be for current condition = same-domain?
+    if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
       for (var i = 0; i < data.trials.length; i++) {
         if (data.trials[i].trial_id == "equation" && data.trials[i].exp_stage == 'practice') {
           equationTrials += 1;
@@ -1221,16 +1139,11 @@ var practiceNode = {
       }
     }
 
-    console.log(correct)
-    console.log(totalTrials)
 
     var accuracy = correct / totalTrials;
-    console.log(accuracy)
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var equationAccuracy = (correctEquationTrials / equationTrials)
     equationRT = sumRT / rtTrials;
-
-    // var avgRT = sumRT / sumResponses;
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
@@ -1258,7 +1171,7 @@ var practiceNode = {
           "<p class = block-text>Try your best to recall the letters.</p>"
       }
 
-      if (getCurrBlockType() == 'operation') {
+      if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
         if (equationAccuracy < equationAccuracyThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the equations is low.</p>" +
@@ -1271,10 +1184,6 @@ var practiceNode = {
         }
       }
 
-      // if (avgRT > rtThresh) {
-      //   feedbackText +=
-      //     "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
-      // }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
           "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
@@ -1288,18 +1197,46 @@ var practiceNode = {
 };
 
 var testTrials = [];
-testTrials.push(attentionNode)
-for (let i = 0; i < numTrialsPerBlock; i++) { // number of trials
-  // length of difficulty 
-  for (let j = 0; j < numStimuli; j++) {
-    testTrials.push(
-      fixation,
-      stimulusBlock,
-      waitBlock,
-    );
+function generateTestTrials() {
+  var returnArray = []
+  if (getCurrCondition() == 'same-domain') {
+    returnArray.push(attentionNode)
+    for (let i = 0; i < numTrialsPerBlock; i++) { // number of trials
+      for (let j = 0; j < numStimuli; j++) {
+        returnArray.push(
+          waitNode,
+          stimulusBlock
+        );
+      }
+      returnArray.push(responseBlock, ITIBlock)
+    }
+  } else if (getCurrCondition() == 'storage-only') {
+    returnArray.push(attentionNode)
+    for (let i = 0; i < numTrialsPerBlock; i++) {
+      for (let j = 0; j < numStimuli; j++) {
+        returnArray.push(
+          waitNode,
+          stimulusBlock,
+        );
+      }
+      returnArray.push(responseBlock, ITIBlock)
+    }
+  } else if (getCurrCondition() == 'processing-only') {
+    returnArray.push(attentionNode)
+    for (let i = 0; i < numTrialsPerBlock; i++) { // number of trials
+      for (let j = 0; j < numStimuli; j++) {
+        returnArray.push(
+          waitNode,
+          stimulusBlock
+        );
+      }
+      returnArray.push(responseBlock, ITIBlock)
+    }
   }
-  testTrials.push(responseBlock, ITIBlock)
+  return returnArray
 }
+
+testTrials = generateTestTrials()
 
 // loop based on criteria
 var testCount = 0;
@@ -1329,15 +1266,13 @@ var testNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     // var avgRT = sumRT / sumResponses;
 
-
-
     var equationTrials = 0;
     var correctEquationTrials = 0;
     var equationRT = 0;
     var sumRT = 0;
     var rtTrials = 0; // trials that have rt
 
-    if (getCurrBlockType() == 'operation') {
+    if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
       for (var i = 0; i < data.trials.length; i++) {
         if (data.trials[i].trial_id == "equation" && data.trials[i].exp_stage == 'practice') {
           equationTrials += 1;
@@ -1359,7 +1294,15 @@ var testNode = {
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
     if (testCount == numTestBlocks) {
-      setBlocks()
+      feedbackText =
+        "<div class = centerbox><p class = center-block-text>Moving onto next task. Press <i>enter</i> to continue.</p>" +
+        '</div>';
+      currCondition = allConditions.shift()
+      practiceTrials = generatePracticeTrials()
+      testTrials = generateTestTrials()
+
+      expStage = 'practice'
+      testCount = 0;
       return false;
     } else {
       feedbackText =
@@ -1371,7 +1314,7 @@ var testNode = {
           '<p class = block-text>Try to recall all the letters. </p>'
       }
 
-      if (getCurrBlockType() == 'operation') {
+      if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
         if (equationAccuracy < equationAccuracyThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the equations is low.</p>" +
@@ -1450,14 +1393,15 @@ var endBlock = {
 span_rdoc_experiment = [];
 // eslint-disable-next-line no-unused-vars
 var span_rdoc_init = () => {
+
   span_rdoc_experiment.push(fullscreen);
   span_rdoc_experiment.push(instructionNode);
-  // simple
-  span_rdoc_experiment.push(practiceNode);
-  span_rdoc_experiment.push(testNode);
-  // operation
-  span_rdoc_experiment.push(practiceNode);
-  span_rdoc_experiment.push(testNode);
+  for (var i = 0; i < 3; i++) {
+    // conditions same-domain/storage-only/processing-only
+    span_rdoc_experiment.push(practiceNode)
+    span_rdoc_experiment.push(testNode)
+  }
+
   span_rdoc_experiment.push(postTaskBlock);
   span_rdoc_experiment.push(endBlock);
   span_rdoc_experiment.push(exitFullscreen);
