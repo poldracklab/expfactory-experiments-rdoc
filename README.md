@@ -54,7 +54,7 @@ To run the RDoC repository, follow these steps:
 5. Open the web address (likely http://0.0.0.0:8080/) from the terminal where you ran the command. Use Google Chrome or Mozilla Firefox.
 6. Optional: Use (`command + option + j`) while in the experiment's window to see important information like durations, number of trials/blocks, total durations, etc.
 
-# Google sheets with trial amount and durations
+# See number of trials and trial durations for each task
 [Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit#gid=0)
 
 # Analysis
