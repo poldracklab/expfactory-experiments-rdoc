@@ -1,8 +1,10 @@
-# From RDoC Grant
+# Overview
+
+### From RDoC Grant
 
 To address our three aims, we propose two large data acquisition efforts that will form the basis for our modeling and validation efforts.
 
-## Aim 1: Behavioral Data Acquisition
+### Aim 1: Behavioral Data Acquisition
 
 We will acquire behavioral data from 500 subjects who will complete a 15-hour study consisting of the following tasks and surveys:
 
@@ -11,7 +13,7 @@ We will acquire behavioral data from 500 subjects who will complete a 15-hour st
 - Working memory tasks
 - Suite of real-world surveys
 
-## Aim 2: Neuroimaging Data Acquisition
+### Aim 2: Neuroimaging Data Acquisition
 
 We will acquire neuroimaging data from 65 subjects who will also complete a 15-hour study, including:
 
@@ -51,6 +53,9 @@ To run the RDoC repository, follow these steps:
 4. Run `expfactory_deploy_local -e [task_name_rdoc]`. For example: `expfactory_deploy_local -e cued_task_switching_rdoc` or `expfactory_deploy_local -e span_rdoc`.
 5. Open the web address (likely http://0.0.0.0:8080/) from the terminal where you ran the command. Use Google Chrome or Mozilla Firefox.
 6. Optional: Use (`command + option + j`) while in the experiment's window to see important information like durations, number of trials/blocks, total durations, etc.
+
+# Google sheets with trial amount and durations
+[Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit#gid=0)
 
 # Analysis
 
