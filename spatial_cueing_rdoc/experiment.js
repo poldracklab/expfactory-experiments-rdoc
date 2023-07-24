@@ -368,6 +368,7 @@ var practiceLen = 12; // 12
 var numTestBlocks = 3;
 var numTrialsPerBlock = 72; // should be multiple of 24
 
+numTrialsPerBlock = 48;
 
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 const totalTrialDuration = fixationDuration + cueTrialDuration + fixationDuration + stimTrialDuration + meanITI * 1000

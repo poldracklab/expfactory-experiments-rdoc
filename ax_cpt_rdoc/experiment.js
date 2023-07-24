@@ -353,12 +353,23 @@ var trialProportions = [
   'BY',
   'BY']
 
+trialProportions = [
+  'AX',
+  'AX',
+  'BX',
+  'AY',
+  'BY']
+
 var numTestBlocks = 3;
 var numTrialsPerBlock = trialProportions.length * 4; // 40
 var practiceLen = trialProportions.length; // 10
 
+
+
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 const totalTrialDuration = (fixationDuration + cueTrialDuration + (fixationDuration + 2500) + probeTrialDuration + (meanITI * 1000))
+
+
 
 
 console.log(`

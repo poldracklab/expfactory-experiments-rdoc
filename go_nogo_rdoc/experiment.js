@@ -474,6 +474,8 @@ var practiceThresh = 3;
 var numTrialsPerBlock = 70; // multiple of 7 (6go:1nogo)
 var numTestBlocks = 3;
 
+numTrialsPerBlock = numTrialsPerBlock / 2
+
 const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 

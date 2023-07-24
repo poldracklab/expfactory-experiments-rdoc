@@ -465,10 +465,10 @@ const rtThresh = 1000;
 const missedResponseThresh = 0.1;
 // practice
 const practiceLen = 6; // num practice trials for each block in each condition
-const numTrialsPerBlock = 24; // num test trials for each block in each condition
+var numTrialsPerBlock = 72; // num test trials for each block in each condition
 const numTestBlocks = 3;
 
-
+numTrialsPerBlock = numTrialsPerBlock / 2
 
 const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
 const numTrialsTotal = numTrialsPerCondition * numConditions;
@@ -510,7 +510,7 @@ TOTAL DURATIONS:
 
 (${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
 = ${numTrialsTotal * totalTrialDuration / 1000 / 60} min (feature or condition)
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60 * numConditions} min (feature and condition)
+= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min (feature and condition)
 
 `);
 

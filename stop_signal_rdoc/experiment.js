@@ -486,6 +486,8 @@ var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditi
 var numTrialsPerBlock = 72; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTestBlocks = 3;
 
+numTrialsPerBlock = 36;
+
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 
 const totalTrialDuration = fixationDuration + 2000 + meanITI * 1000

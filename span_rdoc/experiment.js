@@ -199,51 +199,64 @@ var getExpStage = function() {
 
 
 function assessPerformance() {
-  var experimentData = jsPsych.data
+  var responseGridData = jsPsych.data
     .get()
     .filter({ exp_stage: "test", trial_id: "response" }).trials;
+
+  var responseProcessingData = jsPsych.data
+    .get()
+    .filter({ exp_stage: "test", trial_id: "wait" }).trials;
+
   var missedCount = 0;
-  var trialCount = experimentData.length;
-  var rtArray = [];
+  var trialCount = responseGridData.length;
   var correct = 0;
 
-  for (var i = 0; i < experimentData.length; i++) {
-    correct += experimentData[i].correct_trial;
-    missedCount += experimentData[i].response == null;
-    rtArray.push(experimentData[i].rt);
+  console.log('response data', responseGridData)
+  console.log('response processing data', responseProcessingData)
+
+  for (var i = 0; i < trialCount; i++) {
+    if (responseGridData[i].correct_trial == null) {
+      missedCount += 1
+    } else {
+      if (responseGridData[i].correct_trial == 1) {
+        correct += 1
+      }
+    }
   }
-  var avgRT = math.median(rtArray);
   var missedPercent = missedCount / trialCount;
   var accuracy = correct / trialCount;
 
-  var equations = jsPsych.data
-    .get()
-    .filter({ exp_stage: "test", trial_id: "equation" }).trials;
-  var equationCount = equations.length;
-  var equationCorrect = 0;
-  var missedEquations = 0;
-  var complexCount = 0;
+  var correctProcessing = 0;
+  var missedProcessing = 0;
+  var processingRT = 0
+  var numProcessingTrialsWithResponse = 0;
 
-  for (var i = 0; i < equations.length; i++) {
-    equationCorrect += equations[i].correct_trial;
-    missedEquations += equations[i].response == null;
-    if (equations[i].equationType == 'complex') {
-      complexCount += 1
+  for (var i = 0; i < responseProcessingData.length; i++) {
+    if (responseProcessingData[i].correct_response == null) {
+      missedProcessing += 1
+    } else {
+      numProcessingTrialsWithResponse += 1
+      processingRT += responseProcessingData[i].rt;
+
+      if (responseProcessingData[i].correct_response == 1) {
+        correctProcessing += 1
+      }
     }
   }
 
-  var equationAccuracy = equationCorrect / equationCount;
-  var equationMissed = missedEquations / equationCount;
+  var avgProcessingRT = processingRT / numProcessingTrialsWithResponse
+  var avgProcessingAcc = correctProcessing / numProcessingTrialsWithResponse
 
-  creditVar = missedPercent < 0.3 && avgRT > 200 && equationMissed < 0.3;
+  console.log('avg processing rt', avgProcessingRT)
+  console.log('avg processing acc', avgProcessingAcc)
+
+  creditVar = missedPercent < 0.3 && missedProcessing < 0.3;
   jsPsych.data.get().addToLast({
     final_credit_var: creditVar,
     final_missed_percent: missedPercent,
-    final_avg_RT: avgRT,
     final_accuracy: accuracy,
-    final_equation_accuracy: equationAccuracy,
-    final_equation_missed_percent: equationMissed,
-    final_num_complex_equation: complexCount
+    final_avg_processing_rt: avgProcessingRT,
+    final_avg_processing_acc: avgProcessingAcc
   });
 }
 
@@ -554,8 +567,6 @@ var getExpStage = function() {
 /* Define experimental variables */
 /* ************************************ */
 // common variables
-const fixationDuration = 500;
-
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
@@ -582,21 +593,14 @@ var speedReminder =
 var spanResponses = ['left arrow key', 'right arrow key', 'up arrow key', 'down arrow key', 'spacebar']
 // *Timing:
 // stimulus and fixaiton
-// const stimStimulusDuration = 1000;
-// const stimTrialDuration = 1000; // no blank screen after stim presented
-// // equation
-// const equationStimulusDuration = 3000;
-// const equationTrialDuration = 3000;
-// // wait block (fixation or equation)
-// const responseBlockDuration = 8000;
-
-const stimStimulusDuration = 1000
-const stimTrialDuration = 1000 // no blank screen after stim presented
+const stimStimulusDuration = 1000;
+const stimTrialDuration = 1000; // no blank screen after stim presented
 // equation
-const equationStimulusDuration = 2000;
-const equationTrialDuration = 2000;
+const equationStimulusDuration = 3000;
+const equationTrialDuration = 3000;
 // wait block (fixation or equation)
 const responseBlockDuration = 5000;
+// const fixationDuration = 500;
 
 // generic task variables
 var runAttentionChecks = true;
@@ -609,18 +613,16 @@ var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 var equationChoices = ["t", "f"];
 
-var equationAccuracyThresh = .7;
-var equationRTThresh = 1000; // 500ms
+var processingAccThresh = .7;
+var processingRTThresh = 1000; // 500ms
+var processingMissedThresh = .2;
 
 
-var practiceLen = 4;
-var numTrialsPerBlock = 12;
+var practiceLen = 3;
+var numTrialsPerBlock = 8;
 var numTestBlocks = 3;
 
-practiceLen = 1;
-numTrialsPerBlock = 1;
-numTestBlocks = 1;
-practiceThresh = 1;
+numTrialsPerBlock = numTrialsPerBlock / 2;
 
 var trialList;
 trialList = generateSpatialTrialValues(numStimuli)
@@ -650,52 +652,55 @@ allConditions.sort(() => Math.random() - 0.5);
 var currCondition = allConditions.shift()
 console.log('conditions', allConditions)
 console.log('starting condition', currCondition)
-const numTotalTrials = numTestBlocks * numTrialsPerBlock;
-const trialDuration = fixationDuration + stimTrialDuration + equationTrialDuration
 
 var numStimuli = 4
 
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus duration: ${stimTrialDuration} ms
-- Equation duration: ${equationTrialDuration} ms
-------
-${numStimuli} * ${trialDuration} = ${numStimuli * trialDuration}
+// below is not right
 
-- Average ITI duration: ${meanITI * 1000} ms
-- Response block: ${responseBlockDuration}
-------
-${meanITI * 1000} + ${responseBlockDuration} = ${meanITI * 1000 + responseBlockDuration}
+// const numTotalTrials = numTestBlocks * numTrialsPerBlock;
+// const trialDuration = fixationDuration + stimTrialDuration + equationTrialDuration
 
-TOTAL
-------------------------
-${meanITI * 1000 + responseBlockDuration + trialDuration * numStimuli} ms
+// console.log(`
+// TOTAL DURATION OF A TRIAL:
+// ------------------------
+// - Fixation: ${fixationDuration} ms
+// - Stimulus duration: ${stimTrialDuration} ms
+// - Equation duration: ${equationTrialDuration} ms
+// ------
+// ${numStimuli} * ${trialDuration} = ${numStimuli * trialDuration}
 
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (for span or operation)
-${practiceLen * 3} (max for span or operation)
-${practiceLen * 2 * 3} (max for both span and operation)
+// - Average ITI duration: ${meanITI * 1000} ms
+// - Response block: ${responseBlockDuration}
+// ------
+// ${meanITI * 1000} + ${responseBlockDuration} = ${meanITI * 1000 + responseBlockDuration}
 
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block per span/operation)
-${numTrialsPerBlock * 3 * 2} (6 block total)
+// TOTAL
+// ------------------------
+// ${meanITI * 1000 + responseBlockDuration + trialDuration * numStimuli} ms
+
+// NUMBER OF PRACTICE TRIALS:
+// ------------------------
+// ${practiceLen} (for span or operation)
+// ${practiceLen * 3} (max for span or operation)
+// ${practiceLen * 2 * 3} (max for both span and operation)
+
+// NUMBER OF TEST TRIALS: 
+// ------------------------
+// ${numTrialsPerBlock} (1 block)
+// ${numTrialsPerBlock * 3} (3 block per span/operation)
+// ${numTrialsPerBlock * 3 * 2} (6 block total)
 
 
-TOTAL DURATIONS:
-------------------------
+// TOTAL DURATIONS:
+// ------------------------
 
-# PRACTICE:
-${practiceLen} trials * ${meanITI * 1000 + responseBlockDuration + trialDuration * numStimuli}ms = ${trialDuration * numStimuli * practiceLen / 1000 / 60} min
+// # PRACTICE:
+// ${practiceLen} trials * ${meanITI * 1000 + responseBlockDuration + trialDuration * numStimuli}ms = ${trialDuration * numStimuli * practiceLen / 1000 / 60} min
 
-# TEST: 
-1 condition: ${numTotalTrials} trials * ${meanITI * 1000 + responseBlockDuration + (trialDuration * numStimuli)}ms = ${(meanITI * 1000 + responseBlockDuration + (trialDuration * numStimuli)) * numTotalTrials / 1000 / 60} min
-Both conditions: ${2 * (meanITI * 1000 + responseBlockDuration + (trialDuration * numStimuli)) * numTotalTrials / 1000 / 60} min
-`);
+// # TEST: 
+// 1 condition: ${numTotalTrials} trials * ${meanITI * 1000 + responseBlockDuration + (trialDuration * numStimuli)}ms = ${(meanITI * 1000 + responseBlockDuration + (trialDuration * numStimuli)) * numTotalTrials / 1000 / 60} min
+// Both conditions: ${2 * (meanITI * 1000 + responseBlockDuration + (trialDuration * numStimuli)) * numTotalTrials / 1000 / 60} min
+// `);
 
 // important variables used throughout
 var expStage = "practice";
@@ -757,19 +762,28 @@ var instructionsBlock = {
   type: jsPsychInstructions,
   pages: [
     '<div class="centerbox">' +
-    '<p class="block-text">In this task, you will be presented with a sequence of letters. Each letter will appear one at a time, and a fixation symbol ' + ' will appear between each letter.</p>' +
-    '<p class="block-text">After each trial, a grid will appear with 16 letters on it. Your goal is to move through the grid using the left, right, up, and down arrow keys to select the letters in the order they appeared during the trial.</p>' +
-    '<p class="block-text">To select a letter, press the spacebar.</p>' + '</div>',
-    '<div class="centerbox">' +
-    "<p class = block-text>On some trials, the '+' in between each letter will be replaced by a mathematical equation. You will have a few seconds to decide if the equation is true or false.</p>" +
-    "<p class = block-text><b>If the equation is true, press the " +
-    equationChoices[0] +
-    " key. If the equation is false, press the " +
-    equationChoices[1] +
-    " key.</b></p>" +
-    "<p class = block-text>You will still need to remember and report the sequence of letters!</p>" +
-    speedReminder +
-    '<p class = block-text>We\'ll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>' + '</div>'
+    '<p class= "block-text" >' +
+    'In this task, you will be presented with a series of 4x4 grids, each containing 1 black square and 15 gray squares. ' +
+    'Your goal is to remember the locations of the four black squares within each grid.</p>' +
+    '<p class=block-text>The grids will be presented one at a time and separated by a fixation symbol (****) or an 8x8 grid.</p>' +
+    '<p class=block-text>' +
+    'On some trials, an 8x8 grid will be shown. ' +
+    `If the grid is symmetric, press the <i>${equationChoices[0]} key</i>, if the grid is not symmetric, press the <i>${equationChoices[1]} key</i>. ` +
+    'Respond to as many grids as you can within the alloted time.' +
+    '</p>' +
+    '<p class=block-text>' +
+    'On some trials, only an 8x8 grid will be shown. On these trials, respond solely to the 8x8 grids. ' +
+    'Respond to as many grids as you can within the alloted time. ' +
+    `If the grid is symmetric, press the <i>${equationChoices[0]} key</i>, if the grid is not symmetric, press the <i>${equationChoices[1]} key</i>. ` +
+    '</p>' +
+    '<p class=block-text>' +
+    'On some trials, only a 4x4 grid will be shown. On these trials, you must remember the locations of the four black squares within each grid. ' +
+    '</p>' +
+    '</div>',
+    '<div class=centerbox><p class=block-text>During the practice round, you will receive feedback and reminders of the rules. ' +
+    'These will be removed for the actual test, so make sure you understand the instructions before proceeding.</p>' +
+    `<p class=block-text>${speedReminder}</p>` +
+    '</div>'
   ],
   allow_keys: false,
   data: {
@@ -850,7 +864,7 @@ var stimulusBlock = {
     }
   },
   on_finish: function(data) {
-    console.log(data)
+
     data['correctAnswer'] = trialValue
   }
 };
@@ -905,6 +919,7 @@ var waitBlock = {
     }
     data['correct_response'] = logResponse
     data['equationType'] = equationType
+    console.log('wait block data', data)
   },
   prompt: function() {
     if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only')) {
@@ -982,7 +997,6 @@ var responseBlock = {
     if (submittedAnswers == undefined) {
       data['correct_trial'] = null
     } else {
-
       if (submittedAnswers.length == 5) {
         submittedAnswers = submittedAnswers.slice(1, 5);
         console.log(submittedAnswers)
@@ -991,6 +1005,7 @@ var responseBlock = {
         data['correct_trial'] = correct ? 1 : 0
       }
     }
+    console.log('response trial trial', data)
     activeGrid.resetGrid()
   }
 };
@@ -1050,9 +1065,6 @@ var ITIBlock = {
 
 var practiceTrials = [];
 function generatePracticeTrials() {
-  console.log('IN PRACTICE TRIALS')
-  console.log(getCurrCondition())
-  console.log(getCurrCondition())
   var returnArray = []
   if (getCurrCondition() == 'same-domain') {
     for (let i = 0; i < practiceLen; i++) {
@@ -1095,69 +1107,116 @@ practiceTrials = generatePracticeTrials()
 var practiceCount = 0;
 var practiceNode = {
   timeline: [feedbackBlock].concat(practiceTrials),
-  loop_function: function(data) {
+  loop_function: function() {
     practiceCount += 1;
+    // for response grids - 0, 1, or null
 
-    // set rts for this task
-    // var sumRT = 0;
-    var sumResponses = 0;
+
+
+    var responseGridData = jsPsych.data.get().filter({ trial_id: 'response', exp_stage: 'practice', condition: getCurrCondition() }).trials
+
     var correct = 0;
-    var totalTrials = 0;
+    var totalTrials = responseGridData.length;
+    var missedCount = 0
+    var responseCount = 0;
 
-    for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "response" && data.trials[i].exp_stage == 'practice') {
-        totalTrials += 1;
-        // if (data.trials[i].rt != null) {
-        // sumRT += data.trials[i].rt;
-        sumResponses += 1;
-        if (data.trials[i].correct_trial == 1) {
-          correct += 1;
+
+    console.log('practice response grid data', responseGridData)
+
+
+    // No RTs for response grid
+    for (var i = 0; i < responseGridData.length; i++) {
+      if (responseGridData[i].correct_trial == null) {
+        missedCount += 1
+      } else {
+        responseCount += 1
+
+        if (responseGridData[i].correct_trial == 1) {
+          correct += 1
         }
-        // }
       }
     }
 
-    var equationTrials = 0;
-    var correctEquationTrials = 0;
-    var equationRT = 0;
-    var sumRT = 0;
-    var rtTrials = 0; // trials that have rt
+    var accuracy = correct / responseCount;
+    var missedResponses = missedCount / totalTrials;
 
-    // TODO: Check this data logging - shuold only be for current condition = same-domain?
-    if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
-      for (var i = 0; i < data.trials.length; i++) {
-        if (data.trials[i].trial_id == "equation" && data.trials[i].exp_stage == 'practice') {
-          equationTrials += 1;
-          if (data.trials[i].rt != null) {
-            rtTrials += 1;
-            sumRT += data.trials[i].rt;
-            if (data.trials[i].correct_response == 1) {
-              correctEquationTrials += 1;
-            }
+    // for processing
+    if (getCurrCondition() == 'storage-only') {
+      var avgProcessingAcc = null;
+      var avgProcessingMissed = null
+      var avgProcessingRT = null;
+    } else {
+      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'wait', exp_stage: 'practice', condition: getCurrCondition() }).trials
+      console.log('practice wait grid data', responseProcessingData)
+
+      var processingCorrect = 0;
+      var totalTrials = responseProcessingData.length;
+      var missedProcessingCount = 0
+      var responseCount = 0;
+      var rt = 0
+
+
+      console.log('practice wait grid data', responseProcessingData)
+
+      // No RTs for response grid
+      for (var i = 0; i < totalTrials; i++) {
+        if (responseProcessingData[i].correct_response == null) {
+          missedProcessingCount += 1
+        } else {
+          rt += responseProcessingData.rt
+          responseCount += 1
+          if (responseProcessingData[i].correct_response == 1) {
+            processingCorrect += 1
           }
         }
       }
+
+      var avgProcessingAcc = processingCorrect / responseCount;
+      var avgProcessingMissed = missedProcessingCount / totalTrials;
+      var avgProcessingRT = rt / responseCount
     }
 
+    console.log('############# PRACTICE ##############')
+    console.log(avgProcessingAcc)
+    console.log(avgProcessingMissed)
+    console.log(avgProcessingRT)
+    console.log(accuracy)
+    console.log(missedResponses)
 
-    var accuracy = correct / totalTrials;
-    var missedResponses = (totalTrials - sumResponses) / totalTrials;
-    var equationAccuracy = (correctEquationTrials / equationTrials)
-    equationRT = sumRT / rtTrials;
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
-        "<p class = block-text>Keep your gaze on the central '+', your right index finger on the " +
+        "<p class = block-text>Keep your right index finger on the " +
         spanResponses[0] +
         " and your right middle finger on the " +
-        spanResponses[1] +
-        " and your right ring finger on the " +
         spanResponses[2] +
-        " and your left index finger on the " +
-        spanResponses[3] +
-        ".</p>" +
-        "<p class = center-block-text>Press <i>enter</i> to continue.</p></div>";
+        " and your right ring finger on the " +
+        spanResponses[1] +
+        // TODO: Deal with down arrow press
+        // " and your left index finger on the " +
+        // spanResponses[3] +
+        ".</p>";
+
+      if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
+        if (avgProcessingAcc < processingAccThresh) {
+          feedbackText +=
+            "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
+            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
+        }
+        if (avgProcessingRT < processingRTThresh) {
+          feedbackText +=
+            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
+        }
+        if (avgProcessingMissed < processingMissedThresh) {
+          feedbackText +=
+            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
+        }
+      }
+
+      feedbackText += "<p class = block-text>Press <i>enter</i> to continue.</p></div>"
       expStage = 'test'
       practiceCount = 0;
       return false;
@@ -1172,14 +1231,19 @@ var practiceNode = {
       }
 
       if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
-        if (equationAccuracy < equationAccuracyThresh) {
+        if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
-            "<p class = block-text>Your accuracy for the equations is low.</p>" +
-            "<p class = block-text>Try your best determining whether a word is an English word (t) or not (f).</p>"
+            "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
+            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
         }
-        if (equationRT < equationRTThresh) {
+        if (avgProcessingRT < processingRTThresh) {
           feedbackText +=
-            "<p class = block-text>Your are responding too slowly to the equations when they appear on the screen.</p>" +
+            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
+        }
+        if (avgProcessingMissed < processingMissedThresh) {
+          feedbackText +=
+            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
       }
@@ -1242,61 +1306,100 @@ testTrials = generateTestTrials()
 var testCount = 0;
 var testNode = {
   timeline: [feedbackBlock].concat(testTrials),
-  loop_function: function(data) {
+  loop_function: function() {
     testCount += 1;
 
-    // var sumRT = 0;
-    var sumResponses = 0;
-    var correct = 0;
-    var totalTrials = 0;
 
-    for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "response") {
-        totalTrials += 1;
-        // if (data.trials[i].rt != null) {
-        // sumRT += data.trials[i].rt;
-        sumResponses += 1;
-        if (data.trials[i].correct_trial == 1) {
-          correct += 1;
+    // for response grids - 0, 1, or null
+    var responseGridData = jsPsych.data.get().filter({ trial_id: 'response', exp_stage: 'test', condition: getCurrCondition() }).trials
+
+    var correct = 0;
+    var totalTrials = responseGridData.length;
+    var missedCount = 0
+    var responseCount = 0;
+
+
+    console.log('grid response grid data', responseGridData)
+
+
+    // No RTs for response grid
+    for (var i = 0; i < responseGridData.length; i++) {
+      if (responseGridData[i].correct_trial == null) {
+        missedCount += 1
+      } else {
+        responseCount += 1
+
+        if (responseGridData[i].correct_trial == 1) {
+          correct += 1
         }
-        // }
       }
     }
-    var accuracy = correct / totalTrials;
-    var missedResponses = (totalTrials - sumResponses) / totalTrials;
-    // var avgRT = sumRT / sumResponses;
 
-    var equationTrials = 0;
-    var correctEquationTrials = 0;
-    var equationRT = 0;
-    var sumRT = 0;
-    var rtTrials = 0; // trials that have rt
+    var accuracy = correct / responseCount;
+    var missedResponses = missedCount / totalTrials;
 
-    if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
-      for (var i = 0; i < data.trials.length; i++) {
-        if (data.trials[i].trial_id == "equation" && data.trials[i].exp_stage == 'practice') {
-          equationTrials += 1;
-          if (data.trials[i].rt != null) {
-            rtTrials += 1;
-            sumRT += data.trials[i].rt;
-            if (data.trials[i].correct_response == 1) {
-              correctEquationTrials += 1;
-            }
+    // for processing
+    if (getCurrCondition() == 'storage-only') {
+      var avgProcessingAcc = null;
+      var avgProcessingMissed = null
+      var avgProcessingRT = null;
+    } else {
+      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'wait', exp_stage: 'test', condition: getCurrCondition() }).trials
+      console.log('practice wait grid data', responseProcessingData)
+
+      var processingCorrect = 0;
+      var totalTrials = responseProcessingData.length;
+      var missedProcessingCount = 0
+      var responseCount = 0;
+      var rt = 0
+
+
+      console.log('practice wait grid data', responseProcessingData)
+
+      // No RTs for response grid
+      for (var i = 0; i < totalTrials; i++) {
+        if (responseProcessingData[i].correct_response == null) {
+          missedProcessingCount += 1
+        } else {
+          rt += responseProcessingData.rt
+          responseCount += 1
+          if (responseProcessingData[i].correct_response == 1) {
+            processingCorrect += 1
           }
         }
       }
-    }
 
-    var missedResponses = (totalTrials - sumResponses) / totalTrials;
-    var equationAccuracy = (correctEquationTrials / equationTrials)
-    equationRT = sumRT / rtTrials;
+      var avgProcessingAcc = processingCorrect / responseCount;
+      var avgProcessingMissed = missedProcessingCount / totalTrials;
+      var avgProcessingRT = rt / responseCount
+    }
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
     if (testCount == numTestBlocks) {
       feedbackText =
-        "<div class = centerbox><p class = center-block-text>Moving onto next task. Press <i>enter</i> to continue.</p>" +
-        '</div>';
+        "<div class = centerbox><p class = center-block-text>Moving to next task.";
+
+      if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
+        if (avgProcessingAcc < processingAccThresh) {
+          feedbackText +=
+            "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
+            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
+        }
+        if (avgProcessingRT < processingRTThresh) {
+          feedbackText +=
+            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
+        }
+        if (avgProcessingMissed < processingMissedThresh) {
+          feedbackText +=
+            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
+        }
+      }
+
+      feedbackText += "<p class = block-text>Press <i>enter</i> to continue.</p></div>"
+
       currCondition = allConditions.shift()
       practiceTrials = generatePracticeTrials()
       testTrials = generateTestTrials()
@@ -1315,26 +1418,29 @@ var testNode = {
       }
 
       if (getCurrCondition() == 'same-domain' || getCurrCondition() == 'processing-only') {
-        if (equationAccuracy < equationAccuracyThresh) {
+        if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
-            "<p class = block-text>Your accuracy for the equations is low.</p>" +
-            "<p class = block-text>Try your best determining whether a word is an English word (t) or not (f).</p>"
+            "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
+            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
         }
-        if (equationRT < equationRTThresh) {
+        if (avgProcessingRT < processingRTThresh) {
           feedbackText +=
-            "<p class = block-text>Your are responding too slowly to the equations when they appear on the screen.</p>" +
+            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
+        }
+        if (avgProcessingMissed < processingMissedThresh) {
+          feedbackText +=
+            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
       }
-
-      // if (avgRT > rtThresh) {
-      //   feedbackText +=
-      //     "<p class = block-text>You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>";
-      // }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
           "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
       }
+
+      feedbackText += "<p class = block-text>Press <i>enter</i> to continue.</p></div>"
+
       return true;
     }
   },

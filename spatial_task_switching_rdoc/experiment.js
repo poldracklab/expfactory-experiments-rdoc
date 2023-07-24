@@ -505,6 +505,8 @@ var practiceLen = 16  // divisible by 4,  2 (switch or stay) by 2 (mag or parity
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
+numTrialsPerBlock = 32
+
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
 const totalTrialDuration = fixationDuration + 150 + 2000 + meanITI * 1000
 
