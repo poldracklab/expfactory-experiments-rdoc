@@ -37,7 +37,7 @@ To run the RDoC tasks, follow these steps:
 
 1. Fork/Clone this repository: [expfactory/expfactory-deploy](https://github.com/expfactory/expfactory-deploy) and download it to your local machine.
 2. Open up the terminal (`command + spacebar` on Mac).
-3. Change directory (`cd`) to wherever the `expfactory-deploy` directory is located.
+3. Change directory (`cd`) to wherever the `expfactory-deploy` directory is located. Then `cd` into `expfactory-deploy-local`.
 4. Run `pip install -e .`.
 5. Follow the instructions below to get the RDoC repository.
 
