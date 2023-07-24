@@ -359,6 +359,7 @@ var practiceLen = 12; // must be divisible by 4
 var numTrialsPerBlock = 72; // must be divisible by 4
 var numTestBlocks = 3;
 
+numTrialsPerBlock = numTrialsPerBlock / 2
 
 const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
 const numTrialsTotal = numTestBlocks * numTrialsPerBlock;

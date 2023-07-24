@@ -488,6 +488,7 @@ var numTrialsPerBlock = 65; // 50, must be divisible by 5 and we need to have a 
 var numTestBlocks = 3;
 var practiceThresh = 3; // 3 blocks of 15 trials
 
+numTrialsPerBlock = 30
 
 function shuffleChecksArray(array) {
   // Create a copy of the original array

@@ -537,6 +537,7 @@ var practiceLen = 16; // must be divisible by 4
 var numTrialsPerBlock = 72;
 var numTestBlocks = 3;
 
+numTrialsPerBlock = numTrialsPerBlock / 2
 
 var practiceThresh = 3; // 3 blocks of 16 trials
 var rtThresh = 1000;
