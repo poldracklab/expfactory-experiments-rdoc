@@ -309,7 +309,7 @@ var appendData = function() {
 };
 var getCue = function() {
   var cueHTML =
-    '<div class = upperbox><div class = "center-text" style="color:white;" >' +
+    '<div class = upperbox><div class = "center-text" style="color:black;" >' +
     currCue +
     '</div></div>' +
     '<div class = lowerbox><div class = fixation>+</div></div>';
@@ -318,7 +318,7 @@ var getCue = function() {
 
 var getStim = function() {
   var stimHTML =
-    '<div class = upperbox><div class = "center-text" style="color:white;" >' +
+    '<div class = upperbox><div class = "center-text" style="color:black;" >' +
     currCue +
     '</div></div>' +
     '<div class = lowerbox><div class = gng_number><div class = cue-text>' +
@@ -458,9 +458,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -468,9 +465,9 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
   '<p class=center-block-text>' +
-  'To avoid technical issues,' +
+  'To avoid technical issues, ' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -495,7 +492,7 @@ var runAttentionChecks = true;
 /* ******************************* */
 
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 0; // /in seconds
+var instructTimeThresh = 1; // /in seconds
 var creditVar = 0;
 
 /* ******************************* */
@@ -534,10 +531,8 @@ var promptText = '<div class="prompt_box">' +
 
 
 var practiceLen = 16; // must be divisible by 4
-var numTrialsPerBlock = 72;
+var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
-
-numTrialsPerBlock = numTrialsPerBlock / 2
 
 var practiceThresh = 3; // 3 blocks of 16 trials
 var rtThresh = 1000;
@@ -588,13 +583,13 @@ var pageInstruct = [
   '<div class = centerbox><p class = block-text>In this experiment you will respond to a sequence of numbers.</p>' +
   '<p class=block-text>Place your <b>' +
   possibleResponses[0][0] +
-  '</b> on the <i>' +
+  '</b> on the <b>' +
   possibleResponses[0][2] +
-  '</i> and your <b>' +
+  '</b> and your <b>' +
   possibleResponses[1][0] +
-  '</b> on the <i>' +
+  '</b> on the <b>' +
   possibleResponses[1][2] +
-  '</i> </p>' +
+  '</b> </p>' +
   '<p class = block-text>Your response will depend on the current task, which can change each trial. On some trials, you will have to indicate whether the number is <b>even or odd</b>, and on other trials you will indicate whether the number is <b>higher or lower than 5</b>.' +
   ' Each trial will start with a cue telling you which task to do on that trial.</p>' +
   '</div > ',
@@ -614,48 +609,6 @@ var images = [];
 for (i = 0; i < numbersPreload.length; i++) {
   images.push(pathSource + numbersPreload[i] + '.png');
 }
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-const totalTrialDuration = (fixationDuration + CTI + stimTrialDuration + (meanITI * 1000))
-
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- CTI: ${CTI} ms
-- Stimulus: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
-
-
 
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -884,6 +837,8 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
+
+
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         '<div class = centerbox>' +
@@ -1036,9 +991,10 @@ var testNode = {
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 
+
     if (testCount >= numTestBlocks) {
       feedbackText =
-        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue. <br>If you have been completing tasks continuously for one hour or more, please take a 15-minute break before starting again.';
+        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
       return false;
     } else {
       feedbackText =
@@ -1098,28 +1054,6 @@ var expID = 'cued_task_switching_rdoc'
 // eslint-disable-next-line no-unused-vars
 var expStage = 'practice'
 
-// Set up post task questionnaire
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: 'post task questions',
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
 
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -1159,7 +1093,6 @@ var cued_task_switching_rdoc_init = () => {
   cued_task_switching_rdoc_experiment.push(instructionNode);
   cued_task_switching_rdoc_experiment.push(practiceNode);
   cued_task_switching_rdoc_experiment.push(testNode);
-  cued_task_switching_rdoc_experiment.push(postTaskBlock);
   cued_task_switching_rdoc_experiment.push(endBlock);
   cued_task_switching_rdoc_experiment.push(exitFullscreen);
 };

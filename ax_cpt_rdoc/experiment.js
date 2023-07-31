@@ -44,7 +44,6 @@ function evalAttentionChecks() {
     }
     checkPercent = checksPassed / attentionChecksTrials.length;
   }
-  console.log(checkPercent)
   jsPsych.data.get().addToLast({ attention_check_percent: checkPercent });
   return checkPercent;
 }
@@ -57,12 +56,14 @@ var getInstructFeedback = function() {
   );
 };
 
+
+
 var getFeedback = function() {
   return (
     '<div class = bigbox><div class = picture_box><p class = block-text>' +
     feedbackText +
     '</font></p></div></div>'
-  ); // <font color="white">
+  );
 };
 
 var getCondition = function() {
@@ -177,17 +178,17 @@ var setStims = function() {
       currStim = '<div class = centerbox><div class = AX_text>X</div></div>';
       currCue = '<div class = centerbox><div class = AX_text>A</div></div>';
       break;
-    case 'BX':
-      currStim = getChar();
-      currCue = '<div class = centerbox><div class = AX_text>X</div></div>';
-      break;
-    case 'AY':
-      currStim = '<div class = centerbox><div class = AX_text>A</div></div>';
-      currCue = getChar();
-      break;
     case 'BY':
       currStim = getChar();
       currCue = getChar();
+      break;
+    case 'BX':
+      currStim = '<div class = centerbox><div class = AX_text>X</div></div>';
+      currCue = getChar();
+      break;
+    case 'AY':
+      currStim = getChar();
+      currCue = '<div class = centerbox><div class = AX_text>A</div></div>';
       break;
   }
 };
@@ -222,10 +223,10 @@ var endText = '<div class = centerbox>' +
 var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
-  '<p class=center-block-text>' +
+  '<p class=center-block-text> ' +
   'To avoid technical issues,' +
-  'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' please keep the experiment tab (on Chrome or Firefox)' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -297,11 +298,11 @@ var pageInstruct = [
   'and a reminder of the rules.' +
   ' These will be taken out for test, so make sure you understand' +
   ' the instructions before moving on.</p>' +
-  '<p class = block-text>Remember, press your ' +
+  '<p class = block-text>Remember, press your <b>' +
   possibleResponses[0][0] +
-  ' after you see "A" followed by an "X", and your ' +
+  '</b> after you see "A" followed by an "X", and your <b>' +
   possibleResponses[1][0] +
-  ' for all other combinations.</p>' +
+  '</b> for all other combinations.</p>' +
   speedReminder +
   '</div>',
 ]
@@ -353,67 +354,9 @@ var trialProportions = [
   'BY',
   'BY']
 
-trialProportions = [
-  'AX',
-  'AX',
-  'BX',
-  'AY',
-  'BY']
-
 var numTestBlocks = 3;
-var numTrialsPerBlock = trialProportions.length * 4; // 40
+var numTrialsPerBlock = trialProportions.length * 5; // 50
 var practiceLen = trialProportions.length; // 10
-
-
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-const totalTrialDuration = (fixationDuration + cueTrialDuration + (fixationDuration + 2500) + probeTrialDuration + (meanITI * 1000))
-
-
-
-
-console.log(`
-
-AX-CPT TRIAL PROPORTIONS
-------------------------
-4AX:2BX:2AY:2BY
-
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Cue duration: ${cueTrialDuration} ms
-- Fixation: ${fixationDuration + 2500} ms
-- Probe: ${probeTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 blocks)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration} ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 block)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration}ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
-
 
 // set empty and populate later with current trial data
 var currCondition = '';
@@ -723,8 +666,7 @@ var attentionCheckData = [
 // TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-console.log(attentionCheckData)
-console.log(currentAttentionCheckData)
+
 
 // Set up attention check node
 var attentionCheckBlock = {
@@ -773,8 +715,8 @@ for (i = 0; i < practiceLen; i++) {
         condition: getCondition(),
       };
     },
-    stimulus_duration: cueStimulusDuration, // 300
-    trial_duration: cueTrialDuration, // 5200
+    stimulus_duration: cueStimulusDuration, // 500
+    trial_duration: cueTrialDuration, // 500
     response_ends_trial: false,
     post_trial_gap: 0,
     prompt: promptText,
@@ -842,6 +784,9 @@ var practiceNode = {
     var accuracy = correct / totalTrials;
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
+
+
+
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
@@ -980,13 +925,12 @@ var testNode = {
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 
+
     if (testCount == numTestBlocks) {
       feedbackText +=
         '</p><p class = block-text>' +
         'Done with this test. Press <i>enter</i>' +
-        ' to continue.<br> If you have been completing tasks continuously' +
-        ' for an hour or more, please take a 15-minute break' +
-        'before starting again.';
+        ' to continue.</p>';
       return false;
     } else {
       feedbackText =
@@ -1046,32 +990,6 @@ var exitFullscreen = {
 
 var expID = 'ax_cpt_rdoc' // for this experiment
 
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: 'post task questions',
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text' +
-        'style = "font-size: 20px">You have completed this task! ' +
-        'Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text ' +
-        'style = "font-size: 20px">' +
-        'Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
-
 // last block in timeline
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -1098,12 +1016,10 @@ var ax_cpt_rdoc_experiment = [];
 // eslint-disable-next-line no-unused-vars
 var ax_cpt_rdoc_init = () => {
   blockList = jsPsych.randomization.repeat(trialProportions, 1);
-  console.log('practice block list', blockList)
   ax_cpt_rdoc_experiment.push(fullscreen);
   ax_cpt_rdoc_experiment.push(instructionNode);
   ax_cpt_rdoc_experiment.push(practiceNode);
   ax_cpt_rdoc_experiment.push(testNode);
-  ax_cpt_rdoc_experiment.push(postTaskBlock);
   ax_cpt_rdoc_experiment.push(endBlock);
   ax_cpt_rdoc_experiment.push(exitFullscreen);
 };

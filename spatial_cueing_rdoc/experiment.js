@@ -270,7 +270,6 @@ function assessPerformance() {
 
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
-  console.log('data', data)
   if (data.response == data.correctResponse) {
     correctTrial = 1;
   } else {
@@ -323,9 +322,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -333,9 +329,9 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
   '<p class=center-block-text>' +
-  'To avoid technical issues,' +
+  'To avoid technical issues, ' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -358,7 +354,7 @@ var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
 // generic task variables
 var runAttentionChecks = false;
 // var attentionCheckThresh = 0.65;
-var instructTimeThresh = 0; // /in seconds
+var instructTimeThresh = 1; // /in seconds
 var accuracyThresh = 0.75;
 var rtThresh = 1000;
 var missedResponseThresh = 0.1;
@@ -368,47 +364,6 @@ var practiceLen = 12; // 12
 var numTestBlocks = 3;
 var numTrialsPerBlock = 72; // should be multiple of 24
 
-numTrialsPerBlock = 48;
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-const totalTrialDuration = fixationDuration + cueTrialDuration + fixationDuration + stimTrialDuration + meanITI * 1000
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Cue: ${cueTrialDuration} ms
-- Fixation: ${fixationDuration} ms
-- Probe: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
 
 const responseKeys = `<p class='block-text'>Press your <b>${possibleResponses[0][0]}</b> if the star ('+') appears in the left box and press your <b>${possibleResponses[1][0]}</b> if the star ('+') appears in the right box.</p>`;
 var currStim = "";
@@ -477,6 +432,7 @@ for (let i = 0; i < 2; i++) {
   );
 }
 
+
 var promptText =
   "<div class = prompt_box>" +
   '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Star in left box: ' +
@@ -537,9 +493,8 @@ var instructionsBlock = {
     "</b> on the <b>" +
     possibleResponses[1][2] +
     "</b> </p>" +
-    "<p class = block-text>In this task, you should focus your gaze on the '+' sign in the center of the screen throughout. </p>" +
     "<p class = block-text>There will be two boxes on either side of the screen. On each trial, a star will appear in one of them.</p>" +
-    "<p class = block-text>While focusing on the central '+', your task is to press your <b>" +
+    "<p class = block-text>Your task is to press your <b>" +
     possibleResponses[0][0] +
     "</b> if the star appears in the <b>left box</b>, and your <b>" +
     possibleResponses[1][0] +
@@ -592,7 +547,6 @@ var practiceFeedbackBlock = {
     // var last = jsPsych.data.get().last(1).values()[0];
     var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block
-    console.log(last);
     if (last.response == null) {
       return (
         "<div class = fb_box><div class = 'center-text'><font size =20>Respond Faster!</font></div></div>" +
@@ -969,28 +923,6 @@ var testNode = {
   },
 };
 
-// Set up post task questionnaire
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
 
 var fullscreen = {
   type: jsPsychFullscreen,
@@ -1031,7 +963,6 @@ var spatial_cueing_rdoc_init = () => {
   spatial_cueing_rdoc_experiment.push(instructionNode);
   spatial_cueing_rdoc_experiment.push(practiceNode);
   spatial_cueing_rdoc_experiment.push(testNode);
-  spatial_cueing_rdoc_experiment.push(postTaskBlock);
   spatial_cueing_rdoc_experiment.push(endBlock);
   spatial_cueing_rdoc_experiment.push(exitFullscreen);
 };

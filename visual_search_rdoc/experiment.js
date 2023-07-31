@@ -180,9 +180,9 @@ function shuffleArray(array) {
 
   return shuffledArray;
 }
+// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-
 
 var getInstructFeedback = function() {
   return (
@@ -200,10 +200,6 @@ var getFeedback = function() {
   ); // <font color="white">
 };
 
-
-var getExpStage = function() {
-  return expStage;
-};
 
 
 function assessPerformance() {
@@ -266,10 +262,9 @@ function assessPerformance() {
 }
 
 const nArray = [8, 24]
-nArray.sort(() => Math.random() - 0.5);
-n = nArray[0];
+var randomIndex = Math.floor(Math.random() * nArray.length);
+var n = nArray[randomIndex]
 
-var blockCount = 0;
 
 var trialTargetPresent;
 function getStim() {
@@ -290,8 +285,12 @@ function isTargetPresent() {
   return Math.random() < 0.5; // Modify the condition for your target logic
 }
 
+
+
 function generateHTML(containerWidth, containerHeight, targetPresent, targetIndex, boxWidth, boxHeight) {
-  let html = '<div class="container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: ' + containerWidth + 'px; height: ' + containerHeight + 'px;">';
+  let html;
+
+  html = '<div class="container" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: ' + containerWidth + 'px; height: ' + containerHeight + 'px;">';
   const positions = [];
   let rows;
   let cols;
@@ -326,8 +325,10 @@ function generateHTML(containerWidth, containerHeight, targetPresent, targetInde
   }
 
   html += '</div>';
+
   return html;
 }
+
 
 function generateTargetElement(left, top, width, height) {
   return '<div id="target" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white;"></div>';
@@ -335,14 +336,14 @@ function generateTargetElement(left, top, width, height) {
 
 function generateDistractorElement(left, top, width, height) {
   if (getCurrBlockType() === 'color') {
-    return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
+    return '<div id="black-distractor-element" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
   } else if (getCurrBlockType() === 'orientation') {
     return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
   } else if (getCurrBlockType() === 'conjunction') {
     if (Math.random() < 0.5) {
-      return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
+      return '<div id="white-distractor-element"  class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
     } else {
-      return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
+      return '<div id="black-distractor-element"  class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
     }
   }
 }
@@ -357,42 +358,7 @@ var getCurrBlockType = function() {
   return blockType;
 };
 
-var setBlocks = function() {
-  if (getCurrBlockType() == conditions[0]) {
-    practiceCount = 0;
-    testCount = 0;
-    expStage = 'practice'
-    if (blockCount == 0) {
-      n = nArray[1];
-      blockCount += 1
-      feedbackText =
-        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-    } else {
-      nArray.sort(() => Math.random() - 0.5);
-      n = nArray[0];
-      blockCount = 0;
-      blockType = conditions[1]
-      feedbackText =
-        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next task.</p></div>"
-    }
 
-  } else if (getCurrBlockType() == conditions[1]) {
-    practiceCount = 0;
-    testCount = 0;
-    if (blockCount == 0) {
-      n = nArray[1];
-      blockCount += 1
-      expStage = 'practice'
-      feedbackText =
-        "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-    } else {
-      nArray.sort(() => Math.random() - 0.5);
-      n = nArray[0];
-      feedbackText =
-        "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
-    }
-  }
-}
 
 var getInstructFeedback = function() {
   return (
@@ -423,9 +389,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -433,9 +396,9 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
   '<p class=center-block-text>' +
-  'To avoid technical issues,' +
+  'To avoid technical issues, ' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -445,8 +408,8 @@ var speedReminder =
 // generic task variables
 // const runAttentionChecks = false;
 // const attention_check_thresh = 0.65;
-const stimStimulusDuration = 1000;
-const stimTrialDuration = 1000;
+const stimStimulusDuration = 2000;
+const stimTrialDuration = 2000;
 const conditions = ['color', 'conjunction']
 conditions.sort(() => Math.random() - 0.5);
 // Remove one element without replacement
@@ -456,63 +419,16 @@ var blockType = conditions[0];
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
 var numConditions = 2;
-var numBlocksPerCondition = 2;
 
-const instructTimeThresh = 0; // /in seconds
+const instructTimeThresh = 1; // /in seconds
 let sumInstructTime = 0; // ms
 const accuracyThresh = 0.6;
 const rtThresh = 1000;
 const missedResponseThresh = 0.1;
 // practice
-const practiceLen = 6; // num practice trials for each block in each condition
-var numTrialsPerBlock = 48; // num test trials for each block in each condition
+var practiceLen = 6; // num practice trials for each block in each condition
+var numTrialsPerBlock = 32; // num test trials for each block in each condition
 const numTestBlocks = 3;
-
-numTrialsPerBlock = numTrialsPerBlock / 2
-
-const numTrialsPerCondition = numTestBlocks * numTrialsPerBlock * numBlocksPerCondition;
-const numTrialsTotal = numTrialsPerCondition * numConditions;
-
-const totalTrialDuration = fixationDuration + stimTrialDuration + meanITI * 1000
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus duration: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-${practiceLen * 3 * numConditions} (feature and conjunction)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-${numTrialsPerBlock * 3 * numConditions} (feature and conjunction)
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3 * numConditions} min max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min (feature or condition)
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60 * 2} min (feature and condition)
-
-`);
 
 
 var practiceCount = 0;
@@ -531,6 +447,20 @@ var promptText =
   possibleResponses[1][0] +
   "</p>" +
   "</div>";
+
+var promptTextList =
+  '<ul style="text-align:left;font-size: 24px;">' +
+  "<li>" +
+  'Target present: press your ' +
+  possibleResponses[0][0] +
+  "</li>" +
+  "<li>" +
+  'Target absent: press your ' +
+  possibleResponses[1][0] +
+  "</li>" +
+  "</ul>";
+
+
 var speedReminder =
   "<p class = block-text>Try to respond as quickly and accurately as possible.</p>";
 
@@ -559,7 +489,7 @@ var attentionNode = {
 /* define static blocks */
 var feedbackInstructText =
   "<p class=center-block-text>Welcome! This experiment will take around 10 minutes.</p>" +
-  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
+  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 
 var feedbackInstructBlock = {
@@ -578,7 +508,7 @@ var stimulusBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: getStim,
   choices: choices,
-  stimulus_duration: stimStimulusDuration, // 1000,
+  stimulus_duration: stimStimulusDuration, // 2000,
   trial_duration: stimTrialDuration, // 2000
   post_trial_gap: 0,
   response_ends_trial: false,
@@ -591,17 +521,31 @@ var stimulusBlock = {
   },
   data: {
     trial_id: "stim",
-    exp_stage: getExpStage(),
   },
   on_finish: function(data) {
     data['target_present'] = trialTargetPresent ? 1 : 0
     data['num_stimuli'] = n;
     data['block_type'] = getCurrBlockType()
-
-    data['correct_response'] = trialTargetPresent ?
-      (data.response == possibleResponses[0][1] ? 1 : 0) :
-      (data.response == possibleResponses[0][1] ? 0 : 1);
-
+    data['exp_stage'] = getExpStage()
+    if (data.response !== null) {
+      if (trialTargetPresent) {
+        if (data.response == possibleResponses[0][1]) {
+          data['correct_response'] = 1
+        } else {
+          data['correct_response'] = 0
+        }
+      } else {
+        if (data.response == possibleResponses[0][1]) {
+          data['correct_response'] = 0
+        } else {
+          data['correct_response'] = 1
+        }
+      }
+    } else {
+      data['correct_response'] = null
+    }
+    randomIndex = Math.floor(Math.random() * nArray.length);
+    n = nArray[randomIndex]
   }
 };
 
@@ -616,18 +560,18 @@ var instructionsBlock = {
     `</b> and your ${possibleResponses[1][0]} on the <b>` +
     possibleResponses[1][2] +
     "</b>.</p>" +
-    "<p class = block-text>In this experiment, on each trial you will see several black and white rectangles at various angles.</p>" +
-    "<p class = block-text>On some trials, <b>one</b> of these rectangles will be angled differently than all others of its color. We will call this rectangle the 'target'.</p>" +
-    "<p class = block-text>A target will only be present on some trials. Your task is to determine whether a target is present or absent on each trial. You will only have a few seconds to do so.</p>" +
+    "<p class = block-text>In this task, you will be presented with a series of rectangles on the screen. The rectangles can be either black or white in color.</p>" +
+    "<p class = block-text>On some trials, <b>one</b> of these rectangles will be a <b>vertical white rectangles</b>. We will call this rectangle the 'target'.</p>" +
+    "<p class = block-text>Your task is to determine whether a target is present or absent on each trial.</p>" +
     "<p class=block-text>If you determine a target is <b>present</b>, press your <b>" +
     possibleResponses[0][0] +
     "</b>, and if you determine a target is <b>absent</b>, press your <b>" +
     possibleResponses[1][0] +
     "</b>.</p>" +
-    speedReminder +
     "</div>",
     "<div class = centerbox>" +
     "<p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>" +
+    speedReminder +
     "</div>",
   ],
   allow_keys: false,
@@ -725,13 +669,15 @@ var practiceFeedbackBlock = {
   stimulus: function() {
     // var last = jsPsych.data.get().last(1).values()[0];
     var last = jsPsych.data.get().last(1).trials[0];
-    // ^ changed since we added a fixation block after response block
+    // ^ changed since we added a fixation block after response block\
+    console.log(last)
+    if (last.response == null) {
+      return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
+    }
     if (last.correct_response == 1) {
       return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
     } else if (last.correct_response == 0) {
       return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
-    } else {
-      return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
     }
   },
   data: {
@@ -771,10 +717,10 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].exp_stage == 'practice' && data.trials[i].block_type == getCurrBlockType() && data.trials[i].num_stimuli == n) {
+      if (data.trials[i].exp_stage == 'practice' && data.trials[i].block_type == getCurrBlockType()) {
         if (data.trials[i].trial_id == "stim") {
           totalTrials += 1;
-          if (data.trials[i] != null) {
+          if (data.trials[i].rt != null) {
             sumRT += data.trials[i].rt;
             sumResponses += 1;
             if (data.trials[i].correct_response == 1) {
@@ -785,10 +731,10 @@ var practiceNode = {
       }
     }
 
+
     var accuracy = correct / totalTrials;
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
-    console.log(accuracy)
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
@@ -801,7 +747,9 @@ var practiceNode = {
       feedbackText =
         "<p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
       if (accuracy < accuracyThresh) {
-        feedbackText += `<p class = block-text>Your accuracy is low.</p>`;
+        feedbackText +=
+          "<p class = block-text>Your accuracy is low.  Remember: </p>" +
+          promptTextList;
       }
       if (avgRT > rtThresh) {
         feedbackText +=
@@ -834,10 +782,10 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].exp_stage == 'test' && data.trials[i].block_type == getCurrBlockType() && data.trials[i].num_stimuli == n) {
+      if (data.trials[i].exp_stage == 'test' && data.trials[i].block_type == getCurrBlockType()) {
         if (data.trials[i].trial_id == "stim") {
           totalTrials += 1;
-          if (data.trials[i] != null) {
+          if (data.trials[i].rt != null) {
             sumRT += data.trials[i].rt;
             sumResponses += 1;
             if (data.trials[i].correct_response == 1) {
@@ -852,27 +800,37 @@ var testNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    var accuracy = correct / totalTrials;
-    var missedResponses = (totalTrials - sumResponses) / totalTrials;
-    var avgRT = sumRT / sumResponses;
-
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 
     if (testCount == numTestBlocks) {
-      setBlocks()
+      if (getCurrBlockType() == conditions[0]) {
+        practiceCount = 0;
+        testCount = 0;
+        expStage = 'practice'
+        feedbackText =
+          "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
+      } else if (getCurrBlockType() == conditions[1]) {
+        practiceCount = 0;
+        testCount = 0;
+        expStage = 'practice'
+        feedbackText =
+          "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
+      }
       return false;
     } else {
       feedbackText =
-        "<p class = block-text>Please take this time to read your feedback and to take a short break!<br>" +
-        "You have completed: " +
+        "<p class = block-text>Please take this time to read your feedback and to take a short break!</p>" +
+        "<p class=block-text>You have completed: " +
         testCount +
         " out of " +
         numTestBlocks +
         " blocks of trials.</p>";
 
       if (accuracy < accuracyThresh) {
-        feedbackText += `<p class = block-text>Your accuracy is too low.  Remember: <br> ${promptText}</p>`;
+        feedbackText +=
+          "<p class = block-text>Your accuracy is low.  Remember: </p>" +
+          promptTextList;
       }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
@@ -905,29 +863,6 @@ var exitFullscreen = {
   fullscreen_mode: false,
 };
 
-// Set up post task questionnaire
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: "visual_search_rdoc",
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
-
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -952,13 +887,10 @@ var visual_search_rdoc_init = () => {
   visual_search_rdoc_experiment.push(fullscreen);
   visual_search_rdoc_experiment.push(instructionNode);
   for (let i = 0; i < numConditions; i++) {
-    for (let j = 0; j < numBlocksPerCondition; j++) {
-      visual_search_rdoc_experiment.push(practiceNode);
-      visual_search_rdoc_experiment.push(testNode);
-    }
+
+    visual_search_rdoc_experiment.push(practiceNode);
+    visual_search_rdoc_experiment.push(testNode);
   }
-  // post-task
-  visual_search_rdoc_experiment.push(postTaskBlock);
   visual_search_rdoc_experiment.push(endBlock);
   visual_search_rdoc_experiment.push(exitFullscreen);
 };

@@ -312,9 +312,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -322,9 +319,9 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
   '<p class=center-block-text>' +
-  'To avoid technical issues,' +
+  'To avoid technical issues, ' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -364,12 +361,26 @@ var congruentStim = [];
 var incongruentStim = [];
 
 // arrays for colors and words to be used for stimuli
-var colors = ["red", "blue", "green"];
+var colors = ["#FF7070", "#7070FF", "#70FF70"];
 var words = ["red", "blue", "green"];
 
 // Generate congruent stimuli
 colors.forEach(function(color, index) {
-  var stimulus = stimulusText.replace("XXX", color).replace("YYY", color); // so each color and word are equivalent, can just use color for both
+  var tempWord = ''
+  switch (color) {
+    case colors[0]:
+      tempWord = words[0]
+      break;
+    case colors[1]:
+      tempWord = words[1]
+      break;
+    case colors[2]:
+      tempWord = words[2]
+      break;
+    default:
+      break;
+  }
+  var stimulus = stimulusText.replace("XXX", color).replace("YYY", tempWord); // so each color and word are equivalent, can just use color for both
   var data = {
     trial_id: "stim",
     condition: "congruent",
@@ -413,72 +424,28 @@ colors.forEach(function(color, colorIndex) {
 // end generating stimuli
 
 var stims = [].concat(congruentStim, congruentStim, incongruentStim);
-var practiceLen = 18;
-var numTrialsPerBlock = 72;
+var practiceLen = 12;
+var numTrialsPerBlock = 32;
 var numTestBlocks = 3;
-
-numTrialsPerBlock = numTrialsPerBlock / 2
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-
-const totalTrialDuration = fixationDuration + stimTrialDuration + meanITI * 1000
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
 
 
 choices[2] = possibleResponses[2][1]
 
 var responseKeys =
-  '<ul class="list-text"><li><span class = "large" style = "color:red">WORD</span>: ' +
-  possibleResponses[0][0] +
-  '</li><li><span class = "large" style = "color:blue">WORD</span>: ' +
-  possibleResponses[1][0] +
-  '</li><li><span class = "large" style = "color:green">WORD</span>: ' +
-  possibleResponses[2][0] +
-  " </li></ul>";
+  `<ul class="list-text"><li><span class = "large" style = "color:#FF7070">${possibleResponses[0][0]}</span></li>` +
+  `<li><span class = "large" style = "color:#7070FF">${possibleResponses[1][0]}</span></li>` +
+  `<li><span class = "large" style = "color:#70FF70">${possibleResponses[2][0]}</span></li>`
+"</ul>";
 
 var promptText =
   "<div class = prompt_box>" +
-  '<p class = center-block-text style = "font-size:16px; line-height:80%%;"><span class = "large" style = "color:red">WORD</span>: ' +
+  '<p class = center-block-text style = "font-size:16px; line-height:80%%;"><span class = "large" style = "color:#FF7070">WORD</span>: ' +
   possibleResponses[0][0] +
   "</p>" +
-  '<p class = center-block-text style = "font-size:16px; line-height:80%%;"><span class = "large" style = "color:blue">WORD</span>: ' +
+  '<p class = center-block-text style = "font-size:16px; line-height:80%%;"><span class = "large" style = "color:#7070FF">WORD</span>: ' +
   possibleResponses[1][0] +
   "</p>" +
-  '<p class = center-block-text style = "font-size:16px; line-height:80%%;"><span class = "large" style = "color:green">WORD</span>: ' +
+  '<p class = center-block-text style = "font-size:16px; line-height:80%%;"><span class = "large" style = "color:#70FF70">WORD</span>: ' +
   possibleResponses[2][0] +
   "</p>" +
   "</div>";
@@ -511,7 +478,7 @@ var attentionNode = {
 
 var feedbackInstructText =
   "<p class=center-block-text>Welcome! This experiment will take around 8 minutes.</p>" +
-  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
+  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 
 var feedbackInstructBlock = {
@@ -536,24 +503,27 @@ var instructionsBlock = {
     possibleResponses[0][0] +
     "</b> on the <b>" +
     possibleResponses[0][2] +
-    "</b> your <b>" +
+    "</b>, your <b>" +
     possibleResponses[1][0] +
     "</b> on the <b>" +
     possibleResponses[1][2] +
-    "</b> and your <b>" +
+    "</b>, and your <b>" +
     possibleResponses[2][0] +
     "</b> on the <b>" +
     possibleResponses[2][2] +
-    "</b> </p>" +
-    '<p class = block-text>In this task, you will see a series of "color" words (RED, BLUE, GREEN). The "ink" of the words will also be colored. For example, you may see: ' +
-    '<span class = "large" style = "color:blue">RED</span>, <span class = "large" style = "color:blue">BLUE</span>, or <span class = "large" style = "color:red">BLUE</span>.</p>' +
-    "<p class = block-text>Your task is to press the following buttons corresponding to the <b>ink color</b> (not the word itself):" +
-    responseKeys +
-    "</div>",
-    "<div class = centerbox><p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. " +
+    "</b> .</p>" +
+    '<p class = block-text>In this task, you will be presented with a single word on the screen.' +
+    ` The word will always be one of these three: <b>'RED'</b>, <b>'BLUE'</b>, or <b>'GREEN'</b>.` +
+    `<p class="block-text">Each word will appear in a certain color. Note the color of the word may not match the word itself. For example, you might see the word 'RED' colored in green, like this: <span style='color:#70FF70'>RED</span>.</p>` +
+    `<p class="block-text">Your task is to identify the <b>color in which the word is displayed</b>, not the word itself. So, if you see the word 'RED' displayed in green, you should press the key corresponding to green.</p>` +
+    `<p class=block-text>Press your <b>${possibleResponses[0][0]}</b> if the color is <span style='color:${colors[0]}'>red</span>.</p>` +
+    `<p class=block-text>Press your <b>${possibleResponses[1][0]}</b> if the color is <span style='color:${colors[1]}'>blue</span>.</p>` +
+    `<p class=block-text>Press your <b>${possibleResponses[2][0]}</b> if the color is <span style='color:${colors[2]}'>green</span>.</p>` +
+
+    '</div>',
+    '<div class=centerbox>' +
+    "<p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. " +
     "These will be taken out for test, so make sure you understand the instructions before moving on.</p>" +
-    "<p class = block-text>Remember, press the key corresponding to the <strong>ink</strong> color of the word: </p>" +
-    responseKeys +
     speedReminder +
     "</div>",
   ],
@@ -620,7 +590,6 @@ var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
     var last = jsPsych.data.get().last(1).trials[0];
-    console.log(last);
     if (last.response == null) {
       return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
     }
@@ -886,29 +855,6 @@ var exitFullscreen = {
   fullscreen_mode: false,
 };
 
-// Set up post task questionnaire
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: "stroop_rdoc",
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
-
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -937,7 +883,6 @@ var stroop_rdoc_init = () => {
   stroop_rdoc_experiment.push(instructionsNode);
   stroop_rdoc_experiment.push(practiceNode);
   stroop_rdoc_experiment.push(testNode);
-  stroop_rdoc_experiment.push(postTaskBlock);
   stroop_rdoc_experiment.push(endBlock);
   stroop_rdoc_experiment.push(exitFullscreen);
 };

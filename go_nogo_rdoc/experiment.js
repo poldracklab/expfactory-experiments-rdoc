@@ -362,9 +362,6 @@ var getData = function() {
 const fixationDuration = 500;
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -372,9 +369,9 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
   '<p class=center-block-text>' +
-  'To avoid technical issues,' +
+  'To avoid technical issues, ' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -391,9 +388,9 @@ const stimTrialDuration = 2000;
 var runAttentionChecks = true;
 // var attentionCheckThresh = 0.45;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 0; // /in seconds
+var instructTimeThresh = 1; // /in seconds
 var creditVar = 0;
-var goResponse = " "; // space bar
+var goResponse = " "; // spacebar
 
 // task specific variables
 var numGoStim = 6; // per one no-go stim
@@ -405,7 +402,7 @@ var correctResponses = [
 // var stims = jsPsych.randomization.shuffle([["orange", "stim1"],["blue","stim2"]])
 var stims = [
   ["solid black", "stim1"],
-  ["outlined white", "stim2"],
+  ["outlined black", "stim2"],
 ]; // solid and outlined squares used as stimuli for this task are not png files as in some others, but they are defined in style.css
 // var gap = 0;
 varcurrentTrial = 0;
@@ -465,58 +462,15 @@ var testStimuliBlock = [
   })
 );
 
+
 var accuracyThresh = 0.75;
 var rtThresh = 1000;
 var missedResponseThresh = 0.1;
 
 var practiceLen = 7;
 var practiceThresh = 3;
-var numTrialsPerBlock = 70; // multiple of 7 (6go:1nogo)
+var numTrialsPerBlock = 84; // multiple of 7 (6go:1nogo)
 var numTestBlocks = 3;
-
-numTrialsPerBlock = numTrialsPerBlock / 2
-
-const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-
-console.log(`
-
-TRIAL PROPORTIONS:
-------------------------
-7 NO-GO: 1 GO
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
 
 var promptTextList =
   '<ul style="text-align:left;">' +
@@ -568,7 +522,7 @@ var attentionNode = {
 /* define static blocks */
 var feedbackInstructText =
   "<p class=center-block-text>Welcome! This experiment will take around 15 minutes.</p>" +
-  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
+  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 
 var feedbackInstructBlock = {
@@ -589,7 +543,7 @@ var instructionsBlock = {
   },
   pages: [
     "<div class = centerbox>" +
-    "<p class = block-text>Please place your <b>index finger</b> on the <b>space bar</b>.</p>" +
+    "<p class = block-text>Please place your <b>index finger</b> on the <b>spacebar</b>.</p>" +
     "<p class = block-text>In this experiment, " +
     stims[0][0] +
     " and " +
@@ -786,15 +740,16 @@ var practiceNode = {
     var accuracy = correct / totalTrials;
     var missedResponses = missedResponse / totalGoTrials;
     var avgRT = sumRT / sumResponses;
+
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         "<div class = centerbox><p class = block-text>We will now start the test portion.</p>" +
-        "<p class = block-text>Remember, keep your index finger on the space bar, and if you see the " +
+        "<p class = block-text>Remember, keep your <b>index finger</b> on the spacebar, and if you see the " +
         stims[0][0] +
-        " square you should <i>respond by pressing the spacebar as quickly as possible</i>. " +
+        " square you should <b>respond</b> by pressing the <b>spacebar</b> as quickly as possible. " +
         "If you see the " +
         stims[1][0] +
-        " square you should <i>not respond</i>.</p><p class = block-text>Press <i>enter</i> to begin.</p></div>";
+        " square you should <b>not respond</b>.</p><p class = block-text>Press <i>enter</i> to begin.</p></div>";
       blockStims = jsPsych.randomization.repeat(
         testStimuliBlock,
         numTrialsPerBlock / testStimuliBlock.length
@@ -890,8 +845,8 @@ var testNode = {
 
 
     if (testCount >= numTestBlocks) {
-      feedbackText +=
-        "</p><p class = block-text>Done with this test. Press <i>enter</i> to continue. <br>If you have been completing tasks continuously for one hour or more, please take a 15-minute break before starting again.";
+      feedbackText =
+        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
       return false;
     } else {
       feedbackText =
@@ -939,28 +894,6 @@ var exitFullscreen = {
 // Set up post task questionnaire
 var expID = 'go_no_go_rdoc'
 
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
-
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
@@ -991,7 +924,6 @@ var go_nogo_rdoc_init = () => {
   go_nogo_rdoc_experiment.push(instructionNode);
   go_nogo_rdoc_experiment.push(practiceNode);
   go_nogo_rdoc_experiment.push(testNode);
-  go_nogo_rdoc_experiment.push(postTaskBlock);
   go_nogo_rdoc_experiment.push(endBlock);
   go_nogo_rdoc_experiment.push(exitFullscreen);
 };

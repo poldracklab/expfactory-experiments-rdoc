@@ -786,28 +786,42 @@ var instructionsBlock = {
   type: jsPsychInstructions,
   pages: [
     '<div class="centerbox">' +
-    '<p class= "block-text" >' +
-    'In this task, you will be presented with a series of 4x4 grids, each containing 1 black square and 15 gray squares. ' +
-    'Your goal is to remember the locations of the four black squares within each grid.</p>' +
-    '<p class=block-text>The grids will be presented one at a time and separated by a fixation symbol (****) or an 8x8 grid.</p>' +
-    '<p class=block-text>' +
-    'On some trials, an 8x8 grid will be shown. ' +
-    `If the grid is symmetric, press the <i>${equationChoices[0]} key</i>, if the grid is not symmetric, press the <i>${equationChoices[1]} key</i>. ` +
-    'Respond to as many grids as you can within the alloted time.' +
+    '<p class="block-text">' +
+    'This task involves two sub-tasks.' +
     '</p>' +
-    '<p class=block-text>' +
-    'On some trials, only an 8x8 grid will be shown. On these trials, respond solely to the 8x8 grids. ' +
-    'Respond to as many grids as you can within the alloted time. ' +
-    `If the grid is symmetric, press the <i>${equationChoices[0]} key</i>, if the grid is not symmetric, press the <i>${equationChoices[1]} key</i>. ` +
+    '<h3 class="block-text">Sub-task #1:</h3>' +
+    '<p class="block-text">' +
+    'In this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. ' +
+    `Press the <i>${equationChoices[0]} key</i> if the grid is symmetric and press the <i>${equationChoices[1]} key</i> if it is not.` +
     '</p>' +
-    '<p class=block-text>' +
-    'On some trials, only a 4x4 grid will be shown. On these trials, you must remember the locations of the four black squares within each grid. ' +
+    '<p class="block-text">' +
+    `When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgements as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell. ` +
     '</p>' +
-    '</div>',
-    '<div class=centerbox><p class=block-text>During the practice round, you will receive feedback and reminders of the rules. ' +
-    'These will be removed for the actual test, so make sure you understand the instructions before proceeding.</p>' +
-    `<p class=block-text>${speedReminder}</p>` +
+    '<p class="block-text">' +
+    'This sequence of 8x8 grids and 4x4 grid will alternative four times. After the fourth time, a blank 4x4 grid will be presented.' +
+    '</p>' +
+    '<p class="block-text">' +
+    'On the blank 4x4 grid, use the arrow keys to navigate the grid and the spacebar to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …). ' +
+    '</p>' +
     '</div>'
+    ,
+    '<div class="centerbox">' +
+    '<h3 class="block-text">Sub-task #2:</h3>' +
+    '<p class="block-text">' +
+    'In this sub-task, you will see a fixation (****) followed by a 4x4 grid. This 4x4 grid will have one cell colored black. Try to remember the location of the black cell.' +
+    '</p>' +
+    '<p class="block-text">' +
+    'This sequence of a fixation (****) and 4x4 grid will alternate four times. After the fourth time, a blank 4x4 grid will be presented.' +
+    '</p>' +
+    '<p class="block-text">' +
+    'On the blank 4x4 grid, use the arrow keys to navigate the grid and the spacebar to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).' +
+    '</p>' +
+    '<p class="block-text">' +
+    'During the practice round, you will receive feedback and reminders of the rules. These will be removed for the actual test, so ensure that you understand the instructions before proceeding.' +
+    '</p>' +
+    `<p class="block-text">${speedReminder}</p>` +
+    '</div>'
+
   ],
   allow_keys: false,
   data: {
@@ -1168,7 +1182,7 @@ var practiceNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
+            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
         if (avgProcessingRT < processingRTThresh) {
           feedbackText +=
@@ -1200,7 +1214,7 @@ var practiceNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
+            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
         if (avgProcessingRT < processingRTThresh) {
           feedbackText +=
@@ -1331,7 +1345,7 @@ var testNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
-            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
+            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
         if (avgProcessingRT < processingRTThresh) {
           feedbackText +=
@@ -1368,7 +1382,7 @@ var testNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
-            "<p class = block-text>Try your best determining if it is symmetric (t) or not (f).</p>"
+            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
         if (avgProcessingRT < processingRTThresh) {
           feedbackText +=
