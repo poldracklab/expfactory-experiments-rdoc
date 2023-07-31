@@ -483,7 +483,6 @@ var expLen = 198;
 var practiceLen = 10;
 var numTrialsPerBlock = 11;
 var numTestBlocks = expLen / numTrialsPerBlock; //  18 blocks total
-numTestBlocks = numTestBlocks / 2; // 9 blocks per condition
 var practiceThresh = 3;
 
 
@@ -963,6 +962,7 @@ var testNode = {
     delay = delays.shift()
 
     if (testCount == numTestBlocks) {
+      testCount = 0;
       feedbackText =
         '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
       return false;
