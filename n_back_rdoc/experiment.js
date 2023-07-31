@@ -297,7 +297,6 @@ var createTrialTypes = function(numTrialsPerBlock, delay) {
   var correctResponse;
   var nbackCondition;
 
-  console.log('creating trials')
 
   for (var i = 0; i < delay; i++) {
     nbackCondition = "N/A";
@@ -312,7 +311,6 @@ var createTrialTypes = function(numTrialsPerBlock, delay) {
     };
     firstStims.push(firstStim);
   }
-  console.log(firstStims)
   stims = [];
 
   for (
@@ -325,8 +323,10 @@ var createTrialTypes = function(numTrialsPerBlock, delay) {
       numNBackConds < nbackConditions.length;
       numNBackConds++
     ) {
-      nbackCondition = nbackConditions[numNBackConds];
-      console.log(nbackCondition)
+      // always sampling nbackcondition, for each stim
+      const randomIndex = Math.floor(Math.random() * 4) + 1;
+
+      nbackCondition = nbackConditions[randomIndex];
 
       stim = {
         n_back_condition: nbackCondition,
@@ -392,7 +392,6 @@ var createTrialTypes = function(numTrialsPerBlock, delay) {
 
 
 var getStim = function() {
-  console.log(stims)
   stim = stims.shift();
   nbackCondition = stim.n_back_condition;
   probe = stim.probe;
@@ -449,9 +448,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -461,7 +457,7 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'To avoid technical issues,' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -472,7 +468,7 @@ var speedReminder =
 // eslint-disable-next-line no-unused-vars
 var expStage = 'practice'
 var letters = "bBdDgGtTvV".split("");
-console.log(randomDraw(letters))
+
 // *: Timing
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 2000;
@@ -480,15 +476,16 @@ const stimTrialDuration = 2000;
 // generic task variables
 var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 0; // /in seconds
+var instructTimeThresh = 1;
 var creditVar = 0;
 
-var practiceLen = 10; // must be divisible by 5
-var numTrialsPerBlock = 65; // 50, must be divisible by 5 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
-var numTestBlocks = 3;
-var practiceThresh = 3; // 3 blocks of 15 trials
+var expLen = 198;
+var practiceLen = 10;
+var numTrialsPerBlock = 11;
+var numTestBlocks = expLen / numTrialsPerBlock; //  18 blocks total
+numTestBlocks = numTestBlocks / 2; // 9 blocks per condition
+var practiceThresh = 3;
 
-numTrialsPerBlock = 30
 
 function shuffleChecksArray(array) {
   // Create a copy of the original array
@@ -513,54 +510,11 @@ function shuffleArray(array) {
 
 
 var delays = shuffleArray([1, 2]);
-var delay = delays[0]
-var nbackConditions = shuffleArray(["mismatch", "mismatch", "match", "mismatch", "mismatch"])
+delays = [...delays, ...delays, ...delays]
+
+var delay = 1
+var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"]
 var stims = createTrialTypes(practiceLen, delay);
-console.log(stims)
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
-
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block per delay)
-${practiceLen * 3} (3 block max per delay)
-${practiceLen * 2 * 3} (6 blocks max)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block per delay)
-${numTrialsPerBlock * 3 * 2} (6 block total)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks per delay)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3 * 2} max (6 blocks total)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60 * 2} min total (all trials for all test blocks of both delays)
-
-`);
 
 var accuracyThresh = 0.75;
 var rtThresh = 1000;
@@ -648,7 +602,7 @@ var attentionNode = {
 // this also functions as the welcome screen!
 var feedbackInstructText =
   "<p class=center-block-text>Welcome! This experiment will take around 5 minutes.</p>" +
-  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
+  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 
 var feedbackInstructBlock = {
@@ -681,19 +635,19 @@ var instructionsBlock = {
       possibleResponses[1][2] +
       "</b> </p>" +
       "<p class = block-text>In this task, you will see a letter on each trial.</p>" +
-      "<p class = block-text>Your task is to match the current letter to the letter that appeared either 1 or 2 trials ago, depending on the delay given to you for that block.</p>" +
+      "<p class = block-text>Your task is to match the current letter to the letter that appeared either 1 or 2 trials ago, depending on the delay given to you for that block. </p>" +
       "<p class = block-text>Press your <b>" +
       possibleResponses[0][0] +
       "</b> if the letters match, and your <b>" +
       possibleResponses[1][0] +
       "</b> if they mismatch.</p>" +
       "<p class = block-text>Your delay (the number of trials ago to which you compare the current letter) will change from block to block. You will be given the delay at the start of every block of trials.</p>" +
-      '<p class = block-text>Capitalization does not matter, so "T" matches with "t". The first trial(s) will not match, because there was nothing before them.</p> ' +
+      '<p class = block-text>Capitalization does not matter, so "T" matches with "t". The first trial(s) will not match, because there was nothing before it.</p> ' +
+      `<p class = block-text><b>Your delay for this practice round is ${delay}</b>.</p>` +
       "</div>",
       "<div class = centerbox>" +
       speedReminder +
       "<p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>" +
-      `<p class = block-text><b>Your delay for this practice round is ${delay}</b>.</p>` +
       "</div>",
     ]
   },
@@ -867,37 +821,59 @@ var practiceNode = {
     var avgRT = sumRT / sumResponses;
     var mismatchPercent = mismatchPress / totalTrials;
 
+    console.log(accuracy)
+    console.log(missedResponses)
+    console.log(avgRT)
+    console.log(mismatchPercent)
+
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
-      feedbackText =
-        "<div class = centerbox>" +
-        "<p class = block-text>We will now begin the test portion.</p>" +
-        "<p class = block-text>Keep your " +
-        possibleResponses[0][0] +
-        " on the " +
-        possibleResponses[0][2] +
-        " and your " +
-        possibleResponses[1][0] +
-        " on the " +
-        possibleResponses[1][2] +
-        "</p>" +
-        "<p class = block-text>Once again, match the current letter to the letter that appeared either 1 or 2 trials ago depending on the delay given to you for each block." +
-        "Press your " +
-        possibleResponses[0][0] +
-        " if they match, and your " +
-        possibleResponses[1][0] +
-        " if they mismatch.</p>" +
-        "<p class = block-text>Your delay (the number of trials ago to which you compare the current letter) will change from block to block.</p>" +
-        '<p class = block-text>Capitalization does not matter, so "T" matches with "t". The first trial(s) will not match, because there was nothing before them.</p> ' +
-        "<p class = block-text>You will no longer see the rules, so memorize the instructions before you continue. Press <i>enter</i> to begin.</p>" +
-        "</div>";
-      nbackConditions = shuffleArray(["mismatch", "mismatch", "match", "mismatch", "mismatch"])
-      stims = createTrialTypes(numTrialsPerBlock, delay);
-      practiceCount = 0
-      expStage = 'test'
+
+      if (delay == 2) {
+        expStage = 'test'
+        delay = delays.shift()
+        feedbackText =
+          "<div class = centerbox>" +
+          "<p class = block-text>We will now begin the test portion.</p>" +
+          "<p class = block-text>Keep your " +
+          possibleResponses[0][0] +
+          " on the " +
+          possibleResponses[0][2] +
+          " and your " +
+          possibleResponses[1][0] +
+          " on the " +
+          possibleResponses[1][2] +
+          "</p>" +
+          "<p class = block-text>Once again, match the current letter to the letter that appeared either 1 or 2 trials ago depending on the delay given to you for each block. " +
+          "Press your " +
+          possibleResponses[0][0] +
+          " if they match, and your " +
+          possibleResponses[1][0] +
+          " if they mismatch.</p>" +
+          "<p class=block-text><b>Your delay for this block is " +
+          delay +
+          "</b>. Please match the current letter to the letter that appeared <b>" +
+          delay +
+          "</b> trial(s) ago.</p>" +
+          '<p class = block-text>Capitalization does not matter, so "T" matches with "t". The first trial(s) will not match, because there was nothing before it.</p> ' +
+          "<p class = block-text>You will no longer see the rules, so memorize the instructions before you continue. Press <i>enter</i> to begin.</p>" +
+          "</div>";
+        stims = createTrialTypes(numTrialsPerBlock, delay);
+      } else {
+        delay = 2;
+        feedbackText =
+          "<div class = centerbox>" +
+          "<p class=block-text>Your delay for this block is " +
+          delay +
+          ". Please match the current letter to the letter that appeared " +
+          delay +
+          " trial(s) ago.</p><p class=block-text>Press <i>enter</i> to begin.</p></div>";
+        stims = createTrialTypes(practiceLen, delay);
+        practiceCount = 0
+      }
       return false;
     } else {
       feedbackText =
-        "<p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
       if (accuracy < accuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy is low.  Remember: </p>" +
@@ -922,8 +898,7 @@ var practiceNode = {
           " when they occur.";
       }
       feedbackText +=
-        "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p>";
-      nbackConditions = shuffleArray(["mismatch", "mismatch", "match", "mismatch", "mismatch"])
+        "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p></div>";
       stims = createTrialTypes(practiceLen, delay);
       return true;
     }
@@ -985,27 +960,12 @@ var testNode = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
+    delay = delays.shift()
 
     if (testCount == numTestBlocks) {
-      if (delay == delays[0]) {
-        delay = delays[1]
-        nbackConditions = jsPsych.randomization.repeat(
-          ["mismatch", "mismatch", "match", "mismatch", "mismatch"],
-          1
-        );
-
-        stims = createTrialTypes(practiceLen, delay);
-        expStage = 'practice'
-        testCount = 0
-
-        feedbackText =
-          `<p class = block-text>Starting practice for delay ${delay}. Press <i>enter</i> to continue.<br></p>`;
-        return false;
-      } else if (delay == delays[1]) {
-        feedbackText =
-          "<p class = block-text>Done with this test. Press <i>enter</i> to continue.<br> If you have been completing tasks continuously for an hour or more, please take a 15-minute break before starting again.</p>";
-        return false;
-      }
+      feedbackText =
+        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
+      return false;
     } else {
       feedbackText =
         "<p>Please take this time to read your feedback and to take a short break! Press <i>enter</i> to continue." +
@@ -1041,7 +1001,6 @@ var testNode = {
         "<p class = block-text><i>For the next round of trials, your delay is " +
         delay +
         "</i>.  Press <i>enter</i> to continue.</p>";
-      nbackConditions = shuffleArray(["mismatch", "mismatch", "match", "mismatch", "mismatch"])
       stims = createTrialTypes(numTrialsPerBlock, delay);
       return true;
     }
@@ -1059,28 +1018,6 @@ var exitFullscreen = {
 
 // Set up post task questionnaire
 var expID = 'n_back_rdoc'
-
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
 
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -1109,16 +1046,18 @@ var n_back_rdoc_experiment = [];
 var n_back_rdoc_init = () => {
   jsPsych.pluginAPI.preloadImages(images);
   n_back_rdoc_experiment.push(fullscreen);
-
   n_back_rdoc_experiment.push(instructionNode);
-  // first delay
+  // practice node 1 - delay 1
   n_back_rdoc_experiment.push(practiceNode);
-  n_back_rdoc_experiment.push(testNode);
-  // second delay
+  // practice node 2 - delay 2
   n_back_rdoc_experiment.push(practiceNode);
-  n_back_rdoc_experiment.push(testNode);
+
+  // test node, 1 then 2
+  for (var i = 0; i < numTestBlocks; i++) {
+    n_back_rdoc_experiment.push(testNode);
+  }
+
   // post task
-  n_back_rdoc_experiment.push(postTaskBlock);
   n_back_rdoc_experiment.push(endBlock);
   n_back_rdoc_experiment.push(exitFullscreen);
 };

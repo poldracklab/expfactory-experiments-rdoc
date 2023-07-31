@@ -171,9 +171,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -181,9 +178,9 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'Welcome! This experiment will take around 5 minutes.</p>' +
   '<p class=center-block-text>' +
-  'To avoid technical issues,' +
+  'To avoid technical issues, ' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen mode for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -198,7 +195,7 @@ const stimStimulusDuration = 1000;
 const stimTrialDuration = 2000;
 
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 0; // /in seconds
+var instructTimeThresh = 1; // /in seconds
 
 var accuracyThresh = 0.75;
 var rtThresh = 1000;
@@ -356,48 +353,9 @@ var testStimuli = [
 ];
 
 var practiceLen = 12; // must be divisible by 4
-var numTrialsPerBlock = 72; // must be divisible by 4
+var numTrialsPerBlock = 32; // must be divisible by 4
 var numTestBlocks = 3;
 
-numTrialsPerBlock = numTrialsPerBlock / 2
-
-const totalTrialDuration = (fixationDuration + stimTrialDuration + (meanITI * 1000))
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus: ${stimTrialDuration} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min per block
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
 
 var promptTextList =
   '<ul style="text-align:left;">' +
@@ -611,7 +569,7 @@ var attentionNode = {
 /* define static blocks */
 var feedbackInstructText =
   "<p class=center-block-text>Welcome! This experiment will take around 5 minutes.</p>" +
-  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
+  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 
 var feedbackInstructBlock = {
@@ -813,6 +771,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var aveRT = sumRT / sumResponses;
 
+
     feedbackText =
       "<p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
 
@@ -931,10 +890,9 @@ var testNode = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-
     if (testCount == numTestBlocks) {
       feedbackText =
-        "</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.<br> If you have been completing tasks continuously for an hour or more, please take a 15-minute break before starting again.";
+        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
       return false;
     } else {
       feedbackText =
@@ -987,28 +945,6 @@ var exitFullscreen = {
   fullscreen_mode: false,
 };
 
-// Set up post task questionnaire
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
 
 var expID = 'flanker_rdoc'
 
@@ -1042,7 +978,6 @@ var flanker_rdoc_init = () => {
   flanker_rdoc_experiment.push(instructionNode);
   flanker_rdoc_experiment.push(practiceNode);
   flanker_rdoc_experiment.push(testNode);
-  flanker_rdoc_experiment.push(postTaskBlock);
   flanker_rdoc_experiment.push(endBlock);
   flanker_rdoc_experiment.push(exitFullscreen);
 };

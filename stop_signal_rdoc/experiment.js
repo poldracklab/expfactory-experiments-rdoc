@@ -451,9 +451,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
-  '<p class = center-block-text>' +
-  'If you have been completing tasks continuously for an hour or more,' +
-  'please take a 15-minute break before starting again.</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
   '</div>'
 
@@ -463,7 +460,7 @@ var feedbackInstructText =
   '<p class=center-block-text>' +
   'To avoid technical issues,' +
   'please keep the experiment tab (on Chrome or Firefox)' +
-  ' active and in full-screen mode for the whole duration of each task.</p>' +
+  ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -478,55 +475,13 @@ const stimTrialDuration = 2000;
 
 // generic task variables
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 0; // /in seconds
+var instructTimeThresh = 1; // /in seconds
 // var credit_var = 0;
 var runAttentionChecks = true;
 
 var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTrialsPerBlock = 72; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTestBlocks = 3;
-
-numTrialsPerBlock = 36;
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-
-const totalTrialDuration = fixationDuration + 2000 + meanITI * 1000
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Stimulus: ${2000} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
-
 
 var practiceThresh = 3; // max number of times to repeat practice
 var accuracyThresh = 0.75;
@@ -550,7 +505,6 @@ var minStopCorrectPractice = 0;
 var stopSignalsConditions = ["go", "go", "stop"];
 var shapes = ["circle", "square"];
 // var color = "black";
-
 var pathSource = "/static/experiments/stop_signal_rdoc/images/";
 var postFileType = ".png'></img>";
 var preFileType = "<img class = center src='" + pathSource;
@@ -573,7 +527,7 @@ var promptTextList =
   ": " +
   possibleResponses[1][0] +
   "</li>" +
-  "<li>Do not respond if a star appears!</li>" +
+  "<li>Do not respond if a star appears.</li>" +
   "</ul>";
 
 var promptText =
@@ -588,7 +542,7 @@ var promptText =
   ": " +
   possibleResponses[1][0] +
   "</p>" +
-  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Do not respond if a star appears!</p>' +
+  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Do not respond if a star appears.</p>' +
   "</div>";
 
 var speedReminder =
@@ -620,7 +574,7 @@ var attentionNode = {
 
 var feedbackInstructText =
   "<p class=center-block-text>Welcome! This experiment will take around 10 minutes.</p>" +
-  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in full-screen mode for the whole duration of each task.</p>" +
+  "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 var feedbackInstructBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -735,10 +689,10 @@ var feedbackBlock = {
   data: {
     trial_id: "feedback",
   },
-  choices: ["Enter"],
   stimulus: getFeedback,
   post_trial_gap: 0,
-  trial_duration: 18000,
+  trial_duration: 180000,
+  choices: ['Enter'],
   response_ends_trial: true,
 };
 
@@ -883,7 +837,7 @@ var practiceStopNode = {
         " on the " +
         possibleResponses[1][2] +
         ". " +
-        "You will see a shape on every trial. Please respond to each shape as quickly and accurately as possible!</p>" +
+        "You will see a shape on every trial. Please respond to each shape as quickly and accurately as possible.</p>" +
         "<p class = block-text>If the shape is a " +
         shapes[0] +
         ", press your " +
@@ -917,7 +871,7 @@ var practiceStopNode = {
       }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
-          "<p class = block-text>We have detected a number of trials that <i>required a response</i>, where no response was made.  Please <i>ensure that you are responding accurately and quickly  </i>to the shapes.</p>";
+          "<p class = block-text>We have detected a number of trials that <i>required a response</i>, where no response was made.  Please <i>ensure that you are responding accurately and quickly</i> to the shapes.</p>";
       }
       if (stopSignalRespond === maxStopCorrectPractice) {
         feedbackText +=
@@ -925,7 +879,7 @@ var practiceStopNode = {
       }
       if (stopSignalRespond === minStopCorrectPractice) {
         feedbackText +=
-          "<p class = block-text>You have been responding too slowly.  Do not wait for the star; respond as quickly and accurately to each stimulus that requires a response.</p>";
+          "<p class = block-text>You have been responding too slowly. Do not wait for the star. Respond as quickly and accurately to each stimulus that requires a response.</p>";
       }
       feedbackText +=
         "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p>";
@@ -979,11 +933,9 @@ var testNode = {
     var numStopResponses = 0;
     var goLength = 0;
     var stopLength = 0;
-    console.log(data.filter({ trial_id: "test_trial" }));
 
     // probably ahould filter before
     for (i = 0; i < data.trials.length; i++) {
-      console.log(data.trials[i]);
       if (data.trials[i].trial_id == "test_trial") {
         // totalTrials += 1;
       }
@@ -1024,8 +976,8 @@ var testNode = {
       " blocks of trials.</p>";
 
     if (testCount == numTestBlocks) {
-      feedbackText +=
-        "<p class = block-text>Done with this test. If you have been completing tasks continuously for an hour or more, please take a 15-minute break before starting again.</p>";
+      feedbackText =
+        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
       return false;
     } else {
       if (aveShapeRespondCorrect < accuracyThresh) {
@@ -1066,28 +1018,6 @@ var exitFullscreen = {
 
 var expID = 'stop_signal_rdoc'
 
-// Set up post task questionnaire
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  data: {
-    exp_id: expID,
-    trial_id: "post task questions",
-  },
-  questions: [
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-      rows: 15,
-      columns: 60,
-    },
-    {
-      prompt:
-        '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-      rows: 15,
-      columns: 60,
-    },
-  ],
-};
 
 
 var endBlock = {
@@ -1123,7 +1053,6 @@ var stop_signal_rdoc_init = () => {
   stop_signal_rdoc_experiment.push(instructionNode);
   stop_signal_rdoc_experiment.push(practiceStopNode);
   stop_signal_rdoc_experiment.push(testNode);
-  stop_signal_rdoc_experiment.push(postTaskBlock);
   stop_signal_rdoc_experiment.push(endBlock);
   stop_signal_rdoc_experiment.push(exitFullscreen);
 };

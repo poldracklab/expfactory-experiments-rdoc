@@ -472,9 +472,6 @@ const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
 var endText = '<div class = centerbox>' +
     '<p class = center-block-text>Thanks for completing this task!</p>' +
-    '<p class = center-block-text>' +
-    'If you have been completing tasks continuously for an hour or more,' +
-    'please take a 15-minute break before starting again.</p>' +
     '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
     '</div>'
 
@@ -482,9 +479,9 @@ var feedback_instruct_text =
     '<p class=center-block-text>' +
     'Welcome! This experiment will take around 5 minutes.</p>' +
     '<p class=center-block-text>' +
-    'To avoid technical issues,' +
+    'To avoid technical issues, ' +
     'please keep the experiment tab (on Chrome or Firefox)' +
-    ' active and in full-screen mode for the whole duration of each task.</p>' +
+    ' active and fullscreen for the whole duration of each task.</p>' +
     '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
 
 // speed reminder
@@ -493,7 +490,7 @@ var speedReminder =
     'Try to respond as quickly and accurately as possible.</p> ';
 // generic task variables
 var sumInstructTime = 0 // ms
-var instructTimeThresh = 0 // /in seconds
+var instructTimeThresh = 1 // /in seconds
 var credit_var = 0
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true
@@ -504,48 +501,6 @@ var expStage = 'practice'
 var practiceLen = 16  // divisible by 4,  2 (switch or stay) by 2 (mag or parity)]
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
-
-numTrialsPerBlock = 32
-
-const numTrialsTotal = numTestBlocks * numTrialsPerBlock;
-const totalTrialDuration = fixationDuration + 150 + 2000 + meanITI * 1000
-
-console.log(`
-TOTAL DURATION OF A TRIAL:
-------------------------
-- Fixation: ${fixationDuration} ms
-- Cue: ${150} ms
-- Probe: ${2000} ms
-- Average ITI duration: ${meanITI * 1000} ms
-------------------------
-${totalTrialDuration} ms
-
-NUMBER OF PRACTICE TRIALS:
-------------------------
-${practiceLen} (1 block)
-${practiceLen * 3} (3 block)
-
-NUMBER OF TEST TRIALS: 
-------------------------
-${numTrialsPerBlock} (1 block)
-${numTrialsPerBlock * 3} (3 block)
-
-
-TOTAL DURATIONS:
-------------------------
-
-# PRACTICE:
-
-(${practiceLen} trials * ${totalTrialDuration}ms per trial) 
-= ${practiceLen * totalTrialDuration / 1000 / 60} min (1 block)
-= ${practiceLen * totalTrialDuration / 1000 / 60 * 3} min max (3 blocks)
-
-# TEST: 
-
-(${numTrialsTotal} trials * ${numTestBlocks} blocks * ${totalTrialDuration} ms per trial) 
-= ${numTrialsTotal * totalTrialDuration / 1000 / 60} min
-`);
-
 
 var accuracy_thresh = 0.75
 var rt_thresh = 1000
@@ -710,25 +665,6 @@ var instruction_node = {
     }
 }
 
-var post_task_block = {
-    type: jsPsychSurveyText,
-    data: {
-        exp_id: "spatial_task_switching_rdoc",
-        trial_id: "post task questions"
-    },
-    questions: [
-        {
-            prompt: '<p class = center-block-text style = "font-size: 20px">You have completed this task! Please summarize what you were asked to do in this task.</p>',
-            rows: 15,
-            columns: 60,
-        },
-        {
-            prompt: '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>',
-            rows: 15,
-            columns: 60,
-        }
-    ]
-};
 var end_block = {
     type: jsPsychHtmlKeyboardResponse,
     data: {
@@ -749,12 +685,13 @@ var practiceTrials = []
 for (i = 0; i < practiceLen + 1; i++) {
     var fixation_block = {
         type: jsPsychHtmlKeyboardResponse,
-        stimulus: '', // fixation included in the prompt
+        stimulus: getFixation,
         choices: ["NO_KEYS"],
         data: {
             exp_stage: "practice",
             trial_id: "practice_fixation"
         },
+        stimulus_duration: 500,
         trial_duration: 500, // 500
         post_trial_gap: 0,
         prompt: prompt_text
@@ -917,6 +854,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
             exp_stage: "test",
             trial_id: "test_fixation"
         },
+        stimulus_duration: 500,
         trial_duration: fixationDuration, // 500
         post_trial_gap: 0
     }
@@ -987,7 +925,8 @@ var testNode = {
 
 
         if (testCount >= numTestBlocks) {
-            feedback_text = '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue. <br>If you have been completing tasks continuously for one hour or more, please take a 15-minute break before starting again.'
+            feedbackText =
+                '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
             return false
         } else {
             feedback_text = "<p class = block-text>Please take this time to read your feedback and to take a short break!<br>"
@@ -1037,7 +976,6 @@ var spatial_task_switching_rdoc_init = () => {
     spatial_task_switching_rdoc_experiment.push(instruction_node)
     spatial_task_switching_rdoc_experiment.push(practiceNode)
     spatial_task_switching_rdoc_experiment.push(testNode)
-    spatial_task_switching_rdoc_experiment.push(post_task_block)
     spatial_task_switching_rdoc_experiment.push(end_block)
     spatial_task_switching_rdoc_experiment.push(exit_fullscreen)
 }
