@@ -1,6 +1,7 @@
 /*******************************************************/
 /*********    RDoC/Network Default CSS Styles    *******/
 /*******************************************************/
+
 body {
   background-color: #707070;
   color: white;
@@ -44,7 +45,6 @@ body {
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, -50%);
-  background-color: none;
 }
 
 .bigbox {
@@ -76,7 +76,7 @@ body {
   height: 20%;
   position: absolute;
   top: 15%;
-  left: 20%;
+  left: 15%;
   transform: translate(-50%, -45%);
   margin-right: 0%;
   background-color: none;
@@ -86,6 +86,7 @@ body {
 img.center {
   height: auto;
   width: auto\9;
+  /* ie8 */
   position: absolute;
   top: 0;
   bottom: 0;
@@ -98,36 +99,105 @@ img.center {
 }
 
 /*******************************************************/
-/***********          2x2 CSS Styles          **********/
+/************        Span CSS Styles        ************/
 /*******************************************************/
 
-.upperbox {
-  width: 35vw;
-  height: 20vw;
+.digit-span-text {
+  text-align: center;
+  font-size: 60px;
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  color: black;
+}
+
+.numbers {
+  font-weight: 900;
+  text-align: center;
+  font-size: 60px;
+  position: relative;
+  top: 50%;
+}
+
+.active-box {
+  color: white;
+  background-color: black;
+}
+
+
+.box {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.response-active {
+  border: 8px solid black;
+  background-color: lightgray;
+  /* Color for arrow key navigation */
+}
+
+.active-box {
+  background-color: black;
+  /* Color for arrow key navigation */
+}
+
+.spacebar-box {
+  background-color: white;
+  /* Color for spacebar selection */
+}
+
+.numbox {
+  width: 30vw;
+  height: 30vw;
   position: absolute;
   top: 50%;
   left: 50%;
   margin-right: -50%;
-  transform: translate(-50%, -100%);
-}
-
-.lowerbox {
-  width: 35vw;
-  height: 20vw;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -25%);
-  background-color: none;
-}
-
-.gng_number {
-  width: 60px;
-  height: 60px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background-color: none;
   transform: translate(-50%, -50%);
+}
+
+.jspsych-content {
+  max-width: 100%;
+}
+
+.first-active {
+  border: 3px solid black;
+  background-color: white;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 75vw;
+  height: 75vh;
+}
+
+.box {
+  flex-basis: 25%;
+  height: 25%;
+  box-sizing: border-box;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.distractor-box {
+  flex-basis: 12.5%;
+  height: 12.5%;
+  box-sizing: border-box;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerbox {
+  height: 70vh !important;
 }
