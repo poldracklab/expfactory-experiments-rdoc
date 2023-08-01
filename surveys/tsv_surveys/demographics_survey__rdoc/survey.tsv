@@ -1,9 +1,6 @@
 question_type	question_text	required	page_number	option_text	option_values	variables
 instruction	Welcome to this survey. Press <strong>Next</strong> to begin.	0	1			
 instruction	Please answer the following questions regarding your demographics.	0	2			
-textfield	"What is your first, middle, and last name as shown on your birth certificate?"	1	3			demographics_42
-textfield	What is your date of birth?	1	3			demographics_43
-textfield	What is your City/Municipality of birth?	1	3			demographics_44
 radio	What is your gender?	1	3	"Male,female,non-binary/third gender, prefer not to answer"	"0,1,2,3"	demographics_0
 radio	What is your biological sex? 	1	3	"male, female, intersex"	"0,1,2"	demographics_1
 numeric	How old are you (in years)?	1	3			demographics_2
