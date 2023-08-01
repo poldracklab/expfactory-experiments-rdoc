@@ -328,31 +328,6 @@ function generateRandomGrid(size) {
   return grid;
 }
 
-function createSymmetricGrid(leftArray) {
-  if (leftArray.length % 4 !== 0) {
-    throw new Error('The array length must be a multiple of 4.');
-  }
-
-  const symmetricArray = [];
-
-
-  for (let i = 0; i < leftArray.length; i += 4) {
-    const group = leftArray.slice(i, i + 4);
-    const symmetricGroup = [group[3], group[2], group[1], group[0]];
-    symmetricArray.push(...symmetricGroup);
-  }
-
-  return symmetricArray;
-}
-
-function makeSymmetricArrays() {
-  const size = 32;
-  const firstGrid = generateRandomGrid(size);
-  const secondGrid = createSymmetricGrid(firstGrid);
-
-  return [{ firstGrid: firstGrid, secondGrid: secondGrid, symmetric: true }];
-}
-
 function areArraysAsymmetric(arr1, arr2) {
   // Check if arrays are asymmetric (values at each index are not the same)
   return !arr1.every((val, index) => val === arr2[index]);
@@ -379,16 +354,6 @@ function makeAsymmetricArrays() {
 
   return [{ firstGrid: firstGrid, secondGrid: secondGrid, symmetric: false }];
 }
-
-function generateHalfOnesAndZerosArray(length) {
-  if (length % 2 !== 0) {
-    throw new Error("Length must be an even number.");
-  }
-
-  const halfLength = length / 2;
-  return Array.from({ length: halfLength }, () => 1).concat(Array.from({ length: halfLength }, () => 0));
-}
-
 
 var cheinSymmGrids = []
 
@@ -436,7 +401,6 @@ makeCheinSymmGrids()
 
 var bothGrids = shuffleArray(asymmetricGrids.concat(cheinSymmGrids))
 
-console.log(bothGrids)
 // var getRandomSpatial = function() {
 //   if (distractorSpatial.length == 0) {
 //     distractorSpatial = makeDistractorSpatial()
@@ -693,32 +657,15 @@ var practiceLen = 3;
 var numTrialsPerBlock = 8;
 var numTestBlocks = 3;
 
-
+practiceLen = 1
 var trialList;
 trialList = generateSpatialTrialValues(numStimuli)
 
 
-var booleanArray = shuffleArray(generateHalfOnesAndZerosArray(200))
+
 
 var spatialAns;
 
-
-function makeDistractorSpatial() {
-  var returnArray = []
-  for (var i = 0; i < 100; i++) {
-    const symmetric = booleanArray.shift()
-    if (symmetric) {
-      returnArray.push(makeSymmetricArrays())
-    } else {
-      returnArray.push(makeAsymmetricArrays())
-    }
-  }
-  return returnArray
-}
-
-
-var distractorSpatial = makeDistractorSpatial()
-console.log(distractorSpatial)
 
 var allConditions = ['storage-only', 'same-domain']
 allConditions.sort(() => Math.random() - 0.5);
@@ -955,7 +902,6 @@ var waitBlock = {
     }
     data['correct_response'] = logResponse
     data['equationType'] = equationType
-    console.log(data)
   },
   prompt: function() {
     if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain')) {
@@ -1040,6 +986,7 @@ var responseBlock = {
         data['correct_trial'] = correct ? 1 : 0
       }
     }
+    data['condition'] = getCurrCondition()
     activeGrid.resetGrid()
   }
 };
@@ -1104,11 +1051,7 @@ var practiceNode = {
   loop_function: function() {
     practiceCount += 1;
     // for response grids - 0, 1, or null
-
-
-
     var responseGridData = jsPsych.data.get().filter({ trial_id: 'response', exp_stage: 'practice', condition: getCurrCondition() }).trials
-
     var correct = 0;
     var totalTrials = responseGridData.length;
     var missedCount = 0
@@ -1196,6 +1139,16 @@ var practiceNode = {
         }
       }
 
+      if (accuracy < accuracyThresh) {
+        feedbackText +=
+          "<p class = block-text>Your accuracy is low.</p>" +
+          "<p class = block-text>Try your best to recall the letters.</p>"
+      }
+      if (missedResponses > missedResponseThresh) {
+        feedbackText +=
+          "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
+      }
+
       feedbackText += "<p class = block-text>Press <i>enter</i> to continue.</p></div>"
       expStage = 'test'
       practiceCount = 0;
@@ -1277,7 +1230,6 @@ var testNode = {
   timeline: [feedbackBlock].concat(testTrials),
   loop_function: function() {
     testCount += 1;
-
 
     // for response grids - 0, 1, or null
     var responseGridData = jsPsych.data.get().filter({ trial_id: 'response', exp_stage: 'test', condition: getCurrCondition() }).trials
