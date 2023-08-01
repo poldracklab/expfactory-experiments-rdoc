@@ -573,7 +573,7 @@ var attentionNode = {
 };
 
 var feedbackInstructText =
-  "<p class=center-block-text>Welcome! This experiment will take around 10 minutes.</p>" +
+  "<p class=center-block-text>Welcome! This experiment will take around 15 minutes.</p>" +
   "<p class=center-block-text>To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.</p>" +
   "<p class=center-block-text> Press <i>enter</i> to begin.</p>";
 var feedbackInstructBlock = {

@@ -477,7 +477,7 @@ var endText = '<div class = centerbox>' +
 
 var feedback_instruct_text =
     '<p class=center-block-text>' +
-    'Welcome! This experiment will take around 5 minutes.</p>' +
+    'Welcome! This experiment will take around 15 minutes.</p>' +
     '<p class=center-block-text>' +
     'To avoid technical issues, ' +
     'please keep the experiment tab (on Chrome or Firefox)' +
