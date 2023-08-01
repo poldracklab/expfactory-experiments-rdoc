@@ -657,11 +657,9 @@ var practiceLen = 3;
 var numTrialsPerBlock = 8;
 var numTestBlocks = 3;
 
-practiceLen = 1
+
 var trialList;
 trialList = generateSpatialTrialValues(numStimuli)
-
-
 
 
 var spatialAns;
