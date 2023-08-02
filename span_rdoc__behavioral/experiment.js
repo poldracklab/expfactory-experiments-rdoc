@@ -103,7 +103,6 @@ var attentionCheckData = [
     "Q": "<p class='block-text'>Press the M key</p>",
     "A": 77
   },
-  ,
   {
     "Q": "<p class='block-text'>Press the L key</p>",
     "A": 76
