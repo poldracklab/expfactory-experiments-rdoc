@@ -54,10 +54,7 @@ var getCurrAttentionCheckAnswer = function() {
   return currentAttentionCheckData.A
 }
 
-
-
-
-var attentionCheckData = [
+const attentionChecks = [
   // key presses
   {
     "Q": "<p class='block-text'>Press the Q key</p>",
@@ -99,7 +96,6 @@ var attentionCheckData = [
     "Q": "<p class='block-text'>Press the M key</p>",
     "A": 77
   },
-  ,
   {
     "Q": "<p class='block-text'>Press the L key</p>",
     "A": 76
@@ -170,7 +166,7 @@ var attentionCheckData = [
   }
 ]
 // TODO: change this to only use n number of Qs and As where n is numTestBlocks?
-attentionCheckData = shuffleChecksArray(attentionCheckData)
+var attentionCheckData = shuffleChecksArray(attentionChecks)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 
@@ -424,7 +420,6 @@ var appendData = function() {
   if (currentTrial.response == correctResponse) {
     correctTrial = 1;
   }
-
   jsPsych.data.get().addToLast({
     n_back_condition: nbackCondition,
     probe: probe,
@@ -433,6 +428,7 @@ var appendData = function() {
     letter_case: letterCase,
     correct_trial: correctTrial,
   });
+
 };
 
 /* ************************************ */
@@ -485,7 +481,6 @@ var numTrialsPerBlock = 11;
 var numTestBlocks = expLen / numTrialsPerBlock; //  18 blocks total
 var practiceThresh = 3;
 
-
 function shuffleChecksArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -509,8 +504,8 @@ function shuffleArray(array) {
 
 
 var delays = shuffleArray([1, 2]);
-delays = [...delays, ...delays, ...delays]
 
+delays = [...delays, ...delays, ...delays, ...delays, ...delays, ...delays, ...delays, ...delays, ...delays] // length of  num test blocks = 18
 var delay = 1
 var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"]
 var stims = createTrialTypes(practiceLen, delay);
@@ -739,8 +734,9 @@ var ITIBlock = {
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
-var practiceTrials = [];
-for (i = 0; i < practiceLen + delay; i++) {
+var practiceTrials1 = [];
+var practiceTrials2 = [];
+for (i = 0; i < practiceLen + 1; i++) {
   var practiceBlock = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getStim,
@@ -779,7 +775,53 @@ for (i = 0; i < practiceLen + delay; i++) {
     prompt: getPromptText,
   };
 
-  practiceTrials.push(
+  practiceTrials1.push(
+    fixationBlock,
+    practiceBlock,
+    practiceFeedbackBlock,
+    ITIBlock
+  );
+}
+for (i = 0; i < practiceLen + 2; i++) {
+  var practiceBlock = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: getStim,
+    data: {
+      trial_id: "practice_trial",
+      exp_stage: "practice",
+    },
+    choices: choices,
+    stimulus_duration: stimStimulusDuration, // 1000
+    trial_duration: stimTrialDuration, // 2000
+    post_trial_gap: 0,
+    response_ends_trial: false,
+    prompt: getPromptText,
+    on_finish: appendData,
+  };
+
+  var practiceFeedbackBlock = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: function() {
+      var last = jsPsych.data.get().last(1).values()[0];
+      if (last.response == null) {
+        return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
+      } else if (last.correct_trial == 1) {
+        return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
+      } else {
+        return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
+      }
+    },
+    data: {
+      exp_stage: "practice",
+      trial_id: "practice_feedback",
+    },
+    choices: ["NO_KEYS"],
+    stimulus_duration: 500,
+    trial_duration: 500,
+    prompt: getPromptText,
+  };
+
+  practiceTrials2.push(
     fixationBlock,
     practiceBlock,
     practiceFeedbackBlock,
@@ -788,8 +830,8 @@ for (i = 0; i < practiceLen + delay; i++) {
 }
 
 var practiceCount = 0;
-var practiceNode = {
-  timeline: [feedbackBlock].concat(practiceTrials),
+var practiceNode1 = {
+  timeline: [feedbackBlock].concat(practiceTrials1),
   loop_function: function(data) {
     practiceCount += 1;
 
@@ -820,10 +862,115 @@ var practiceNode = {
     var avgRT = sumRT / sumResponses;
     var mismatchPercent = mismatchPress / totalTrials;
 
-    console.log(accuracy)
-    console.log(missedResponses)
-    console.log(avgRT)
-    console.log(mismatchPercent)
+    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+
+      if (delay == 2) {
+        expStage = 'test'
+        delay = delays.shift()
+        feedbackText =
+          "<div class = centerbox>" +
+          "<p class = block-text>We will now begin the test portion.</p>" +
+          "<p class = block-text>Keep your " +
+          possibleResponses[0][0] +
+          " on the " +
+          possibleResponses[0][2] +
+          " and your " +
+          possibleResponses[1][0] +
+          " on the " +
+          possibleResponses[1][2] +
+          "</p>" +
+          "<p class = block-text>Once again, match the current letter to the letter that appeared either 1 or 2 trials ago depending on the delay given to you for each block. " +
+          "Press your " +
+          possibleResponses[0][0] +
+          " if they match, and your " +
+          possibleResponses[1][0] +
+          " if they mismatch.</p>" +
+          "<p class=block-text><b>Your delay for this block is " +
+          delay +
+          "</b>. Please match the current letter to the letter that appeared <b>" +
+          delay +
+          "</b> trial(s) ago.</p>" +
+          '<p class = block-text>Capitalization does not matter, so "T" matches with "t". The first trial(s) will not match, because there was nothing before it.</p> ' +
+          "<p class = block-text>You will no longer see the rules, so memorize the instructions before you continue. Press <i>enter</i> to begin.</p>" +
+          "</div>";
+        stims = createTrialTypes(numTrialsPerBlock, delay);
+      } else {
+        delay = 2;
+        feedbackText =
+          "<div class = centerbox>" +
+          "<p class=block-text>Your delay for this block is " +
+          delay +
+          ". Please match the current letter to the letter that appeared " +
+          delay +
+          " trial(s) ago.</p><p class=block-text>Press <i>enter</i> to begin.</p></div>";
+        stims = createTrialTypes(practiceLen, delay);
+        practiceCount = 0
+      }
+      return false;
+    } else {
+      feedbackText =
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
+      if (accuracy < accuracyThresh) {
+        feedbackText +=
+          "<p class = block-text>Your accuracy is low.  Remember: </p>" +
+          promptTextList;
+      }
+      if (avgRT > rtThresh) {
+        feedbackText +=
+          "<p class = block-text>You have been responding too slowly." +
+          speedReminder +
+          "</p>";
+      }
+      if (missedResponses > missedResponseThresh) {
+        feedbackText +=
+          "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
+      }
+      if (mismatchPercent >= 0.9) {
+        feedbackText +=
+          "</p><p class = block-text>Please do not simply press your " +
+          possibleResponses[1][0] +
+          " to every stimulus. Please try to identify the matches and press your " +
+          possibleResponses[0][0] +
+          " when they occur.";
+      }
+      feedbackText +=
+        "<p class = block-text>We are going to repeat the practice round now. Press <i>enter</i> to begin.</p></div>";
+      stims = createTrialTypes(practiceLen, delay);
+      return true;
+    }
+  },
+};
+var practiceNode2 = {
+  timeline: [feedbackBlock].concat(practiceTrials2),
+  loop_function: function(data) {
+    practiceCount += 1;
+
+    var sumRT = 0;
+    var sumResponses = 0;
+    var correct = 0;
+    var totalTrials = 0;
+    var mismatchPress = 0;
+
+    for (var i = 0; i < data.trials.length; i++) {
+      if (data.trials[i].trial_id == "practice_trial") {
+        totalTrials += 1;
+        if (data.trials[i].rt != null) {
+          sumRT += data.trials[i].rt;
+          sumResponses += 1;
+          if (data.trials[i].response == data.trials[i].correct_response) {
+            correct += 1;
+          }
+        }
+        if (data.trials[i].response == possibleResponses[1][1]) {
+          mismatchPress += 1;
+        }
+      }
+    }
+
+    var accuracy = correct / totalTrials;
+    var missedResponses = (totalTrials - sumResponses) / totalTrials;
+    var avgRT = sumRT / sumResponses;
+    var mismatchPercent = mismatchPress / totalTrials;
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
 
@@ -904,9 +1051,9 @@ var practiceNode = {
   },
 };
 
-var testTrials = [];
-testTrials.push(attentionNode)
-for (i = 0; i < numTrialsPerBlock + delay; i++) {
+var testTrials1 = [];
+testTrials1.push(attentionNode)
+for (i = 0; i < numTrialsPerBlock + 1; i++) {
   var testBlock = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getStim,
@@ -921,12 +1068,31 @@ for (i = 0; i < numTrialsPerBlock + delay; i++) {
     response_ends_trial: false,
     on_finish: appendData,
   };
-  testTrials.push(fixationBlock, testBlock, ITIBlock);
+  testTrials1.push(fixationBlock, testBlock, ITIBlock);
+}
+var testTrials2 = [];
+testTrials2.push(attentionNode)
+for (i = 0; i < numTrialsPerBlock + 2; i++) {
+  var testBlock = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: getStim,
+    data: {
+      trial_id: "test_trial",
+      exp_stage: "test",
+    },
+    choices: choices,
+    stimulus_duration: stimStimulusDuration, // 1000
+    trial_duration: stimTrialDuration, // 2000
+    post_trial_gap: 0,
+    response_ends_trial: false,
+    on_finish: appendData,
+  };
+  testTrials2.push(fixationBlock, testBlock, ITIBlock);
 }
 
-testCount = 0; // global
-var testNode = {
-  timeline: [feedbackBlock].concat(testTrials),
+var testCount = 0; // global
+var testNode1 = {
+  timeline: [feedbackBlock].concat(testTrials1),
   loop_function: function(data) {
     testCount += 1;
 
@@ -957,12 +1123,20 @@ var testNode = {
     var avgRT = sumRT / sumResponses;
     var mismatchPercent = mismatchPress / totalTrials;
 
+
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+
+
+
+    if (currentAttentionCheckData == undefined) {
+      attentionCheckData = shuffleChecksArray(attentionChecks)
+      currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+    }
 
     delay = delays.shift()
 
+
     if (testCount == numTestBlocks) {
-      testCount = 0;
       feedbackText =
         '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
       return false;
@@ -1002,7 +1176,97 @@ var testNode = {
         delay +
         "</i>.  Press <i>enter</i> to continue.</p>";
       stims = createTrialTypes(numTrialsPerBlock, delay);
-      return true;
+      return false;
+    }
+  },
+};
+
+var testNode2 = {
+  timeline: [feedbackBlock].concat(testTrials2),
+  loop_function: function(data) {
+    testCount += 1;
+
+    var sumRT = 0;
+    var sumResponses = 0;
+    var correct = 0;
+    var totalTrials = 0;
+    var mismatchPress = 0;
+
+    for (var i = 0; i < data.trials.length; i++) {
+      if (data.trials[i].trial_id == "test_trial") {
+        totalTrials += 1;
+        if (data.trials[i].rt != null) {
+          sumRT += data.trials[i].rt;
+          sumResponses += 1;
+          if (data.trials[i].response == data.trials[i].correct_response) {
+            correct += 1;
+          }
+        }
+        if (data.trials[i].response == possibleResponses[1][1]) {
+          mismatchPress += 1;
+        }
+      }
+    }
+
+    var accuracy = correct / totalTrials;
+    var missedResponses = (totalTrials - sumResponses) / totalTrials;
+    var avgRT = sumRT / sumResponses;
+    var mismatchPercent = mismatchPress / totalTrials;
+
+
+    currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+
+
+
+    if (currentAttentionCheckData == undefined) {
+      attentionCheckData = shuffleChecksArray(attentionChecks)
+      currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+    }
+
+    delay = delays.shift()
+
+
+    if (testCount == numTestBlocks) {
+      feedbackText =
+        '</p><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p>';
+      return false;
+    } else {
+      feedbackText =
+        "<p>Please take this time to read your feedback and to take a short break! Press <i>enter</i> to continue." +
+        "<br>You have completed " +
+        testCount +
+        " out of " +
+        numTestBlocks +
+        " blocks of trials.</p>";
+      if (accuracy < accuracyThresh) {
+        feedbackText +=
+          "<p class = block-text>Your accuracy is too low.  Remember: </p>" +
+          promptTextList;
+      }
+      if (missedResponses > missedResponseThresh) {
+        feedbackText +=
+          "<p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.</p>";
+      }
+
+      if (avgRT > rtThresh) {
+        feedbackText +=
+          "<p class = block-text>You have been responding too slowly.</p>";
+      }
+
+      if (mismatchPercent >= 0.9) {
+        feedbackText +=
+          "<p class = block-text>Please do not simply press your " +
+          possibleResponses[1][0] +
+          " to every stimulus. Please try to identify the matches and press your " +
+          possibleResponses[0][0] +
+          " when they occur.</p>";
+      }
+      feedbackText +=
+        "<p class = block-text><i>For the next round of trials, your delay is " +
+        delay +
+        "</i>.  Press <i>enter</i> to continue.</p>";
+      stims = createTrialTypes(numTrialsPerBlock, delay);
+      return false;
     }
   },
 };
@@ -1048,13 +1312,24 @@ var n_back_rdoc_init = () => {
   n_back_rdoc_experiment.push(fullscreen);
   n_back_rdoc_experiment.push(instructionNode);
   // practice node 1 - delay 1
-  n_back_rdoc_experiment.push(practiceNode);
+  n_back_rdoc_experiment.push(practiceNode1);
   // practice node 2 - delay 2
-  n_back_rdoc_experiment.push(practiceNode);
+  n_back_rdoc_experiment.push(practiceNode2);
 
-  // test node, 1 then 2
-  for (var i = 0; i < numTestBlocks; i++) {
-    n_back_rdoc_experiment.push(testNode);
+  const randomInt = Math.floor(Math.random() * 2);
+
+  if (randomInt == 0) {
+    // test node, 1 then 2
+    for (var i = 0; i < numTestBlocks / 2; i++) {
+      n_back_rdoc_experiment.push(testNode1);
+      n_back_rdoc_experiment.push(testNode2);
+    }
+  } else {
+    // test node, 1 then 2
+    for (var i = 0; i < numTestBlocks / 2; i++) {
+      n_back_rdoc_experiment.push(testNode2);
+      n_back_rdoc_experiment.push(testNode1);
+    }
   }
 
   // post task
