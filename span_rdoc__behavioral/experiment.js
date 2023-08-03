@@ -955,8 +955,6 @@ var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
     var last = jsPsych.data.get().last(1).trials[0];
-    console.log('practice feedback block last')
-    console.log(last)
     // ^ changed since we added a fixation block after response block
     if (last.correct_trial == null) {
       return (
@@ -1108,9 +1106,6 @@ var practiceNode = {
     var accuracy = correct / responseCount;
     var missedResponses = missedCount / totalTrials;
 
-    console.log(accuracy)
-    console.log(missedResponses)
-
     // for processing
     if (getCurrCondition() == 'storage-only') {
       var avgProcessingAcc = null;
@@ -1143,9 +1138,7 @@ var practiceNode = {
       var avgProcessingAcc = processingCorrect / responseCount;
       var avgProcessingMissed = missedProcessingCount / totalTrials;
       var avgProcessingRT = rt / responseCount
-      console.log(avgProcessingAcc)
-      console.log(avgProcessingMissed)
-      console.log(avgProcessingRT)
+
     }
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
