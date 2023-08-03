@@ -647,8 +647,8 @@ var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 var equationChoices = ["t", "f"];
 
-var processingAccThresh = .7;
-var processingRTThresh = 1000; // 500ms
+var processingAccThresh = .6;
+var processingRTThresh = 1000;
 var processingMissedThresh = .2;
 
 
@@ -677,7 +677,7 @@ var currSeq = [];
 
 var practicePromptText =
   "<div class = prompt_box>" +
-  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the letters!</p>' +
+  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the black colored cells!</p>' +
   "</div>";
 
 var promptText =
@@ -951,6 +951,42 @@ function arraysAreEqual(array1, array2) {
 // eslint-disable-next-line no-unused-vars
 var activeGrid;
 
+var practiceFeedbackBlock = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function() {
+    var last = jsPsych.data.get().last(1).trials[0];
+    // ^ changed since we added a fixation block after response block
+    if (last.correct_trial == null) {
+      return (
+        "<div class = fb_box><div class = 'center-text'><font size =20>Respond Faster!</font></div></div>"
+      );
+    } else if (last.correct_trial == 1) {
+      return (
+        "<div class = fb_box><div class = 'center-text'><font size =20>Correct!</font></div></div>"
+      );
+    } else {
+      return (
+        "<div class = fb_box><div class = 'center-text'><font size =20>Incorrect</font></div></div>"
+      );
+    }
+  },
+  data: {
+    expStage: "practice",
+    trial_id: "practice_feedback",
+  },
+  choices: ["NO_KEYS"],
+  stimulus_duration: 500,
+  trial_duration: 500,
+  prompt: function() {
+    if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain')) {
+      return promptText
+    }
+    if (getExpStage() == 'practice') {
+      return practicePromptText
+    }
+  },
+};
+
 var responseBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
@@ -1023,7 +1059,7 @@ function generatePracticeTrials() {
           stimulusBlock,
         );
       }
-      returnArray.push(responseBlock, ITIBlock)
+      returnArray.push(responseBlock, practiceFeedbackBlock, ITIBlock)
     }
   } else if (getCurrCondition() == 'storage-only') {
     for (let i = 0; i < practiceLen; i++) {
@@ -1033,7 +1069,7 @@ function generatePracticeTrials() {
           stimulusBlock,
         );
       }
-      returnArray.push(responseBlock, ITIBlock)
+      returnArray.push(responseBlock, practiceFeedbackBlock, ITIBlock)
     }
   }
   return returnArray
@@ -1091,7 +1127,7 @@ var practiceNode = {
         if (responseProcessingData[i].correct_response == null) {
           missedProcessingCount += 1
         } else {
-          rt += responseProcessingData.rt
+          rt += responseProcessingData[i].rt
           responseCount += 1
           if (responseProcessingData[i].correct_response == 1) {
             processingCorrect += 1
@@ -1102,6 +1138,7 @@ var practiceNode = {
       var avgProcessingAcc = processingCorrect / responseCount;
       var avgProcessingMissed = missedProcessingCount / totalTrials;
       var avgProcessingRT = rt / responseCount
+
     }
 
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
@@ -1124,14 +1161,14 @@ var practiceNode = {
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
             "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
-        if (avgProcessingRT < processingRTThresh) {
+        if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
-            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
-        if (avgProcessingMissed < processingMissedThresh) {
+        if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
-            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
       }
@@ -1139,7 +1176,7 @@ var practiceNode = {
       if (accuracy < accuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy is low.</p>" +
-          "<p class = block-text>Try your best to recall the letters.</p>"
+          "<p class = block-text>Try your best to recall the black colored cells.</p>"
       }
       if (missedResponses > missedResponseThresh) {
         feedbackText +=
@@ -1157,7 +1194,7 @@ var practiceNode = {
       if (accuracy < accuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy is low.</p>" +
-          "<p class = block-text>Try your best to recall the letters.</p>"
+          "<p class = block-text>Try your best to recall the black colored cells.</p>"
       }
 
       if (getCurrCondition() == 'same-domain') {
@@ -1166,14 +1203,14 @@ var practiceNode = {
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
             "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
-        if (avgProcessingRT < processingRTThresh) {
+        if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
-            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
-        if (avgProcessingMissed < processingMissedThresh) {
+        if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
-            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
       }
@@ -1271,7 +1308,7 @@ var testNode = {
         if (responseProcessingData[i].correct_response == null) {
           missedProcessingCount += 1
         } else {
-          rt += responseProcessingData.rt
+          rt += responseProcessingData[i].rt
           responseCount += 1
           if (responseProcessingData[i].correct_response == 1) {
             processingCorrect += 1
@@ -1296,14 +1333,14 @@ var testNode = {
             "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
             "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
-        if (avgProcessingRT < processingRTThresh) {
+        if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
-            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
-        if (avgProcessingMissed < processingMissedThresh) {
+        if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
-            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
       }
@@ -1324,7 +1361,7 @@ var testNode = {
       if (accuracy < accuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy is low.  Remember: </p>" +
-          '<p class = block-text>Try to recall all the letters. </p>'
+          '<p class = block-text>Try to recall all the black colored cells. </p>'
       }
 
       if (getCurrCondition() == 'same-domain') {
@@ -1333,14 +1370,14 @@ var testNode = {
             "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
             "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>"
         }
-        if (avgProcessingRT < processingRTThresh) {
+        if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
-            "<p class = block-text>Your are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
-        if (avgProcessingMissed < processingMissedThresh) {
+        if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
-            "<p class = block-text>Your are not responding to the 8x8 grids when they appear on the screen.</p>" +
+            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
             "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>"
         }
       }

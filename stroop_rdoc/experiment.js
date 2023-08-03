@@ -458,6 +458,17 @@ var attentionCheckBlock = {
   data: {
     trial_id: 'attention_check',
   },
+  on_load: function() {
+    function preventSlash(event) {
+      if (event.key === '/' || event.key === ',' || event.key === '.') {
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', preventSlash);
+    jsPsych.currentTrial().on_close = function() {
+      window.removeEventListener('keydown', preventSlash);
+    };
+  },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
@@ -566,6 +577,17 @@ var fixationBlock = {
     trial_id: "fixation",
     exp_stage: "test",
   },
+  on_load: function() {
+    function preventSlash(event) {
+      if (event.key === '/' || event.key === ',' || event.key === '.') {
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', preventSlash);
+    jsPsych.currentTrial().on_close = function() {
+      window.removeEventListener('keydown', preventSlash);
+    };
+  },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500 
@@ -578,6 +600,17 @@ var practiceFixationBlock = {
   data: {
     trial_id: "fixation",
     exp_stage: "practice",
+  },
+  on_load: function() {
+    function preventSlash(event) {
+      if (event.key === '/' || event.key === ',' || event.key === '.') {
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', preventSlash);
+    jsPsych.currentTrial().on_close = function() {
+      window.removeEventListener('keydown', preventSlash);
+    };
   },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
@@ -601,6 +634,17 @@ var practiceFeedbackBlock = {
   data: {
     exp_stage: "practice",
     trial_id: "practice_feedback",
+  },
+  on_load: function() {
+    function preventSlash(event) {
+      if (event.key === '/' || event.key === ',' || event.key === '.') {
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', preventSlash);
+    jsPsych.currentTrial().on_close = function() {
+      window.removeEventListener('keydown', preventSlash);
+    };
   },
   choices: ["NO_KEYS"],
   stimulus_duration: 500,
@@ -639,6 +683,17 @@ var ITIBlock = {
     );
     return ITIms * 1000;
   },
+  on_load: function() {
+    function preventSlash(event) {
+      if (event.key === '/' || event.key === ',' || event.key === '.') {
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', preventSlash);
+    jsPsych.currentTrial().on_close = function() {
+      window.removeEventListener('keydown', preventSlash);
+    };
+  },
   prompt: function() {
     if (getExpStage() == 'practice') {
       return promptText
@@ -660,6 +715,17 @@ for (i = 0; i < practiceLen; i++) {
         exp_stage: "practice",
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
       });
+    },
+    on_load: function() {
+      function preventSlash(event) {
+        if (event.key === '/' || event.key === ',' || event.key === '.') {
+          event.preventDefault();
+        }
+      }
+      window.addEventListener('keydown', preventSlash);
+      jsPsych.currentTrial().on_close = function() {
+        window.removeEventListener('keydown', preventSlash);
+      };
     },
     choices: choices,
     response_ends_trial: false,
@@ -761,6 +827,17 @@ for (i = 0; i < numTrialsPerBlock; i++) {
         exp_stage: "test",
         correct_response: this.key_answer,
       });
+    },
+    on_load: function() {
+      function preventSlash(event) {
+        if (event.key === '/' || event.key === ',' || event.key === '.') {
+          event.preventDefault();
+        }
+      }
+      window.addEventListener('keydown', preventSlash);
+      jsPsych.currentTrial().on_close = function() {
+        window.removeEventListener('keydown', preventSlash);
+      };
     },
     choices: choices,
     response_ends_trial: false,
