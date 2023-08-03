@@ -404,9 +404,6 @@ var feedbackInstructText =
 var speedReminder =
   '<p class = block-text>' +
   'Try to respond as quickly and accurately as possible.</p> ';
-// generic task variables
-// const runAttentionChecks = false;
-// const attention_check_thresh = 0.65;
 const stimStimulusDuration = 2000;
 const stimTrialDuration = 2000;
 const conditions = ['color', 'conjunction']
