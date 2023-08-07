@@ -427,7 +427,6 @@ var practiceLen = 12;
 var numTrialsPerBlock = 32;
 var numTestBlocks = 3;
 
-
 choices[2] = possibleResponses[2][1]
 
 var responseKeys =
@@ -825,7 +824,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       return Object.assign({}, getStimData(), {
         trial_id: "stim",
         exp_stage: "test",
-        correct_response: this.key_answer,
+        correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
       });
     },
     on_load: function() {
