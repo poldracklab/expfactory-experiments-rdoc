@@ -58,7 +58,7 @@ function evalAttentionChecks() {
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
       .get()
-      .filter({ trial_id: 'attention_check' }).trials;
+      .filter({ trial_id: 'test_attention_check' }).trials;
     var checksPassed = 0;
     for (var i = 0; i < attentionChecksTrials.length; i++) {
       if (attentionChecksTrials[i].correct_trial === true) {
@@ -206,11 +206,25 @@ function shuffleArray(array) {
 attentionCheckData = shuffleArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
+function renameDataProperties() {
+  // Fetch the data from the experiment
+  var data = jsPsych.data.get().trials;
+
+  data.forEach(function(obj) {
+    if (obj.correct === true) {
+      obj.correct_trial = 1
+    } else if (obj.correct === false) {
+      obj.correct_trial = 0
+    }
+    delete (obj.correct)
+  });
+
+}
 
 function assessPerformance() {
   var experimentData = jsPsych.data
     .get()
-    .filter({ trialId: "test_trial" }).trials;
+    .filter({ trial_id: "test_trial" }).trials;
   var missedCount = 0;
   var trialCount = 0;
   var rtArray = [];
@@ -228,24 +242,24 @@ function assessPerformance() {
     allTrials += 1;
     key = experimentData[i].response;
     choiceCounts[key] += 1;
-    if (experimentData[i].stopSignalCondition == "go") {
+    if (experimentData[i].condition == "go") {
       trialCount += 1;
     }
     if (
-      experimentData[i].stopSignalCondition == "go" &&
+      experimentData[i].condition == "go" &&
       experimentData[i].rt != null
     ) {
       rtArray.push(experimentData[i].rt);
-      if (experimentData[i].response == experimentData[i].correctResponse) {
+      if (experimentData[i].response == experimentData[i].correct_response) {
         correct += 1;
       }
     } else if (
-      experimentData[i].stopSignalCondition == "stop" &&
+      experimentData[i].condition == "stop" &&
       experimentData[i].rt != null
     ) {
       rtArray.push(experimentData[i].rt);
     } else if (
-      experimentData[i].stopSignalCondition == "go" &&
+      experimentData[i].condition == "go" &&
       experimentData[i].rt == null
     ) {
       missedCount += 1;
@@ -301,7 +315,7 @@ var getCategorizeFeedback = function() {
         "<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>" +
         promptText
       );
-    } else if (last.response == last.correctResponse) {
+    } else if (last.response == last.correct_response) {
       return (
         "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
         promptText
@@ -336,8 +350,8 @@ var createTrialTypes = function(numTrialsPerBlock) {
     for (var j = 0; j < shapes.length; j++) {
       stim = {
         stim: shapes[j],
-        correctResponse: possibleResponses[j][1],
-        stopSignalCondition: stopSignalsConditions[x],
+        correct_response: possibleResponses[j][1],
+        condition: stopSignalsConditions[x],
       };
       stims.push(stim);
     }
@@ -355,15 +369,15 @@ var getStim = function() {
   if (expPhase == "practice1") {
     stim = stims.pop();
     shape = stim.stim;
-    correctResponse = stim.correctResponse;
-    stopSignalCondition = "go";
+    correct_response = stim.correct_response;
+    condition = "go";
   } else if (expPhase == "test" || expPhase == "practice2") {
     stim = stims.pop();
     shape = stim.stim;
-    correctResponse = stim.correctResponse;
-    stopSignalCondition = stim.stopSignalCondition;
-    if (stopSignalCondition == "stop") {
-      correctResponse = null;
+    correct_response = stim.correct_response;
+    condition = stim.condition;
+    if (condition == "stop") {
+      correct_response = null;
     }
   }
   stim = {
@@ -375,8 +389,8 @@ var getStim = function() {
       "</div></div>",
     data: {
       stim: shape,
-      stopSignalCondition: stopSignalCondition,
-      correctResponse: correctResponse,
+      condition: condition,
+      correct_response: correct_response,
     },
   };
   stimData = stim.data;
@@ -388,11 +402,11 @@ function getSSD() {
 }
 
 function getSSType() {
-  return stopSignalCondition;
+  return condition;
 }
 
 function getCorrectResponse() {
-  return correctResponse;
+  return correct_response;
 }
 
 var appendData = function(data) {
@@ -407,19 +421,19 @@ var appendData = function(data) {
   }
 
   data.stim = stimData.stim;
-  data.correctResponse = correctResponse;
+  data.correct_response = correct_response;
   data.current_block = currBlock;
   data.currentTrial = currentTrial;
-  data.stopSignalCondition = stimData.stopSignalCondition;
+  data.condition = stimData.condition;
 
-  var correctCurrent = 0;
-  if (data.response == data.correctResponse) {
+  var correctTrial = 0;
+  if (data.response == data.correct_response) {
     correctTrial = 1;
   }
-  data.correctTrial = correctCurrent;
+
 
   if (expPhase == "test" || expPhase == "practice2") {
-    if (data.stopSignalCondition == "stop") {
+    if (data.condition == "stop") {
       if (data.response == null && SSD < maxSSD) {
         data.stop_acc = 1;
         SSD += 50;
@@ -427,14 +441,15 @@ var appendData = function(data) {
         data.stop_acc = 0;
         SSD -= 50;
       }
-    } else if (data.stopSignalCondition == "go") {
-      if (data.response == data.correctResponse) {
+    } else if (data.condition == "go") {
+      if (data.response == data.correct_response) {
         data.go_acc = 1;
       } else {
         data.go_acc = 0;
       }
     }
   }
+  console.log('trial data', data)
 };
 
 /* ************************************ */
@@ -492,9 +507,9 @@ var maxSSD = 1000;
 var minSSD = 0;
 
 currentTrial = 0;
-correctResponse = null;
+correct_response = null;
 stimData = null;
-stopSignalCondition = null;
+condition = null;
 
 var maxStopCorrect = 0.7;
 var minStopCorrect = 0.3;
@@ -556,7 +571,8 @@ var expPhase = "practice2";
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
-    trial_id: 'attention_check',
+    trial_id: 'test_attention_check',
+    trial_duration: null
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
@@ -580,6 +596,7 @@ var feedbackInstructBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instruction_feedback",
+    trial_duration: 180000
   },
   stimulus: getInstructFeedback,
   post_trial_gap: 0,
@@ -591,6 +608,7 @@ var instructionsBlock = {
   type: jsPsychInstructions,
   data: {
     trial_id: "instructions",
+    trial_duration: null
   },
   pages: [
     "<div class = centerbox>" +
@@ -662,6 +680,8 @@ var fixationBlock = {
   choices: ["NO_KEYS"],
   data: {
     trial_id: "fixation",
+    trial_duration: fixationDuration,
+    stimulus_duration: fixationDuration,
   },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
@@ -674,6 +694,8 @@ var promptFixationBlock = {
   choices: ["NO_KEYS"],
   data: {
     trial_id: "prompt_fixation",
+    trial_duration: 500,
+    stimulus_duration: 500,
   },
   post_trial_gap: 0,
   stimulus_duration: 500, // 500
@@ -685,8 +707,22 @@ var feedbackText =
   "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  data: {
-    trial_id: "feedback",
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000,
+
+      }
+    } else {
+      return {
+        trial_id: 'test_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000,
+
+      }
+    }
   },
   stimulus: getFeedback,
   post_trial_gap: 0,
@@ -696,18 +732,38 @@ var feedbackBlock = {
 };
 
 
+var ITIms = null;
+
+// *** ITI *** //
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
+  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
   is_html: true,
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "wait",
+  choices: ['NO_KEYS'],
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    } else {
+      return {
+        trial_id: 'test_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    }
   },
   post_trial_gap: 0,
   trial_duration: function() {
-    var ITIms = sampleFromDecayingExponential(
-    );
+    ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function() {
@@ -716,6 +772,10 @@ var ITIBlock = {
     } else {
       return ''
     }
+  },
+  on_finish: function(data) {
+    data['trial_duration'] = ITIms * 1000;
+    data['stimulus_duration'] = ITIms * 1000;
   }
 };
 
@@ -725,7 +785,7 @@ var ITIBlock = {
 
 var practiceStopTrials = [];
 for (i = 0; i < practiceLen; i++) {
-  var practiceBlock = {
+  var practiceTrial = {
     type: jsPoldracklabStopSignal,
     stimulus: getStim,
     SS_stimulus: getStopStim,
@@ -733,6 +793,8 @@ for (i = 0; i < practiceLen; i++) {
     data: {
       trial_id: "practice_trial",
       exp_stage: "practice",
+      trial_duration: stimTrialDuration,
+      stimulus_duration: stimStimulusDuration,
     },
     choices: choices,
     correct_choice: getCorrectResponse,
@@ -753,6 +815,8 @@ for (i = 0; i < practiceLen; i++) {
     data: {
       trial_id: "practice-stop-feedback",
       exp_stage: "practice",
+      trial_duration: 500,
+      stimulus_duration: 500,
     },
     choices: ["NO_KEYS"],
     stimulus: getCategorizeFeedback,
@@ -765,7 +829,7 @@ for (i = 0; i < practiceLen; i++) {
 
   practiceStopTrials.push(
     promptFixationBlock,
-    practiceBlock,
+    practiceTrial,
     practiceFeedbackBlock,
     ITIBlock
   );
@@ -793,16 +857,16 @@ var practiceStopNode = {
         // totalTrials += 1;
       }
 
-      if (data.trials[i].stopSignalCondition == "go") {
+      if (data.trials[i].condition == "go") {
         goLength += 1;
         if (data.trials[i].rt != null) {
           numGoResponses += 1;
           sumGoRT += data.trials[i].rt;
-          if (data.trials[i].response == data.trials[i].correctResponse) {
+          if (data.trials[i].response == data.trials[i].correct_response) {
             sumGoCorrect += 1;
           }
         }
-      } else if (data.trials[i].stopSignalCondition == "stop") {
+      } else if (data.trials[i].condition == "stop") {
         stopLength += 1;
         if (data.trials[i].rt != null) {
           numStopResponses += 1;
@@ -891,7 +955,7 @@ var practiceStopNode = {
 var testTrials = [];
 testTrials.push(attentionNode)
 for (i = 0; i < numTrialsPerBlock; i++) {
-  var testBlock = {
+  var testTrial = {
     type: jsPoldracklabStopSignal,
     stimulus: getStim,
     SS_stimulus: getStopStim,
@@ -899,9 +963,11 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     data: {
       trial_id: "test_trial",
       exp_stage: "test",
+      trial_duration: stimTrialDuration,
+      stimulus_duration: stimStimulusDuration,
     },
     choices: choices,
-    correct_choice: correctResponse,
+    correct_choice: correct_response,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 2000
     timing_duration: 2000,
@@ -913,7 +979,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       appendData(data);
     },
   };
-  testTrials.push(fixationBlock, testBlock, ITIBlock);
+  testTrials.push(fixationBlock, testTrial, ITIBlock);
 }
 
 var testCount = 0;
@@ -938,16 +1004,16 @@ var testNode = {
       if (data.trials[i].trial_id == "test_trial") {
         // totalTrials += 1;
       }
-      if (data.trials[i].stopSignalCondition == "go") {
+      if (data.trials[i].condition == "go") {
         goLength += 1;
         if (data.trials[i].rt != null) {
           numGoResponses += 1;
           sumGoRT += data.trials[i].rt;
-          if (data.trials[i].response == data.trials[i].correctResponse) {
+          if (data.trials[i].response == data.trials[i].correct_response) {
             sumGoCorrect += 1;
           }
         }
-      } else if (data.trials[i].stopSignalCondition == "stop") {
+      } else if (data.trials[i].condition == "stop") {
         stopLength += 1;
         if (data.trials[i].rt != null) {
           numStopResponses += 1;
@@ -1024,6 +1090,7 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: expID,
+    trial_duration: 180000
   },
   trial_duration: 180000,
   stimulus: endText,
@@ -1032,6 +1099,7 @@ var endBlock = {
   on_finish: function() {
     assessPerformance();
     evalAttentionChecks();
+    renameDataProperties()
   },
 };
 

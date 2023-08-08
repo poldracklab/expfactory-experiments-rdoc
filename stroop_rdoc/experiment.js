@@ -35,7 +35,7 @@ function evalAttentionChecks() {
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
       .get()
-      .filter({ trial_id: 'attention_check' }).trials;
+      .filter({ trial_id: 'test_attention_check' }).trials;
     var checksPassed = 0;
     for (var i = 0; i < attentionChecksTrials.length; i++) {
       if (attentionChecksTrials[i].correct_trial === true) {
@@ -262,11 +262,12 @@ function assessPerformance() {
 }
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
-  correctTrial = 0;
+  var correctTrial = 0;
   if (data.response == data.correct_response) {
     correctTrial = 1;
   }
-  jsPsych.data.get().addToLast({ correctTrial: correctTrial });
+  jsPsych.data.get().addToLast({ correct_trial: correctTrial });
+  console.log(jsPsych.data.get().last(1).values()[0])
 }
 
 var getInstructFeedback = function() {
@@ -350,6 +351,22 @@ possibleResponses[2] = ["ring finger", "/", "slash key (/)"]
 /*
   Changed this to create stimuli by looping arrays
 */
+
+function renameDataProperties() {
+  // Fetch the data from the experiment
+  var data = jsPsych.data.get().trials;
+  // rename colors from hex values to color words
+  data.forEach(function(obj) {
+    if (obj.stim_color === "#FF7070") {
+      obj.stim_color = 'red'
+    } else if (obj.stim_color === "#7070FF") {
+      obj.stim_color = 'red'
+    } else if (obj.stim_color === "#70FF70") {
+      obj.stim_color = 'red'
+    }
+  });
+  console.log(jsPsych.data.get().trials)
+}
 
 // creating stimuli for stroop task, string replace XXX and YYY
 var stimulusText =
@@ -455,7 +472,8 @@ var promptText =
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
-    trial_id: 'attention_check',
+    trial_id: 'test_attention_check',
+    trial_duration: null
   },
   on_load: function() {
     function preventSlash(event) {
@@ -494,6 +512,7 @@ var feedbackInstructBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
     trial_id: "instruction_feedback",
+    trial_duration: 180000
   },
   choices: ["Enter"],
   stimulus: getInstructFeedback,
@@ -505,6 +524,7 @@ var instructionsBlock = {
   type: jsPsychInstructions,
   data: {
     trial_id: "instructions",
+    trial_duration: null
   },
   pages: [
     "<div class = centerbox>" +
@@ -575,6 +595,8 @@ var fixationBlock = {
   data: {
     trial_id: "fixation",
     exp_stage: "test",
+    trial_duration: fixationDuration,
+    stimulus_duration: fixationDuration,
   },
   on_load: function() {
     function preventSlash(event) {
@@ -599,6 +621,8 @@ var practiceFixationBlock = {
   data: {
     trial_id: "fixation",
     exp_stage: "practice",
+    trial_duration: 500,
+    stimulus_duration: 500,
   },
   on_load: function() {
     function preventSlash(event) {
@@ -612,8 +636,8 @@ var practiceFixationBlock = {
     };
   },
   post_trial_gap: 0,
-  stimulus_duration: fixationDuration, // 500
-  trial_duration: fixationDuration, // 1000ms total
+  stimulus_duration: fixationDuration,
+  trial_duration: fixationDuration,
   prompt: promptText,
 };
 
@@ -624,7 +648,7 @@ var practiceFeedbackBlock = {
     if (last.response == null) {
       return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
     }
-    if (last.correctTrial == 1) {
+    if (last.correct_trial == 1) {
       return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
     } else {
       return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
@@ -633,6 +657,8 @@ var practiceFeedbackBlock = {
   data: {
     exp_stage: "practice",
     trial_id: "practice_feedback",
+    trial_duration: 500,
+    stimulus_duration: 500,
   },
   on_load: function() {
     function preventSlash(event) {
@@ -656,8 +682,20 @@ var feedbackText =
   "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  data: {
-    trial_id: "feedback",
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000
+      }
+    } else {
+      return {
+        trial_id: 'test_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000
+      }
+    }
   },
   choices: ["Enter"],
   stimulus: getFeedback,
@@ -666,20 +704,38 @@ var feedbackBlock = {
   response_ends_trial: true,
 };
 
+var ITIms = null;
 
-
+// *** ITI *** //
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
+  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
   is_html: true,
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "wait",
+  choices: ['NO_KEYS'],
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    } else {
+      return {
+        trial_id: 'test_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    }
   },
   post_trial_gap: 0,
   trial_duration: function() {
-    var ITIms = sampleFromDecayingExponential(
-    );
+    ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   on_load: function() {
@@ -699,13 +755,18 @@ var ITIBlock = {
     } else {
       return ''
     }
+  },
+  on_finish: function(data) {
+    data['trial_duration'] = ITIms * 1000;
+    data['stimulus_duration'] = ITIms * 1000;
   }
 };
+
 
 // create trials and repeat nodes
 var practiceTrials = [];
 for (i = 0; i < practiceLen; i++) {
-  var practiceBlock = {
+  var practiceTrial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getStim,
     data: function() {
@@ -713,6 +774,8 @@ for (i = 0; i < practiceLen; i++) {
         trial_id: "stim",
         exp_stage: "practice",
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
+        trial_duration: stimTrialDuration,
+        stimulus_duration: stimStimulusDuration
       });
     },
     on_load: function() {
@@ -736,7 +799,7 @@ for (i = 0; i < practiceLen; i++) {
   };
   practiceTrials.push(
     practiceFixationBlock,
-    practiceBlock,
+    practiceTrial,
     practiceFeedbackBlock,
     ITIBlock
   );
@@ -760,7 +823,7 @@ var practiceNode = {
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
           sumResponses += 1;
-          if (data.trials[i].correctTrial == 1) {
+          if (data.trials[i].correct_trial == 1) {
             correct += 1;
           }
         }
@@ -817,7 +880,7 @@ var practiceNode = {
 var testTrials = [];
 testTrials.push(attentionNode)
 for (i = 0; i < numTrialsPerBlock; i++) {
-  var testBlock = {
+  var testTrial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getStim,
     data: function() {
@@ -825,6 +888,8 @@ for (i = 0; i < numTrialsPerBlock; i++) {
         trial_id: "stim",
         exp_stage: "test",
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
+        trial_duration: stimTrialDuration,
+        stimulus_duration: stimStimulusDuration
       });
     },
     on_load: function() {
@@ -846,7 +911,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     on_finish: appendData,
   };
 
-  testTrials.push(fixationBlock, testBlock, ITIBlock);
+  testTrials.push(fixationBlock, testTrial, ITIBlock);
 }
 
 var testCount = 0;
@@ -869,7 +934,7 @@ var testNode = {
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
           sumResponses += 1;
-          if (data.trials[i].correctTrial == 1) {
+          if (data.trials[i].correct_trial == 1) {
             correct += 1;
           }
         }
@@ -935,6 +1000,7 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "stroop_rdoc",
+    trial_duration: 180000
   },
   trial_duration: 180000,
   stimulus: endText,
@@ -943,6 +1009,7 @@ var endBlock = {
   on_finish: function() {
     assessPerformance();
     evalAttentionChecks();
+    renameDataProperties()
   },
 };
 

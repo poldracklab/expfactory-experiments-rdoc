@@ -35,7 +35,7 @@ function evalAttentionChecks() {
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
       .get()
-      .filter({ trial_id: 'attention_check' }).trials;
+      .filter({ trial_id: 'test_attention_check' }).trials;
     var checksPassed = 0;
     for (var i = 0; i < attentionChecksTrials.length; i++) {
       if (attentionChecksTrials[i].correct_trial === true) {
@@ -368,14 +368,28 @@ var expStage = 'practice';
 /* STUFF USED IN ALL TASKS */
 /* ******************************* */
 
+// *** FIXATION *** //
 var fixation = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus:
     '<div class = centerbox><div class = fixation>+</div></div>',
   choices: ['NO_KEYS'],
-  data: {
-    trial_id: 'fixation',
-    exp_stage: 'test',
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_fixation_1',
+        exp_stage: getExpStage(),
+        trial_duration: fixationDuration,
+        stimulus_duration: fixationDuration
+      }
+    } else {
+      return {
+        trial_id: 'test_fixation_1',
+        exp_stage: getExpStage(),
+        trial_duration: fixationDuration,
+        stimulus_duration: fixationDuration
+      }
+    }
   },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
@@ -389,14 +403,28 @@ var fixation = {
   }
 };
 
+// *** FIXATION2 *** //
 var fixation2 = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus:
     '<div class = centerbox><div class = fixation>+</div></div>',
   choices: ['NO_KEYS'],
-  data: {
-    trial_id: 'fixation',
-    exp_stage: 'test',
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_fixation_2',
+        exp_stage: getExpStage(),
+        trial_duration: fixationDuration + 2500,
+        stimulus_duration: fixationDuration + 2500
+      }
+    } else {
+      return {
+        trial_id: 'test_fixation_2',
+        exp_stage: getExpStage(),
+        trial_duration: fixationDuration + 2500,
+        stimulus_duration: fixationDuration + 2500
+      }
+    }
   },
   post_trial_gap: 0,
   stimulus_duration: fixationDuration + 2500, // 3000
@@ -410,17 +438,38 @@ var fixation2 = {
   }
 };
 
+var ITIms = null;
+
+// *** ITI *** //
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
   is_html: true,
   choices: ['NO_KEYS'],
-  data: {
-    trial_id: 'wait',
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    } else {
+      return {
+        trial_id: 'test_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    }
   },
   post_trial_gap: 0,
   trial_duration: function() {
-    var ITIms = sampleFromDecayingExponential();
+    ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function() {
@@ -429,6 +478,10 @@ var ITIBlock = {
     } else {
       return ''
     }
+  },
+  on_finish: function(data) {
+    data['trial_duration'] = ITIms * 1000;
+    data['stimulus_duration'] = ITIms * 1000;
   }
 };
 
@@ -455,6 +508,7 @@ var feedbackInstructBlock = {
   stimulus: getInstructFeedback,
   data: {
     trial_id: 'instruction_feedback',
+    trial_duration: 180000
   },
   post_trial_gap: 0,
   trial_duration: 180000,
@@ -466,6 +520,7 @@ var instructionsBlock = {
   data: {
     exp_id: expID,
     trial_id: 'instructions',
+    trial_duration: null
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -526,6 +581,7 @@ var practiceFeedbackBlock = {
   data: {
     exp_stage: 'practice',
     trial_id: 'practice_feedback',
+    trial_duration: 500
   },
   choices: ['NO_KEYS'],
   stimulus_duration: 500,
@@ -535,8 +591,20 @@ var practiceFeedbackBlock = {
 
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  data: {
-    trial_id: 'feedback',
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000
+      }
+    } else {
+      return {
+        trial_id: 'test_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000
+      }
+    }
   },
   choices: ['Enter'],
   stimulus: getFeedback,
@@ -668,7 +736,8 @@ var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first o
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
-    trial_id: 'attention_check',
+    trial_id: 'test_attention_check',
+    trial_duration: null
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
@@ -706,9 +775,11 @@ for (i = 0; i < practiceLen; i++) {
     choices: ['NO_KEYS'],
     data: function() {
       return {
-        trial_id: 'cue',
+        trial_id: 'practice_cue',
         exp_stage: 'practice',
         condition: getCondition(),
+        trial_duration: cueTrialDuration,
+        stimulus_duration: cueStimulusDuration,
       };
     },
     stimulus_duration: cueStimulusDuration, // 500
@@ -723,9 +794,11 @@ for (i = 0; i < practiceLen; i++) {
     choices: choices,
     data: function() {
       return {
-        trial_id: 'probe',
+        trial_id: 'practice_probe',
         exp_stage: 'practice',
         condition: getCondition(),
+        trial_duration: probeTrialDuration,
+        stimulus_duration: probeStimulusDuration,
         correct_response:
           getCondition() == 'AX' ?
             possibleResponses[0][1] :
@@ -766,7 +839,7 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == 'probe') {
+      if (data.trials[i].trial_id == 'practice_probe') {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
@@ -844,9 +917,11 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: ['NO_KEYS'],
     data: function() {
       return {
-        trial_id: 'cue',
+        trial_id: 'test_cue',
         exp_stage: 'test',
         condition: getCondition(),
+        trial_duration: cueTrialDuration,
+        stimulus_duration: cueStimulusDuration,
       };
     },
     stimulus_duration: cueStimulusDuration,
@@ -860,9 +935,11 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: choices,
     data: function() {
       return {
-        trial_id: 'probe',
+        trial_id: 'test_probe',
         exp_stage: 'test',
         condition: getCondition(),
+        trial_duration: probeTrialDuration,
+        stimulus_duration: probeStimulusDuration,
         correct_response:
           getCondition() == 'AX' ?
             possibleResponses[0][1] :
@@ -899,10 +976,7 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (
-        data.trials[i].trial_id == 'probe' &&
-        data.trials[i].exp_stage == 'test'
-      ) {
+      if (data.trials[i].trial_id == 'test_probe') {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
@@ -992,6 +1066,7 @@ var endBlock = {
   data: {
     trial_id: 'end',
     exp_id: expID,
+    trial_duration: 180000
   },
   trial_duration: 180000,
   stimulus: endText,
