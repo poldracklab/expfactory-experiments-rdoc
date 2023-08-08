@@ -36,7 +36,7 @@ function evalAttentionChecks() {
     if (runAttentionChecks) {
         var attentionChecksTrials = jsPsych.data
             .get()
-            .filter({ trial_id: 'attention_check' }).trials;
+            .filter({ trial_id: 'test_attention_check' }).trials;
         var checksPassed = 0;
         for (var i = 0; i < attentionChecksTrials.length; i++) {
             if (attentionChecksTrials[i].correct_trial === true) {
@@ -335,7 +335,6 @@ var getQuad = function(oldQuad, curr_switch) {
 var createTrialTypes = function(task_switches) {
     // make the first trial
     var whichQuadStart = jsPsych.randomization.repeat([1, 2, 3, 4], 1).pop()
-    var predictable_cond_array = predictable_conditions[whichQuadStart % 2]
     var predictable_dimensions = [predictable_dimensions_list[0].dim,
     predictable_dimensions_list[0].dim,
     predictable_dimensions_list[1].dim,
@@ -354,8 +353,7 @@ var createTrialTypes = function(task_switches) {
 
     var first_stim = {
         whichQuadrant: whichQuadStart,
-        predictable_condition: 'N/A',
-        predictable_dimension: predictable_dimension,
+        spatial_cue: predictable_dimension,
         number: number,
         magnitude: response_arr[1],
         parity: response_arr[2],
@@ -380,8 +378,7 @@ var createTrialTypes = function(task_switches) {
 
         stim = {
             whichQuadrant: quadIndex,
-            predictable_condition: predictable_cond_array[quadIndex - 1],
-            predictable_dimension: predictable_dimension,
+            spatial_cue: predictable_dimension,
             number: number,
             magnitude: response_arr[1],
             parity: response_arr[2],
@@ -400,7 +397,6 @@ var getFixation = function() {
 
 var getCue = function() {
     stim = stims.shift()
-    predictable_condition = stim.predictable_condition
     predictable_dimension = stim.predictable_dimension
     number = stim.number
     correct_response = stim.correct_response
@@ -434,9 +430,8 @@ var appendData = function() {
     }
 
     jsPsych.data.get().addToLast({
-        predictable_condition: predictable_condition,
-        predictable_dimension: predictable_dimension,
-        task_switch: task_switch,
+        spatial_cue: predictable_dimension,
+        condition: task_switch,
         number: number,
         correct_response: correct_response,
         whichQuadrant: whichQuadrant,
@@ -456,6 +451,8 @@ var appendData = function() {
             correct_trial: correct_trial
         })
     }
+    console.log('last data')
+    console.log(jsPsych.data.get().last(1))
 }
 
 /* ************************************ */
@@ -506,8 +503,8 @@ var rt_thresh = 1000
 var missed_response_thresh = 0.10
 var practice_thresh = 3 // 3 blocks of 16 trials
 
-var predictable_conditions = [['switch', 'stay'],
-['stay', 'switch']]
+// // var predictable_conditions = [['switch', 'stay'],
+// ['stay', 'switch']]
 var predictable_dimensions_list = [stim = { dim: 'magnitude', values: ['high', 'low'], exp: ' (higher or lower than 5)' },
 stim = { dim: 'parity', values: ['even', 'odd'], exp: ' (odd or even)' }]
 
@@ -575,7 +572,8 @@ for (i = 0; i < numbersPreload.length; i++) {
 var attentionCheckBlock = {
     type: jsPsychAttentionCheckRdoc,
     data: {
-        trial_id: 'attention_check',
+        trial_id: 'test_attention_check',
+        trial_duration: null
     },
     question: getCurrAttentionCheckQuestion,
     key_answer: getCurrAttentionCheckAnswer,
@@ -593,8 +591,22 @@ var attentionNode = {
 var feedback_text = '<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>'
 var feedback_block = {
     type: jsPsychHtmlKeyboardResponse,
-    data: {
-        trial_id: "feedback"
+    data: function() {
+        if (getExpStage() == 'practice') {
+            return {
+                trial_id: 'practice_feedback',
+                exp_stage: getExpStage(),
+                trial_duration: 180000,
+
+            }
+        } else {
+            return {
+                trial_id: 'test_feedback',
+                exp_stage: getExpStage(),
+                trial_duration: 180000,
+
+            }
+        }
     },
     choices: ['Enter'],
     stimulus: getFeedback,
@@ -608,7 +620,8 @@ var feedback_block = {
 var feedback_instruct_block = {
     type: jsPsychHtmlKeyboardResponse,
     data: {
-        trial_id: "instruction_feedback"
+        trial_id: "instruction_feedback",
+        trial_duration: 180000
     },
     choices: ['Enter'],
     stimulus: getInstructFeedback,
@@ -620,7 +633,8 @@ var feedback_instruct_block = {
 var instructions_block = {
     type: jsPsychInstructions,
     data: {
-        trial_id: "instructions"
+        trial_id: "instructions",
+        trial_duration: null
     },
     pages: [
         '<div class = centerbox>' +
@@ -668,7 +682,8 @@ var end_block = {
     type: jsPsychHtmlKeyboardResponse,
     data: {
         trial_id: "end",
-        exp_id: 'spatial_task_switching_rdoc'
+        exp_id: 'spatial_task_switching_rdoc',
+        trial_duration: 180000
     },
     trial_duration: 180000,
     stimulus: endText,
@@ -688,7 +703,9 @@ for (i = 0; i < practiceLen + 1; i++) {
         choices: ["NO_KEYS"],
         data: {
             exp_stage: "practice",
-            trial_id: "practice_fixation"
+            trial_id: "practice_fixation",
+            trial_duration: 500,
+            stimulus_duration: 500,
         },
         stimulus_duration: 500,
         trial_duration: 500, // 500
@@ -702,7 +719,9 @@ for (i = 0; i < practiceLen + 1; i++) {
         choices: ['NO_KEYS'],
         data: {
             exp_stage: "practice",
-            trial_id: 'practice_cue'
+            trial_id: 'practice_cue',
+            trial_duration: 150,
+            stimulus_duration: 150,
         },
         trial_duration: 150, // getCTI
         stimulus_duration: 150,  // getCTI
@@ -710,13 +729,15 @@ for (i = 0; i < practiceLen + 1; i++) {
         prompt: prompt_text
     };
 
-    var practice_block = {
+    var practiceTrial = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: getStim,
         choices: choices,
         data: {
             exp_stage: "practice",
-            trial_id: "practice_trial"
+            trial_id: "practice_trial",
+            trial_duration: 2000,
+            stimulus_duration: 1000,
         },
         stimulus_duration: 1000, // 1000
         trial_duration: 2000, // 2000
@@ -726,18 +747,38 @@ for (i = 0; i < practiceLen + 1; i++) {
         prompt: prompt_text,
     }
 
+    var ITIms = null;
+
+    // *** ITI *** //
     var ITIBlock = {
         type: jsPsychHtmlKeyboardResponse,
-        stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
+        stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
         is_html: true,
-        choices: ["NO_KEYS"],
-        data: {
-            trial_id: "wait",
+        choices: ['NO_KEYS'],
+        data: function() {
+            if (getExpStage() == 'practice') {
+                return {
+                    trial_id: 'practice_ITI',
+                    ITIParams: {
+                        min: 0,
+                        max: 5,
+                        mean: 0.5
+                    }
+                }
+            } else {
+                return {
+                    trial_id: 'test_ITI',
+                    ITIParams: {
+                        min: 0,
+                        max: 5,
+                        mean: 0.5
+                    }
+                }
+            }
         },
         post_trial_gap: 0,
         trial_duration: function() {
-            var ITIms = sampleFromDecayingExponential(
-            );
+            ITIms = sampleFromDecayingExponential();
             return ITIms * 1000;
         },
         prompt: function() {
@@ -746,6 +787,10 @@ for (i = 0; i < practiceLen + 1; i++) {
             } else {
                 return ''
             }
+        },
+        on_finish: function(data) {
+            data['trial_duration'] = ITIms * 1000;
+            data['stimulus_duration'] = ITIms * 1000;
         }
     };
 
@@ -763,14 +808,16 @@ for (i = 0; i < practiceLen + 1; i++) {
         },
         data: {
             exp_stage: "practice",
-            trial_id: "practice_feedback"
+            trial_id: "practice_feedback",
+            trial_duration: 500,
+            stimulus_duration: 500,
         },
         choices: ['NO_KEYS'],
         stimulus_duration: 500,
         trial_duration: 500,
         prompt: prompt_text
     }
-    practiceTrials.push(fixation_block, practice_cue_block, practice_block, practice_feedback_block, ITIBlock)
+    practiceTrials.push(fixation_block, practice_cue_block, practiceTrial, practice_feedback_block, ITIBlock)
 }
 
 var practiceCount = 0
@@ -851,7 +898,9 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
         choices: ['NO_KEYS'],
         data: {
             exp_stage: "test",
-            trial_id: "test_fixation"
+            trial_id: "test_fixation",
+            trial_duration: 500,
+            stimulus_duration: 500,
         },
         stimulus_duration: 500,
         trial_duration: fixationDuration, // 500
@@ -864,20 +913,24 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
         choices: ['NO_KEYS'],
         data: {
             exp_stage: "test",
-            trial_id: 'practice_cue'
+            trial_id: 'practice_cue',
+            trial_duration: 150,
+            stimulus_duration: 150,
         },
         trial_duration: 150, // getCTI
         stimulus_duration: 150,  // getCTI
         post_trial_gap: 0
     };
 
-    var test_block = {
+    var testTrial = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: getStim,
         choices: choices,
         data: {
             exp_stage: "test",
-            trial_id: "test_trial"
+            trial_id: "test_trial",
+            trial_duration: 2000,
+            stimulus_duration: 1000,
         },
         stimulus_duration: 1000, // 1000
         trial_duration: 2000, // 2000
@@ -887,7 +940,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
     }
     testTrials.push(fixation_block)
     testTrials.push(cue_block)
-    testTrials.push(test_block)
+    testTrials.push(testTrial)
     testTrials.push(ITIBlock)
 }
 

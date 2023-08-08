@@ -1,3 +1,4 @@
+// TODO: make sure getCurrCondition() type returns condition correctly, I renamed stuff
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
@@ -29,12 +30,13 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+
 function evalAttentionChecks() {
   var checkPercent = 1;
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
       .get()
-      .filter({ trial_id: 'attention_check' }).trials;
+      .filter({ trial_id: 'test_attention_check' }).trials;
     var checksPassed = 0;
     for (var i = 0; i < attentionChecksTrials.length; i++) {
       if (attentionChecksTrials[i].correct_trial === true) {
@@ -199,12 +201,10 @@ var getFeedback = function() {
   ); // <font color="white">
 };
 
-
-
 function assessPerformance() {
   var experimentData = jsPsych.data
     .get()
-    .filter({ exp_stage: "test", trial_id: "stim" }).trials;
+    .filter({ exp_stage: "test", trial_id: "test_trials" }).trials;
   var missedCount = 0;
   var trialCount = 0;
   var rtArray = [];
@@ -284,8 +284,6 @@ function isTargetPresent() {
   return Math.random() < 0.5; // Modify the condition for your target logic
 }
 
-
-
 function generateHTML(containerWidth, containerHeight, targetPresent, targetIndex, boxWidth, boxHeight) {
   let html;
 
@@ -334,11 +332,11 @@ function generateTargetElement(left, top, width, height) {
 }
 
 function generateDistractorElement(left, top, width, height) {
-  if (getCurrBlockType() === 'color') {
+  if (getCurrCondition() === 'color') {
     return '<div id="black-distractor-element" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
-  } else if (getCurrBlockType() === 'orientation') {
+  } else if (getCurrCondition() === 'orientation') {
     return '<div class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
-  } else if (getCurrBlockType() === 'conjunction') {
+  } else if (getCurrCondition() === 'conjunction') {
     if (Math.random() < 0.5) {
       return '<div id="white-distractor-element"  class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: white; transform: rotate(90deg); transform-origin: center;"></div>';
     } else {
@@ -353,7 +351,7 @@ var getExpStage = function() {
 };
 
 
-var getCurrBlockType = function() {
+var getCurrCondition = function() {
   return blockType;
 };
 
@@ -467,7 +465,8 @@ var speedReminder =
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
-    trial_id: 'attention_check',
+    trial_id: 'test_attention_check',
+    trial_duration: null
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
@@ -493,6 +492,7 @@ var feedbackInstructBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instruction_feedback",
+    trial_duration: 180000
   },
   stimulus: getInstructFeedback,
   post_trial_gap: 0,
@@ -500,7 +500,7 @@ var feedbackInstructBlock = {
 };
 
 
-var stimulusBlock = {
+var testTrial = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: getStim,
   choices: choices,
@@ -515,13 +515,25 @@ var stimulusBlock = {
       return ""
     }
   },
-  data: {
-    trial_id: "stim",
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_trial',
+        trial_duration: stimTrialDuration,
+        stimulus_duration: stimStimulusDuration
+      }
+    } else {
+      return {
+        trial_id: 'test_trial',
+        trial_duration: stimTrialDuration,
+        stimulus_duration: stimStimulusDuration
+      }
+    }
   },
   on_finish: function(data) {
     data['target_present'] = trialTargetPresent ? 1 : 0
     data['num_stimuli'] = n;
-    data['block_type'] = getCurrBlockType()
+    data['condition'] = getCurrCondition()
     data['exp_stage'] = getExpStage()
     if (data.response !== null) {
       if (trialTargetPresent) {
@@ -542,6 +554,7 @@ var stimulusBlock = {
     }
     randomIndex = Math.floor(Math.random() * nArray.length);
     n = nArray[randomIndex]
+    console.log('data', data)
   }
 };
 
@@ -573,6 +586,7 @@ var instructionsBlock = {
   allow_keys: false,
   data: {
     trial_id: "instructions",
+    trial_duration: null
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -608,8 +622,20 @@ var feedbackText =
 
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  data: {
-    trial_id: "feedback",
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000,
+      }
+    } else {
+      return {
+        trial_id: 'test_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000,
+      }
+    }
   },
   choices: ["Enter"],
   stimulus: getFeedback,
@@ -625,6 +651,8 @@ var fixationBlock = {
   data: {
     trial_id: "fixation",
     exp_stage: getExpStage(),
+    trial_duration: fixationDuration,
+    stimulus_duration: fixationDuration,
   },
   prompt: function() {
     if (getExpStage() == 'practice') {
@@ -637,20 +665,50 @@ var fixationBlock = {
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500 
 };
+var ITIms = null;
 
+// *** ITI *** //
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
+  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
   is_html: true,
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "wait",
+  choices: ['NO_KEYS'],
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    } else {
+      return {
+        trial_id: 'test_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    }
   },
   post_trial_gap: 0,
   trial_duration: function() {
-    var ITIms = sampleFromDecayingExponential(
-    );
+    ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
+  },
+  on_load: function() {
+    function preventSlash(event) {
+      if (event.key === '/' || event.key === ',' || event.key === '.') {
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', preventSlash);
+    jsPsych.currentTrial().on_close = function() {
+      window.removeEventListener('keydown', preventSlash);
+    };
   },
   prompt: function() {
     if (getExpStage() == 'practice') {
@@ -658,8 +716,13 @@ var ITIBlock = {
     } else {
       return ''
     }
+  },
+  on_finish: function(data) {
+    data['trial_duration'] = ITIms * 1000;
+    data['stimulus_duration'] = ITIms * 1000;
   }
 };
+
 var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
@@ -679,6 +742,8 @@ var practiceFeedbackBlock = {
   data: {
     exp_stage: "practice",
     trial_id: "practice_feedback",
+    trial_duration: 500,
+    stimulus_duration: 500,
   },
   choices: ["NO_KEYS"],
   stimulus_duration: 500, // 500 
@@ -696,7 +761,7 @@ var practiceTrials = [];
 for (let i = 0; i < practiceLen; i++) {
   practiceTrials.push(
     fixationBlock,
-    stimulusBlock,
+    testTrial,
     practiceFeedbackBlock,
     ITIBlock
   );
@@ -713,8 +778,8 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].exp_stage == 'practice' && data.trials[i].block_type == getCurrBlockType()) {
-        if (data.trials[i].trial_id == "stim") {
+      if (data.trials[i].exp_stage == 'practice' && data.trials[i].condition == getCurrCondition()) {
+        if (data.trials[i].trial_id == "practice_trial") {
           totalTrials += 1;
           if (data.trials[i].rt != null) {
             sumRT += data.trials[i].rt;
@@ -765,7 +830,7 @@ var practiceNode = {
 var testTrials = [];
 testTrials.push(attentionNode)
 for (let i = 0; i < numTrialsPerBlock; i++) {
-  testTrials.push(fixationBlock, stimulusBlock, ITIBlock);
+  testTrials.push(fixationBlock, testTrial, ITIBlock);
 }
 var testCount = 0;
 var testNode = {
@@ -778,8 +843,8 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].exp_stage == 'test' && data.trials[i].block_type == getCurrBlockType()) {
-        if (data.trials[i].trial_id == "stim") {
+      if (data.trials[i].exp_stage == 'test' && data.trials[i].condition == getCurrCondition()) {
+        if (data.trials[i].trial_id == "test_trial") {
           totalTrials += 1;
           if (data.trials[i].rt != null) {
             sumRT += data.trials[i].rt;
@@ -800,13 +865,13 @@ var testNode = {
 
 
     if (testCount == numTestBlocks) {
-      if (getCurrBlockType() == conditions[0]) {
+      if (getCurrCondition() == conditions[0]) {
         practiceCount = 0;
         testCount = 0;
         expStage = 'practice'
         feedbackText =
           "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-      } else if (getCurrBlockType() == conditions[1]) {
+      } else if (getCurrCondition() == conditions[1]) {
         practiceCount = 0;
         testCount = 0;
         expStage = 'practice'
@@ -864,6 +929,7 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "visual_search_rdoc",
+    trial_duration: 180000,
   },
   trialDuration: 180000,
   stimulus: endText,

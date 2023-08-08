@@ -40,7 +40,7 @@ function evalAttentionChecks() {
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
       .get()
-      .filter({ trial_id: 'attention_check' }).trials;
+      .filter({ trial_id: 'test_attention_check' }).trials;
     var checksPassed = 0;
     for (var i = 0; i < attentionChecksTrials.length; i++) {
       if (attentionChecksTrials[i].correct_trial === true) {
@@ -207,7 +207,7 @@ function assessPerformance() {
 
   var responseProcessingData = jsPsych.data
     .get()
-    .filter({ exp_stage: "test", trial_id: "wait" }).trials;
+    .filter({ exp_stage: "test", trial_id: "processing" }).trials;
 
   var missedCount = 0;
   var trialCount = responseGridData.length;
@@ -630,8 +630,8 @@ var spanResponses = ['left arrow key', 'right arrow key', 'up arrow key', 'down 
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000; // no blank screen after stim presented
 // equation
-const equationStimulusDuration = 3000;
-const equationTrialDuration = 3000;
+const processingStimulusDuration = 3000;
+const processingTrialDuration = 3000;
 // wait block (fixation or equation)
 const responseBlockDuration = 5000;
 // const fixationDuration = 500;
@@ -645,6 +645,7 @@ var instructTimeThresh = 1; // /in seconds
 var accuracyThresh = 0.6;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
+var processingThresh = .6;
 var equationChoices = ["t", "f"];
 
 var processingAccThresh = .6;
@@ -655,7 +656,6 @@ var processingMissedThresh = .2;
 var practiceLen = 3;
 var numTrialsPerBlock = 8;
 var numTestBlocks = 3;
-
 
 var trialList;
 trialList = generateSpatialTrialValues(numStimuli)
@@ -692,7 +692,8 @@ var promptText =
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
-    trial_id: 'attention_check',
+    trial_id: 'test_attention_check',
+    trial_duration: null
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
@@ -719,6 +720,7 @@ var feedbackInstructBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instruction_feedback",
+    trial_duration: 180000
   },
   stimulus: getInstructFeedback,
   post_trial_gap: 0,
@@ -770,6 +772,7 @@ var instructionsBlock = {
   allow_keys: false,
   data: {
     trial_id: "instructions",
+    trial_duration: null
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -805,8 +808,20 @@ var feedbackText =
 
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  data: {
-    trial_id: "feedback",
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000
+      }
+    } else {
+      return {
+        trial_id: 'test_feedback',
+        exp_stage: getExpStage(),
+        trial_duration: 180000
+      }
+    }
   },
   choices: ["Enter"],
   stimulus: getFeedback,
@@ -820,19 +835,29 @@ var expStage = 'practice'
 var stimulusBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
-
     return getStim()
-
   },
   stimulus_duration: stimStimulusDuration,
   trial_duration: stimTrialDuration,
   post_trial_gap: 0,
   data: function() {
-    return {
-      trial_id: "stim",
-      exp_stage: getExpStage(),
-      condition: getCurrCondition(),
-    };
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: "practice_stim",
+        exp_stage: getExpStage(),
+        condition: getCurrCondition(),
+        trial_duration: stimTrialDuration,
+        stimulus_duration: stimStimulusDuration,
+      };
+    } else if (getExpStage() == 'test') {
+      return {
+        trial_id: "test_stim",
+        exp_stage: getExpStage(),
+        condition: getCurrCondition(),
+        trial_duration: stimTrialDuration,
+        stimulus_duration: stimStimulusDuration,
+      };
+    }
   },
   choices: ["NO_KEYS"],
   prompt: function() {
@@ -844,13 +869,14 @@ var stimulusBlock = {
     }
   },
   on_finish: function(data) {
-
     data['correctAnswer'] = trialValue
   }
 };
 
 var equationType = 'complex'
 
+
+var startTime = null;
 
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -863,22 +889,32 @@ var waitBlock = {
     }
   },
   choices: equationChoices,
-  stimulus_duration: equationStimulusDuration,
-  trial_duration: equationTrialDuration,
+  stimulus_duration: processingStimulusDuration,
+  trial_duration: processingTrialDuration,
   response_ends_trial: true,
   on_start: function() {
-    var lastTrial = jsPsych.data.get().last(2).trials[0];
+    // calculate time to last 3000ms then end trial
+    if (startTime === null) {
+      startTime = performance.now();
+    }
 
-    if (lastTrial.trial_id == 'feedback' || lastTrial.trial_id == 'wait' || lastTrial.trial_id == 'attention_check') {
-      trialList = generateSpatialTrialValues(numStimuli)
-      trialValues = trialList
+    // get last trial
+    var lastTrial = jsPsych.data.get().last(1).trials[0];
+    // last trials IDs that start new trials
+    var trialIDs = ['practice_feedback', 'practice_ITI', 'test_ITI', 'test_attention_check']
+    // if id starts new trial then set stimuli for that trial
+    if (trialIDs.includes(lastTrial.trial_id)) {
+      trialList = generateSpatialTrialValues(numStimuli);
+      trialValues = trialList;
     }
   },
   data: function() {
     return {
-      trial_id: 'wait',
+      trial_id: 'processing',
       exp_stage: getExpStage(),
-      condition: getCurrCondition()
+      condition: getCurrCondition(),
+      trial_duration: processingTrialDuration,
+      stimulus_duration: processingStimulusDuration,
     };
   },
   post_trial_gap: 0,
@@ -910,21 +946,13 @@ var waitBlock = {
   },
 };
 
-
-
-var startTime = null;
-
 var waitNode = {
   timeline: [waitBlock],
   loop_function: function(data) {
-    if (startTime == null) {
-      startTime = performance.now();
-    }
-
     var elapsedTime = (performance.now() - startTime)
 
     // Continue looping as long as elapsed time is less than 10,000 ms
-    if (elapsedTime >= equationTrialDuration) {
+    if (elapsedTime >= processingTrialDuration) {
       startTime = null; // Reset startTime for the next trial
       return false; // End the loop
     }
@@ -973,6 +1001,8 @@ var practiceFeedbackBlock = {
   data: {
     expStage: "practice",
     trial_id: "practice_feedback",
+    trial_duration: 500,
+    stimulus_duration: 500,
   },
   choices: ["NO_KEYS"],
   stimulus_duration: 500,
@@ -987,7 +1017,7 @@ var practiceFeedbackBlock = {
   },
 };
 
-var responseBlock = {
+var testTrial = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
     activeGrid = generateGrid()
@@ -999,13 +1029,19 @@ var responseBlock = {
       trial_id: "response",
       exp_stage: getExpStage(),
       correct_response: getCurrSeq(),
+      trial_duration: responseBlockDuration,
+      stimulus_duration: responseBlockDuration,
     };
   },
   trial_duration: responseBlockDuration,
   stimulus_duration: responseBlockDuration,
   post_trial_gap: 0,
   on_finish: function(data) {
-    var stimTrials = jsPsych.data.get().filter({ trial_id: 'stim' }).trials
+    if (getExpStage() == 'practice') {
+      var stimTrials = jsPsych.data.get().filter({ trial_id: 'practice_stim' }).trials
+    } else if (getExpStage() == 'test') {
+      var stimTrials = jsPsych.data.get().filter({ trial_id: 'test_stim' }).trials
+    }
     var lastTrials = stimTrials.slice(-4);
     var correctResponses = lastTrials.map(trial => trial.correctAnswer);
 
@@ -1024,27 +1060,51 @@ var responseBlock = {
   }
 };
 
+var ITIms = null;
+
+// *** ITI *** //
 var ITIBlock = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
+  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
   is_html: true,
-  choices: ["NO_KEYS"],
-  data: {
-    trial_id: "wait",
+  choices: ['NO_KEYS'],
+  data: function() {
+    if (getExpStage() == 'practice') {
+      return {
+        trial_id: 'practice_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    } else {
+      return {
+        trial_id: 'test_ITI',
+        ITIParams: {
+          min: 0,
+          max: 5,
+          mean: 0.5
+        }
+      }
+    }
   },
   post_trial_gap: 0,
   trial_duration: function() {
-    var ITIms = sampleFromDecayingExponential();
+    ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function() {
-    if (getExpStage() == 'practice' && (getCurrCondition() == 'same-domain')) {
-      return promptText
-    }
     if (getExpStage() == 'practice') {
-      return practicePromptText
+      return promptText
+    } else {
+      return ''
     }
   },
+  on_finish: function(data) {
+    data['trial_duration'] = ITIms * 1000;
+    data['stimulus_duration'] = ITIms * 1000;
+  }
 };
 
 
@@ -1059,7 +1119,7 @@ function generatePracticeTrials() {
           stimulusBlock,
         );
       }
-      returnArray.push(responseBlock, practiceFeedbackBlock, ITIBlock)
+      returnArray.push(testTrial, practiceFeedbackBlock, ITIBlock)
     }
   } else if (getCurrCondition() == 'storage-only') {
     for (let i = 0; i < practiceLen; i++) {
@@ -1069,7 +1129,7 @@ function generatePracticeTrials() {
           stimulusBlock,
         );
       }
-      returnArray.push(responseBlock, practiceFeedbackBlock, ITIBlock)
+      returnArray.push(testTrial, practiceFeedbackBlock, ITIBlock)
     }
   }
   return returnArray
@@ -1112,16 +1172,13 @@ var practiceNode = {
       var avgProcessingMissed = null
       var avgProcessingRT = null;
     } else {
-      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'wait', exp_stage: 'practice', condition: getCurrCondition() }).trials
+      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'processing', exp_stage: 'practice', condition: getCurrCondition() }).trials
 
       var processingCorrect = 0;
       var totalTrials = responseProcessingData.length;
       var missedProcessingCount = 0
       var responseCount = 0;
       var rt = 0
-
-
-
       // No RTs for response grid
       for (var i = 0; i < totalTrials; i++) {
         if (responseProcessingData[i].correct_response == null) {
@@ -1141,7 +1198,9 @@ var practiceNode = {
 
     }
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    console.log(avgProcessingAcc)
+
+    if ((accuracy > accuracyThresh || practiceCount == practiceThresh) && avgProcessingAcc > processingThresh) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         "<p class = block-text>Keep your right index finger on the " +
@@ -1239,7 +1298,7 @@ function generateTestTrials() {
           stimulusBlock
         );
       }
-      returnArray.push(responseBlock, ITIBlock)
+      returnArray.push(testTrial, ITIBlock)
     }
   } else if (getCurrCondition() == 'storage-only') {
     returnArray.push(attentionNode)
@@ -1250,7 +1309,7 @@ function generateTestTrials() {
           stimulusBlock,
         );
       }
-      returnArray.push(responseBlock, ITIBlock)
+      returnArray.push(testTrial, ITIBlock)
     }
   }
   return returnArray
@@ -1295,7 +1354,7 @@ var testNode = {
       var avgProcessingMissed = null
       var avgProcessingRT = null;
     } else {
-      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'wait', exp_stage: 'test', condition: getCurrCondition() }).trials
+      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'processing', exp_stage: 'test', condition: getCurrCondition() }).trials
 
       var processingCorrect = 0;
       var totalTrials = responseProcessingData.length;
@@ -1407,6 +1466,7 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "span_rdoc",
+    trial_duration: 180000
   },
   trial_duration: 180000,
   stimulus: endText,
