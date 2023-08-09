@@ -1171,6 +1171,7 @@ var practiceNode = {
       var avgProcessingAcc = null;
       var avgProcessingMissed = null
       var avgProcessingRT = null;
+      var passProcessing = true
     } else {
       var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'processing', exp_stage: 'practice', condition: getCurrCondition() }).trials
 
@@ -1195,12 +1196,10 @@ var practiceNode = {
       var avgProcessingAcc = processingCorrect / responseCount;
       var avgProcessingMissed = missedProcessingCount / totalTrials;
       var avgProcessingRT = rt / responseCount
-
+      var passProcessing = avgProcessingAcc > processingThresh ? true : false
     }
 
-    console.log(avgProcessingAcc)
-
-    if ((accuracy > accuracyThresh || practiceCount == practiceThresh) && avgProcessingAcc > processingThresh) {
+    if ((accuracy > accuracyThresh || practiceCount == practiceThresh) && passProcessing) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         "<p class = block-text>Keep your right index finger on the " +
