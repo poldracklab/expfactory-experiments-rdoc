@@ -554,7 +554,6 @@ var testTrial = {
     }
     randomIndex = Math.floor(Math.random() * nArray.length);
     n = nArray[randomIndex]
-    console.log('data', data)
   }
 };
 
@@ -729,7 +728,6 @@ var practiceFeedbackBlock = {
     // var last = jsPsych.data.get().last(1).values()[0];
     var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block\
-    console.log(last)
     if (last.response == null) {
       return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
     }

@@ -308,7 +308,7 @@ var appendData = function() {
 };
 var getCue = function() {
   var cueHTML =
-    '<div class = upperbox><div class = "center-text" style="color:black;" >' +
+    '<div class = upperbox><div class = "center-text" style="color:white;" >' +
     currCue +
     '</div></div>' +
     '<div class = lowerbox><div class = fixation>+</div></div>';
@@ -317,7 +317,7 @@ var getCue = function() {
 
 var getStim = function() {
   var stimHTML =
-    '<div class = upperbox><div class = "center-text" style="color:black;" >' +
+    '<div class = upperbox><div class = "center-text" style="color:white;" >' +
     currCue +
     '</div></div>' +
     '<div class = lowerbox><div class = gng_number><div class = cue-text>' +
@@ -348,7 +348,7 @@ var genStims = function(n) {
   stims = [];
   for (var i = 0; i < n; i++) {
     var number = randomDraw('12346789');
-    var color = 'black'; // randomDraw(['white'])
+    var color = 'white'; // randomDraw(['white'])
     var stim = {
       number: parseInt(number),
       color: color,
