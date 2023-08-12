@@ -742,7 +742,7 @@ var ITIBlock = {
   },
   prompt: function() {
     if (getExpStage() == 'practice') {
-      return promptText
+      return getPromptText()
     } else {
       return ''
     }
