@@ -175,9 +175,9 @@ var game_state = "start";
 //Questions to be presented
 var survey_questions = [
   "Think of this ladder as representing where people stand in the United States.</strong> At the <strong>top</strong> of the ladder are the people who are the best off – those who have the most money, the most education, and the most respected jobs. At the <strong>bottom</strong> are the people who are the worst off – those who have the least money, least education, the least respected jobs, or no job. The higher up you are on this ladder, the closer you are to the people at the very top; the lower you are, the closer you are to the people at the very bottom. Where would you place yourself on this ladder? Please choose the number on the rung where you think you stand at this time in your life relative to other people in the United States." +
-    '<div class = "ladder"><img src="/static/experiments/mcarthur_social_status_survey/images/ladder.png"></div>',
+    '<div class = "ladder"><img src="./images/ladder.png"></div>',
   "Think of this ladder as representing where people stand in their communities.</strong> People define community in different ways; please define it in whatever way is most meaningful to you. At the <strong>top</strong> of the ladder are people who have the highest standing in their community. At the <strong>bottom</strong> are the people who have the lowest standing in their community. Where would you place yourself on this ladder? Please choose the number on the rung where you think you stand at this time in your life relative to other people in your community." +
-    '<div class = "ladder"><img src="/static/experiments/mcarthur_social_status_survey/images/ladder.png"></div>',
+    '<div class = "ladder"><img src="./images/ladder.png"></div>',
 ];
 
 //response options for radio buttons
