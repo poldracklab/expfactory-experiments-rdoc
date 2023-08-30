@@ -5,8 +5,8 @@ textfield	"1. During the past month, what time have you usually gone to bed at n
 numeric	"2. During the past month, how long (in minutes) has it usually taken you to fall asleep each night?"	1	3			psqi_2
 textfield	"3. During the past month, what time have you usually gotten up in the morning?  (hour:minutes AM/PM)"	1	3			psqi_3
 numeric	"4. During the past month, how many hours of actual sleep did you get at night? (This may be different than the number of hours you spent in bed.)"	1	3			psqi_4
-instruction	"For each of the remaining questions, check the one best response. Please answer all questions."	0	4			
-radio	"<font size=""5"">5. During the past month, how often have you had trouble sleeping because you . . . </font><br /><br />a) Cannot get to sleep within 30 minutes"	1	4	"Not during the past month, Less than once a week, Once or twice a week, Three or more times a week"	"0, 1, 2, 3"	psqi_5
+instruction	"For each of the remaining questions, check the one best response. Please answer all questions. 5. During the past month, how often have you had trouble sleeping because you . . . "	0	4			
+radio	a) Cannot get to sleep within 30 minutes	1	4	"Not during the past month, Less than once a week, Once or twice a week, Three or more times a week"	"0, 1, 2, 3"	psqi_5
 radio	b) Wake up in the middle of the night or early morning	1	4	"Not during the past month, Less than once a week, Once or twice a week, Three or more times a week"	"0, 1, 2, 3"	psqi_6
 radio	c) Have to get up to use the bathroom	1	4	"Not during the past month, Less than once a week, Once or twice a week, Three or more times a week"	"0, 1, 2, 3"	psqi_7
 radio	d) Cannot breathe comfortably	1	4	"Not during the past month, Less than once a week, Once or twice a week, Three or more times a week"	"0, 1, 2, 3"	psqi_8
