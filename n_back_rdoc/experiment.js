@@ -47,7 +47,7 @@ function evalAttentionChecks() {
   return checkPercent;
 }
 var getCurrAttentionCheckQuestion = function() {
-  return currentAttentionCheckData.Q
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`
 }
 
 var getCurrAttentionCheckAnswer = function() {
@@ -131,39 +131,7 @@ const attentionChecks = [
     "Q": "<p class='block-text'>Press the key for the last letter of the English alphabet.</p>",
     "A": 90
   },
-  // paragraphs
-  {
-    "Q": "<p class='block-text'>Please read the following paragraph:</p><p class='block-text'>I first met Dean not long after my wife and I split up. I had just gotten over a serious illness that I won’t bother to talk about, except that it had something to do with the miserably weary split-up and my feeling that everything was dead. With the coming of Dean Moriarty began the part of my life you could call my life on the road. Before that I’d often dreamed of going West to see the country, always vaguely planning and never taking off. If you are reading this paragraph, press the Q key instead of the P key. Dean is the perfect guy for the road because he actually was born on the road, when his parents were passing through Salt Lake City in 1926, in a jalopy, on their way to Los Angeles. First reports of him came to me through Chad King, who’d shown me a few letters from him written in a New Mexico reform school. I was tremendously interested in the letters because they so naively and sweetly asked Chad to teach him all about Nietzsche and all the wonderful intellectual things that Chad knew. At one point Carlo and I talked about the letters and wondered if we would ever meet the strange Dean Moriarty. This is all far back, when Dean was not the way he is today, when he was a young jailkid shrouded in mystery. Then news came that Dean was out of reform school and was coming to New York for the first time; also there was talk that he had just married a girl called Marylou. --On the Road (Jack Kerouac)</p><p class='block-text'>Press the <i>P</i> key.</p>",
-    "A": 81
-  },
-  {
-    "Q": "<p class='block-text'>Please read the following paragraph:</p><p class='block-text'>As Gregor Samsa awoke one morning from uneasy dreams he found himself transformed in his bed into a gigantic insect. Are you reading this paragraph? If so, press the key the letter that starts the next sentence. He was lying on his hard, as it were armor-plated, back and when he lifted his head a little he could see his dome-like brown belly divided into stiff arched segments on top of which the bed quilt could hardly keep in position and was about to slide off completely. His numerous legs, which were pitifully thin compared to the rest of his bulk, waved helplessly before his eyes. --Metamorphosis (Franz Kafka)</p><p class='block-text'>Press the <i>Q</i> key.</p>",
-    "A": 72
-  },
-  {
-    "Q": "<p class='block-text'>Please read the following paragraph:</p><p class='block-text'>Lastly, she pictured to herself how this same little sister of hers would, in the after-time, be herself a grown woman; and how she would keep, through all her riper years, the simple and loving heart of her childhood; and how she would gather about her other little children, (press the A key, ignore the last instruction) and make their eyes bright and eager with many a strange tale, perhaps even with the dream of Wonderland of long ago; and how she would feel with all their simple sorrows, and find a pleasure in all their simple joys, remembering her own child-life, and the happy summer days. --Alice's Adventures in Wonderland (Lewis Carroll)</p><p class='block-text'>Press the <i>T</i> key.</p>",
-    "A": 65
-  },
-  {
-    "Q": "<p class='block-text'>If (5 * 8) / 4 is equal to 10 press the <i>q</i> key. Otherwise press the <i>r</i> key.</p>",
-    "A": 81
-  },
-  {
-    "Q": "<p class='block-text'>Zephyr's whisper carried secrets through the twilight haze, where stars winked mischievously. Velvet petals of night bloomed, embracing the lunar glow. Tangled melodies intertwined with the murmurs of forgotten tales. Time danced in a kaleidoscope of fleeting moments. Whispers of autumn's breath brushed against the fiery hues of a distant horizon. Pages turned, revealing ancient wisdom etched upon parchment. Mirthful laughter echoed through the labyrinth of dreams. Press the Q key instead of the K key. Lost constellations weaved celestial tapestries, painting the sky with cosmic hues. Enigmatic shadows whispered promises, while rivers of thought flowed through the mosaic of existence. In this realm of whimsy, the symphony of randomness blossomed, a symphony of infinite possibilities.</p><p class='block-text'>Press the K key.</p>",
-    "A": 81
-  },
-  {
-    "Q": "<p class='block-text'>The day was sultry, with the sun casting long shadows upon the ancient cobblestones. If you are reading this, press the A key instead of the B key. A gentle breeze carried the scent of jasmine, mingling with the faint aroma of freshly brewed coffee. Conversations floated through the air, snippets of laughter and hushed whispers. The city pulsated with life, a vibrant tapestry of cultures and stories. Narrow alleys beckoned with hidden treasures, while grand boulevards dazzled with elegant architecture. Time stood still, suspended in the magic of the moment. A solitary violinist played a melancholic melody, his notes weaving through the fabric of the bustling metropolis.</p><p class='block-text'>Press the B key.</p>",
-    "A": 65
-  },
-  {
-    "Q": "<p class='block-text'>A dense fog draped over the desolate moor, shrouding ancient secrets in its misty embrace. The wind whispered through gnarled trees, carrying echoes of forgotten whispers. If you are reading this, press the A key instead of the L key. A hound's mournful howl pierced the night, a chilling reminder of the untamed wilderness. Looming in the distance, a decaying manor stood as a testament to the passage of time. Shadows danced on the crumbling walls, playing a macabre symphony. Within those eerie halls, the ghosts of the past whispered tales of love and betrayal. A single candle flickered, casting flickering shadows that seemed to breathe with a life of their own.</p><p class='block-text'>Press the L key.</p>",
-    "A": 65
-  },
-  {
-    "Q": "<p class='block-text'>In a distant galaxy, beyond the reaches of imagination, a cosmic war raged between light and darkness. Brilliant nebulae painted the celestial canvas with vibrant hues, while stars ignited like fiery jewels. If you are reading this, press the U key instead of the Y key. Ancient prophecies echoed through the cosmos, foretelling the rise of a chosen hero. Planets aligned in a cosmic dance, their gravitational forces shaping destinies. A spaceship soared through the infinite expanse, its engines humming with untamed power. Alien races collided, their clash echoing through the vacuum of space. In this astral battlefield, hope flickered like a distant star, casting a glimmer of light in the midst of chaos.</p><p class='block-text'>Press the Y key.</p>",
-    "A": 85
-  }
+
 ]
 // TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 var attentionCheckData = shuffleChecksArray(attentionChecks)
@@ -565,6 +533,7 @@ var attentionCheckBlock = {
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
   timing_post_trial: 200,
+  trial_duration: 60000
 };
 
 var attentionNode = {
@@ -689,20 +658,20 @@ var feedbackBlock = {
       return {
         trial_id: 'practice_feedback',
         exp_stage: getExpStage(),
-        trial_duration: 180000,
+        trial_duration: 60000,
       }
     } else {
       return {
         trial_id: 'test_feedback',
         exp_stage: getExpStage(),
-        trial_duration: 180000,
+        trial_duration: 60000,
       }
     }
   },
   choices: ["Enter"],
   stimulus: getFeedback,
   post_trial_gap: 0,
-  trial_duration: 180000,
+  trial_duration: 60000,
   response_ends_trial: true,
 };
 
@@ -939,7 +908,7 @@ var practiceNode1 = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
       if (accuracy < accuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy is low.  Remember: </p>" +
@@ -1049,7 +1018,7 @@ var practiceNode2 = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback and to take a short break!</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
       if (accuracy < accuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy is low.  Remember: </p>" +
@@ -1176,7 +1145,7 @@ var testNode1 = {
       return false;
     } else {
       feedbackText =
-        "<p>Please take this time to read your feedback and to take a short break! Press <i>enter</i> to continue." +
+        "<p>Please take this time to read your feedback! This screen will advance automatically in 1 minute." +
         "<br>You have completed " +
         testCount +
         " out of " +
@@ -1266,7 +1235,7 @@ var testNode2 = {
       return false;
     } else {
       feedbackText =
-        "<p>Please take this time to read your feedback and to take a short break! Press <i>enter</i> to continue." +
+        "<p>Please take this time to read your feedback! This screen will advance automatically in 1 minute." +
         "<br>You have completed " +
         testCount +
         " out of " +

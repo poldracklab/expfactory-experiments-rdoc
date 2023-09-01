@@ -354,8 +354,7 @@ var trialProportions = [
 var numTestBlocks = 3;
 var numTrialsPerBlock = trialProportions.length * 5; // 50
 var practiceLen = trialProportions.length; // 10
-practiceLen = 1
-numTrialsPerBlock = 1
+
 // set empty and populate later with current trial data
 var currCondition = '';
 // eslint-disable-next-line no-unused-vars
