@@ -696,48 +696,49 @@ var feedbackInstructBlock = {
   trial_duration: 180000,
 };
 
+console.log(currCondition)
+console.log(allConditions)
+
+var opSpanInstructions = '<div class="centerbox">' +
+  `<h3 class="block-text">${currCondition == 'same-domain' ? 'Sub-task #1' : 'Sub-task #2'}</h3>` +
+  '<p class="block-text">' +
+  'In this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. ' +
+  `Press the <i>${equationChoices[0]} key</i> if the grid is symmetric and press the <i>${equationChoices[1]} key</i> if it is not.` +
+  '</p>' +
+  '<p class="block-text">' +
+  `When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgements as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell. ` +
+  '</p>' +
+  '<p class="block-text">' +
+  'This sequence of 8x8 grids and 4x4 grid will alternative four times. After the fourth time, a blank 4x4 grid will be presented.' +
+  '</p>' +
+  '<p class="block-text">' +
+  'On the blank 4x4 grid, use the arrow keys to navigate the grid and the spacebar to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …). ' +
+  '</p>' +
+  '</div>'
+
+
+var simpleSpanInstructions = '<div class="centerbox">' +
+  `<h3 class="block-text">${currCondition == 'storage-only' ? 'Sub-task #1' : 'Sub-task #2'}</h3>` +
+  '<p class="block-text">' +
+  'In this sub-task, you will see a fixation (****) followed by a 4x4 grid. This 4x4 grid will have one cell colored black. Try to remember the location of the black cell.' +
+  '</p>' +
+  '<p class="block-text">' +
+  'This sequence of a fixation (****) and 4x4 grid will alternate four times. After the fourth time, a blank 4x4 grid will be presented.' +
+  '</p>' +
+  '<p class="block-text">' +
+  'On the blank 4x4 grid, use the arrow keys to navigate the grid and the spacebar to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).' +
+  '</p>' +
+  '</div>'
+
+var reminderInstruct = '<div class=centerbox> <p class="block-text">' +
+  'During the practice round, you will receive feedback and reminders of the rules. These will be removed for the actual test, so ensure that you understand the instructions before proceeding.' +
+  '</p>' +
+  `<p class="block-text">${speedReminder}</p></div>`
+
 // / This ensures that the subject does not read through the instructions too quickly.  If they do it too quickly, then we will go over the loop again.
 var instructionsBlock = {
   type: jsPsychInstructions,
-  pages: [
-    '<div class="centerbox">' +
-    '<p class="block-text">' +
-    'This task involves two sub-tasks.' +
-    '</p>' +
-    '<h3 class="block-text">Sub-task #1:</h3>' +
-    '<p class="block-text">' +
-    'In this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. ' +
-    `Press the <i>${equationChoices[0]} key</i> if the grid is symmetric and press the <i>${equationChoices[1]} key</i> if it is not.` +
-    '</p>' +
-    '<p class="block-text">' +
-    `When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgements as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell. ` +
-    '</p>' +
-    '<p class="block-text">' +
-    'This sequence of 8x8 grids and 4x4 grid will alternative four times. After the fourth time, a blank 4x4 grid will be presented.' +
-    '</p>' +
-    '<p class="block-text">' +
-    'On the blank 4x4 grid, use the arrow keys to navigate the grid and the spacebar to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …). ' +
-    '</p>' +
-    '</div>'
-    ,
-    '<div class="centerbox">' +
-    '<h3 class="block-text">Sub-task #2:</h3>' +
-    '<p class="block-text">' +
-    'In this sub-task, you will see a fixation (****) followed by a 4x4 grid. This 4x4 grid will have one cell colored black. Try to remember the location of the black cell.' +
-    '</p>' +
-    '<p class="block-text">' +
-    'This sequence of a fixation (****) and 4x4 grid will alternate four times. After the fourth time, a blank 4x4 grid will be presented.' +
-    '</p>' +
-    '<p class="block-text">' +
-    'On the blank 4x4 grid, use the arrow keys to navigate the grid and the spacebar to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).' +
-    '</p>' +
-    '<p class="block-text">' +
-    'During the practice round, you will receive feedback and reminders of the rules. These will be removed for the actual test, so ensure that you understand the instructions before proceeding.' +
-    '</p>' +
-    `<p class="block-text">${speedReminder}</p>` +
-    '</div>'
-
-  ],
+  pages: [getCurrCondition() == 'storage-only' ? simpleSpanInstructions : opSpanInstructions, reminderInstruct],
   allow_keys: false,
   data: {
     trial_id: "instructions",
@@ -1167,7 +1168,6 @@ var practiceNode = {
       var avgProcessingRT = rt / responseCount
       var passProcessing = avgProcessingAcc > processingThresh ? true : false
     }
-
     if ((accuracy > accuracyThresh || practiceCount == practiceThresh) && passProcessing) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
@@ -1177,9 +1177,6 @@ var practiceNode = {
         spanResponses[2] +
         " and your right ring finger on the " +
         spanResponses[1] +
-        // TODO: Deal with down arrow press
-        // " and your left index finger on the " +
-        // spanResponses[3] +
         ".</p>";
 
       if (getCurrCondition() == 'same-domain') {
@@ -1352,7 +1349,7 @@ var testNode = {
 
     if (testCount == numTestBlocks) {
       feedbackText =
-        "<div class = centerbox><p class = center-block-text>Moving to next task.";
+        "<div class = centerbox><p class = center-block-text>Moving to next sub-task.";
 
       if (getCurrCondition() == 'same-domain') {
         if (avgProcessingAcc < processingAccThresh) {
@@ -1372,9 +1369,12 @@ var testNode = {
         }
       }
 
-      feedbackText += "<p class = block-text>Press <i>enter</i> to continue.</p></div>"
-
       currCondition = allConditions.shift()
+
+      feedbackText += getCurrCondition() == 'storage-only' ? simpleSpanInstructions : opSpanInstructions
+
+      feedbackText += "<p class = block-text>Press <i>enter</i> to continue.</p></div>" // include rest of practice instructions about reminder of rules will be removed? Would have to change css to fit into screen if need to include that instruct text
+
       practiceTrials = generatePracticeTrials()
       testTrials = generateTestTrials()
 
