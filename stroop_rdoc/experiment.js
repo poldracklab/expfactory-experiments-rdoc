@@ -299,7 +299,7 @@ var speedReminder =
 var expStage = 'practice'
 // *: Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
+const stimTrialDuration = 1500;
 
 var creditVar = 0;
 // eslint-disable-next-line no-unused-vars
@@ -760,7 +760,7 @@ for (i = 0; i < practiceLen; i++) {
     choices: choices,
     response_ends_trial: false,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     post_trial_gap: 0,
     prompt: promptText,
     on_finish: appendData,

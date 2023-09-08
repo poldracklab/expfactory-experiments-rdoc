@@ -444,7 +444,7 @@ var speedReminder =
 // *: Timing
 // stimuli
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
+const stimTrialDuration = 1500;
 
 /* ******************************* */
 /* ATTENTION CHECK STUFF  */
@@ -781,7 +781,7 @@ for (var i = 0; i < practiceLen + 1; i++) {
     },
     post_trial_gap: 0,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
     prompt: promptText,
     on_finish: appendData,

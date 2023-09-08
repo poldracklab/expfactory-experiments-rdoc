@@ -452,7 +452,7 @@ var speedReminder =
 var expStage = 'practice'
 // *: Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
+const stimTrialDuration = 1500;
 
 // generic task variables
 var sumInstructTime = 0; // ms
@@ -461,7 +461,7 @@ var instructTimeThresh = 1; // /in seconds
 var runAttentionChecks = true;
 
 var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditions.length
-var numTrialsPerBlock = 72; // must be divisible by shapes.length * stopSignalsConditions.length
+var numTrialsPerBlock = 60; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTestBlocks = 3;
 
 var practiceThresh = 3; // max number of times to repeat practice
@@ -767,7 +767,7 @@ for (i = 0; i < practiceLen; i++) {
     choices: choices,
     correct_choice: getCorrectResponse,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
     SSD: getSSD,
     SS_duration: 500, // 500
@@ -937,8 +937,8 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: choices,
     correct_choice: correct_response,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
-    timing_duration: 2000,
+    trial_duration: stimTrialDuration, // 1500
+    timing_duration: 1500,
     response_ends_trial: false,
     SSD: getSSD,
     SS_duration: 500, // 500

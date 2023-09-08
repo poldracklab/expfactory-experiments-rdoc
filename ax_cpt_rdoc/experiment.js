@@ -312,7 +312,7 @@ const cueStimulusDuration = 500;
 const cueTrialDuration = 500;
 // probe
 const probeStimulusDuration = 1000;
-const probeTrialDuration = 2000;
+const probeTrialDuration = 1500;
 
 // generic task variables
 var instructTimeThresh = 1;

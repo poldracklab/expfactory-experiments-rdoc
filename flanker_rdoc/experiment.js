@@ -192,7 +192,7 @@ var speedReminder =
 var expStage = 'practice'
 // *: Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
+const stimTrialDuration = 1500;
 
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
@@ -701,7 +701,7 @@ for (i = 0; i < practiceLen; i++) {
       });
     },
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
     post_trial_gap: 0,
     prompt: promptText,
@@ -853,7 +853,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     post_trial_gap: 0,
     on_finish: appendData,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
     post_trial_gap: 0,
     on_finish: appendData,

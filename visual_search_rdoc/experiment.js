@@ -299,7 +299,7 @@ function generateTargetElement(left, top, width, height) {
 }
 
 function generateDistractorElement(left, top, width, height) {
-  if (getCurrCondition() === 'color') {
+  if (getCurrCondition() === 'feature') {
     return '<div id="black-distractor-element" class="box" style="position: absolute; left: ' + left + 'px; top: ' + top + 'px; width: ' + width + 'px; height: ' + height + 'px; background-color: black;"></div>';
   } else if (getCurrCondition() === 'conjunction') {
     if (Math.random() < 0.5) {
@@ -367,13 +367,17 @@ var feedbackInstructText =
 var speedReminder =
   '<p class = block-text>' +
   'Try to respond as quickly and accurately as possible.</p> ';
-const stimStimulusDuration = 2000;
-const stimTrialDuration = 2000;
-const conditions = ['color', 'conjunction']
-conditions.sort(() => Math.random() - 0.5);
-// Remove one element without replacement
-var blockType = conditions[0];
+const stimStimulusDuration = 1000;
+const stimTrialDuration = 1500;
 
+const conditions = ['feature', 'conjunction']
+conditions.sort(() => Math.random() - 0.5);
+
+// Remove one element without replacement
+var firstBlock = conditions[0];
+var secondBlock = conditions[1];
+
+var blockType = firstBlock
 
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
@@ -387,12 +391,11 @@ const missedResponseThresh = 0.1;
 // practice
 var practiceLen = 6; // num practice trials for each block in each condition
 var numTrialsPerBlock = 32; // num test trials for each block in each condition
-const numTestBlocks = 3;
+var numTestBlocks = 3;
 
 var practiceCount = 0;
 var practiceThresh = 3;
 var expStage = "practice"
-
 
 /*  ######## Important text values for display ######## */
 // prompt text saying , for target present and . if target absent
@@ -469,8 +472,8 @@ var testTrial = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: getStim,
   choices: choices,
-  stimulus_duration: stimStimulusDuration, // 2000,
-  trial_duration: stimTrialDuration, // 2000
+  stimulus_duration: stimStimulusDuration, // 1500,
+  trial_duration: stimTrialDuration, // 1500
   post_trial_gap: 0,
   response_ends_trial: false,
   prompt: function() {
@@ -534,7 +537,7 @@ var instructionsBlock = {
     possibleResponses[1][2] +
     "</b>.</p>" +
     "<p class = block-text>In this task, you will be presented with a series of rectangles on the screen. The rectangles can be either black or white in color.</p>" +
-    "<p class = block-text>On some trials, <b>one</b> of these rectangles will be a <b>vertical white rectangles</b>. We will call this rectangle the 'target'.</p>" +
+    "<p class = block-text>On some trials, <b>one</b> of these rectangles will be a <b>vertical white rectangle</b>. We will call this rectangle the 'target'.</p>" +
     "<p class = block-text>Your task is to determine whether a target is present or absent on each trial.</p>" +
     "<p class=block-text>If you determine a target is <b>present</b>, press your <b>" +
     possibleResponses[0][0] +
@@ -829,6 +832,7 @@ var testNode = {
 
     if (testCount == numTestBlocks) {
       if (getCurrCondition() == conditions[0]) {
+        blockType = secondBlock
         practiceCount = 0;
         testCount = 0;
         expStage = 'practice'

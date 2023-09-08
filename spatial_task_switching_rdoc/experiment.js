@@ -703,11 +703,11 @@ for (i = 0; i < practiceLen + 1; i++) {
         data: {
             exp_stage: "practice",
             trial_id: "practice_trial",
-            trial_duration: 2000,
+            trial_duration: 1500,
             stimulus_duration: 1000,
         },
         stimulus_duration: 1000, // 1000
-        trial_duration: 2000, // 2000
+        trial_duration: 1500, // 1500
         post_trial_gap: 0,
         response_ends_trial: false,
         on_finish: appendData,
@@ -896,11 +896,11 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
         data: {
             exp_stage: "test",
             trial_id: "test_trial",
-            trial_duration: 2000,
+            trial_duration: 1500,
             stimulus_duration: 1000,
         },
         stimulus_duration: 1000, // 1000
-        trial_duration: 2000, // 2000
+        trial_duration: 1500, // 1500
         post_trial_gap: 0,
         response_ends_trial: false,
         on_finish: appendData

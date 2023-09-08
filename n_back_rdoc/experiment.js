@@ -417,7 +417,7 @@ var letters = "bBdDgGtTvV".split("");
 
 // *: Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = 2000;
+const stimTrialDuration = 1500;
 
 // generic task variables
 var runAttentionChecks = true;
@@ -739,7 +739,7 @@ for (i = 0; i < practiceLen + 1; i++) {
     },
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     post_trial_gap: 0,
     response_ends_trial: false,
     prompt: getPromptText,
@@ -789,7 +789,7 @@ for (i = 0; i < practiceLen + 2; i++) {
     },
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     post_trial_gap: 0,
     response_ends_trial: false,
     prompt: getPromptText,
@@ -1064,7 +1064,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
     },
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     post_trial_gap: 0,
     response_ends_trial: false,
     on_finish: appendData,
@@ -1085,7 +1085,7 @@ for (i = 0; i < numTrialsPerBlock + 2; i++) {
     },
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
-    trial_duration: stimTrialDuration, // 2000
+    trial_duration: stimTrialDuration, // 1500
     post_trial_gap: 0,
     response_ends_trial: false,
     on_finish: appendData,
