@@ -1,8 +1,6 @@
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
-// common
-// PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
 var meanITI = 0.5;
 
 function sampleFromDecayingExponential() {
@@ -55,8 +53,6 @@ var getInstructFeedback = function() {
     '</p></div>'
   );
 };
-
-
 
 var getFeedback = function() {
   return (
@@ -154,7 +150,6 @@ function calculateMedian(numbers) {
   }
 }
 
-
 var getCue = function() {
   return currCue;
 };
@@ -204,7 +199,7 @@ var getChar = function() {
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
-// common variables
+
 const fixationDuration = 500;
 
 const possibleResponses = [['index finger', ',', 'comma key (,)'],
@@ -234,9 +229,6 @@ var speedReminder =
 /* ******************************* */
 /* TASK TEXT */
 /* ******************************* */
-// rule reminder for practice
-// after each block
-// eslint-disable-next-line no-unused-vars
 var feedbackText =
   "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
 
@@ -322,7 +314,6 @@ var instructTimeThresh = 1;
 /* ******************************* */
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
-
 
 /* ******************************* */
 /* VALUE THRESHOLDS */

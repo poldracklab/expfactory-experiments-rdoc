@@ -1,4 +1,3 @@
-// TODO: make sure getCurrCondition() type returns condition correctly, I renamed stuff
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
@@ -227,11 +226,6 @@ function assessPerformance() {
   });
 }
 
-const nArray = [8, 24]
-var randomIndex = Math.floor(Math.random() * nArray.length);
-var n = nArray[randomIndex]
-
-
 var trialTargetPresent;
 function getStim() {
   const containerWidth = window.innerWidth * 0.7; // Adjusted width (90% of window width)
@@ -317,9 +311,8 @@ var getExpStage = function() {
 
 
 var getCurrCondition = function() {
-  return blockType;
+  return condition;
 };
-
 
 
 var getInstructFeedback = function() {
@@ -370,27 +363,18 @@ var speedReminder =
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
 
-const conditions = ['feature', 'conjunction']
-conditions.sort(() => Math.random() - 0.5);
-
-// Remove one element without replacement
-var firstBlock = conditions[0];
-var secondBlock = conditions[1];
-
-var blockType = firstBlock
-
-// eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
-var numConditions = 2;
 
+// thresholds
 const instructTimeThresh = 1; // /in seconds
-let sumInstructTime = 0; // ms
+var sumInstructTime = 0; // ms
 const accuracyThresh = 0.6;
 const rtThresh = 1000;
 const missedResponseThresh = 0.1;
-// practice
-var practiceLen = 6; // num practice trials for each block in each condition
-var numTrialsPerBlock = 32; // num test trials for each block in each condition
+
+// trial nums
+var practiceLen = 6;
+var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 
 var practiceCount = 0;
@@ -424,6 +408,17 @@ var promptTextList =
 
 var speedReminder =
   "<p class = block-text>Try to respond as quickly and accurately as possible.</p>";
+
+
+// setting first value for 8 or 24 stim, random 50/50 after
+const nArray = [8, 24]
+var randomIndexN = Math.floor(Math.random() * nArray.length);
+var n = nArray[randomIndexN]
+
+// setting first value for feature/conjunction condition
+const conditionArray = ['feature', 'conjunction']
+var randomIndexCondition = Math.floor(Math.random() * conditionArray.length);
+var condition = conditionArray[randomIndexCondition]
 
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -520,8 +515,11 @@ var testTrial = {
     } else {
       data['correct_response'] = null
     }
-    randomIndex = Math.floor(Math.random() * nArray.length);
-    n = nArray[randomIndex]
+    randomIndexN = Math.floor(Math.random() * nArray.length);
+    n = nArray[randomIndexN]
+
+    randomIndexCondition = Math.floor(Math.random() * conditionArray.length);
+    condition = conditionArray[randomIndexCondition]
   }
 };
 
@@ -673,7 +671,7 @@ var ITIBlock = {
       }
     }
     window.addEventListener('keydown', preventSlash);
-    jsPsych.currentTrial().on_close = function() {
+    jsPsych.getCurrentTrial().on_close = function() {
       window.removeEventListener('keydown', preventSlash);
     };
   },
@@ -832,7 +830,6 @@ var testNode = {
 
     if (testCount == numTestBlocks) {
       if (getCurrCondition() == conditions[0]) {
-        blockType = secondBlock
         practiceCount = 0;
         testCount = 0;
         expStage = 'practice'
@@ -915,10 +912,8 @@ var visual_search_rdoc_experiment = [];
 var visual_search_rdoc_init = () => {
   visual_search_rdoc_experiment.push(fullscreen);
   visual_search_rdoc_experiment.push(instructionNode);
-  for (let i = 0; i < numConditions; i++) {
-    visual_search_rdoc_experiment.push(practiceNode);
-    visual_search_rdoc_experiment.push(testNode);
-  }
+  visual_search_rdoc_experiment.push(practiceNode);
+  visual_search_rdoc_experiment.push(testNode);
   visual_search_rdoc_experiment.push(endBlock);
   visual_search_rdoc_experiment.push(exitFullscreen);
 };
