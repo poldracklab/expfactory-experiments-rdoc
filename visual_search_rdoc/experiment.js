@@ -134,7 +134,6 @@ var attentionCheckData = [
     "A": 90
   },
 ]
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 function shuffleArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -147,7 +146,7 @@ function shuffleArray(array) {
 
   return shuffledArray;
 }
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
+
 attentionCheckData = shuffleArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
@@ -381,6 +380,7 @@ var practiceCount = 0;
 var practiceThresh = 3;
 var expStage = "practice"
 
+
 /*  ######## Important text values for display ######## */
 // prompt text saying , for target present and . if target absent
 var promptText =
@@ -498,6 +498,7 @@ var testTrial = {
     data['num_stimuli'] = n;
     data['condition'] = getCurrCondition()
     data['exp_stage'] = getExpStage()
+
     if (data.response !== null) {
       if (trialTargetPresent) {
         if (data.response == possibleResponses[0][1]) {
@@ -827,21 +828,9 @@ var testNode = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-
     if (testCount == numTestBlocks) {
-      if (getCurrCondition() == conditions[0]) {
-        practiceCount = 0;
-        testCount = 0;
-        expStage = 'practice'
-        feedbackText =
-          "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice for the next block.</p></div>"
-      } else if (getCurrCondition() == conditions[1]) {
-        practiceCount = 0;
-        testCount = 0;
-        expStage = 'practice'
-        feedbackText =
-          "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
-      }
+      feedbackText =
+        "<div class = centerbox><p class = center-block-text>Done this experiment. Press <i>enter</i> to exit.</p></div>"
       return false;
     } else {
       feedbackText =
