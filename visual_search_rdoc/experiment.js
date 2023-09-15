@@ -359,8 +359,8 @@ var feedbackInstructText =
 var speedReminder =
   '<p class = block-text>' +
   'Try to respond as quickly and accurately as possible.</p> ';
-const stimStimulusDuration = 1000;
-const stimTrialDuration = 1500;
+const stimStimulusDuration = 1500;
+const stimTrialDuration = 2000;
 
 var runAttentionChecks = true;
 
@@ -765,7 +765,7 @@ var practiceNode = {
     if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
-        `<p class = block-text>Keep your gaze on the central '+', your ${possibleResponses[0][0]} on the ${possibleResponses[0][2]} and your ${possibleResponses[1][0]} on the ${possibleResponses[1][2]}.` +
+        `<p class = block-text>Please keep your ${possibleResponses[0][0]} on the ${possibleResponses[0][2]} and your ${possibleResponses[1][0]} on the ${possibleResponses[1][2]}.` +
         "<p class = center-block-text> Press <i>enter</i> to continue.</p></div>";
       expStage = "test";
       return false;
