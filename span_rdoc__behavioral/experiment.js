@@ -696,8 +696,6 @@ var feedbackInstructBlock = {
   trial_duration: 180000,
 };
 
-console.log(currCondition)
-console.log(allConditions)
 
 var opSpanInstructions = '<div class="centerbox">' +
   `<h3 class="block-text">${currCondition == 'same-domain' ? 'Sub-task #1' : 'Sub-task #2'}</h3>` +

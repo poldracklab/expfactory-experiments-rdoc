@@ -126,11 +126,11 @@ function assessPerformance() {
 
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
-  correctTrial = 0;
+  correctrial = 0;
   if (data.response == data.correct_response) {
     correctTrial = 1;
   }
-  jsPsych.data.get().addToLast({ correctTrial: correctTrial });
+  jsPsych.data.get().addToLast({ correct_trial: correctTrial });
 }
 
 var getInstructFeedback = function() {
@@ -714,7 +714,7 @@ for (i = 0; i < practiceLen; i++) {
       var last = jsPsych.data.get().last(1).values()[0];
       if (last.response == null) {
         return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
-      } else if (last.correctTrial == 1) {
+      } else if (last.correct_trial == 1) {
         return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
       } else {
         return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";

@@ -53,7 +53,6 @@ var getInstructFeedback = function() {
     '</p></div>'
   );
 };
-
 var getFeedback = function() {
   return (
     '<div class = bigbox><div class = picture_box><p class = block-text>' +
@@ -61,14 +60,12 @@ var getFeedback = function() {
     '</font></p></div></div>'
   );
 };
-
 var getCondition = function() {
   return currCondition;
 };
 var getExpStage = function() {
   return expStage;
 };
-
 function assessPerformance() {
   var experimentData = jsPsych.data
     .get()
@@ -122,7 +119,6 @@ function assessPerformance() {
     final_accuracy: accuracy,
   });
 }
-
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
 
@@ -132,7 +128,6 @@ function appendData() {
   }
   jsPsych.data.get().addToLast({ correct_trial: correctTrial });
 }
-
 function calculateMedian(numbers) {
   if (numbers.length === 0) {
     return null; // Return null if the array is empty
@@ -149,22 +144,18 @@ function calculateMedian(numbers) {
     return sortedNumbers[middleIndex];
   }
 }
-
 var getCue = function() {
   return currCue;
 };
 var getStim = function() {
   return currStim;
 };
-
 var getCurrAttentionCheckQuestion = function() {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`
 }
-
 var getCurrAttentionCheckAnswer = function() {
   return currentAttentionCheckData.A
 }
-
 var setStims = function() {
   currCondition = blockList.pop();
 
@@ -187,7 +178,6 @@ var setStims = function() {
       break;
   }
 };
-
 var getChar = function() {
   return (
     '<div class = centerbox><div class = AX_text>' +
@@ -207,6 +197,9 @@ const possibleResponses = [['index finger', ',', 'comma key (,)'],
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]]
 
+/* ******************************* */
+/* TASK TEXT */
+/* ******************************* */
 var endText = '<div class = centerbox>' +
   '<p class = center-block-text>Thanks for completing this task!</p>' +
   '<p class = center-block-text>Press <i>enter</i> to continue.</p>' +
@@ -220,15 +213,10 @@ var feedbackInstructText =
   ' please keep the experiment tab (on Chrome or Firefox)' +
   ' active and fullscreen for the whole duration of each task.</p>' +
   '<p class=center-block-text> Press <i>enter</i> to begin.</p>';
-
-// speed reminder
 var speedReminder =
   '<p class = block-text>' +
   'Try to respond as quickly and accurately as possible.</p> ';
 
-/* ******************************* */
-/* TASK TEXT */
-/* ******************************* */
 var feedbackText =
   "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
 
@@ -299,6 +287,7 @@ var pageInstruct = [
 /* ******************************* */
 /* TIMINGS */
 /* ******************************* */
+
 // cue
 const cueStimulusDuration = 500;
 const cueTrialDuration = 500;
@@ -312,7 +301,6 @@ var instructTimeThresh = 1;
 /* ******************************* */
 /* ATTENTION CHECK STUFF  */
 /* ******************************* */
-// eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
 
 /* ******************************* */
@@ -345,19 +333,12 @@ var trialProportions = [
 var numTestBlocks = 3;
 var numTrialsPerBlock = trialProportions.length * 5; // 50
 var practiceLen = trialProportions.length; // 10
-
-// set empty and populate later with current trial data
 var currCondition = '';
-// eslint-disable-next-line no-unused-vars
 var expStage = 'practice';
 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
-
-/* ******************************* */
-/* STUFF USED IN ALL TASKS */
-/* ******************************* */
 
 // *** FIXATION *** //
 var fixation = {
@@ -504,10 +485,11 @@ var feedbackInstructBlock = {
   post_trial_gap: 0,
   trial_duration: 180000,
 };
+
 var instructionsBlock = {
   type: jsPsychInstructions,
   pages: pageInstruct,
-  allow_keys: false, // instead clickable pages
+  allow_keys: false,
   data: {
     exp_id: expID,
     trial_id: 'instructions',
@@ -685,10 +667,8 @@ var attentionCheckData = [
     "A": 90
   },
 ]
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-
 
 // Set up attention check node
 var attentionCheckBlock = {
@@ -711,9 +691,6 @@ var attentionNode = {
   },
 };
 
-/* ******************************* */
-/* TASK-SPECIFIC STUFF */
-/* ******************************* */
 
 var setStimsBlock = {
   type: jsPsychCallFunction,
@@ -782,9 +759,6 @@ for (i = 0; i < practiceLen; i++) {
     ITIBlock,
   );
 }
-/* ******************************* */
-/* PRACTICE BLOCKS */
-/* ******************************* */
 
 // loop based on criteria
 var practiceCount = 0;
@@ -862,6 +836,7 @@ var practiceNode = {
     }
   },
 };
+
 /* ******************************* */
 /* TEST TRIALS */
 /* ******************************* */
@@ -919,9 +894,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     ITIBlock,
   );
 }
-/* ******************************* */
-/* TEST BLOCKS */
-/* ******************************* */
+
 var testCount = 0;
 var testNode = {
   timeline: [feedbackBlock].concat(testTrials),

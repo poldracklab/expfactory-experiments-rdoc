@@ -739,7 +739,7 @@ for (i = 0; i < practiceLen; i++) {
     stimulus: getStim,
     data: function() {
       return Object.assign({}, getStimData(), {
-        trial_id: "stim",
+        trial_id: "practice_trial",
         exp_stage: "practice",
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
         trial_duration: stimTrialDuration,
@@ -853,7 +853,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     stimulus: getStim,
     data: function() {
       return Object.assign({}, getStimData(), {
-        trial_id: "stim",
+        trial_id: "test_trial",
         exp_stage: "test",
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
         trial_duration: stimTrialDuration,

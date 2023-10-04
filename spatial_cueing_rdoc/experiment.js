@@ -316,8 +316,6 @@ var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
 // generic task variables
 var runAttentionChecks = true;
 
-// var attentionCheckThresh = 0.65;
-
 var instructTimeThresh = 1; // /in seconds
 var accuracyThresh = 0.75;
 var rtThresh = 1000;

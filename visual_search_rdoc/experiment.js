@@ -502,19 +502,19 @@ var testTrial = {
     if (data.response !== null) {
       if (trialTargetPresent) {
         if (data.response == possibleResponses[0][1]) {
-          data['correct_response'] = 1
+          data['correct_trial'] = 1
         } else {
-          data['correct_response'] = 0
+          data['correct_trial'] = 0
         }
       } else {
         if (data.response == possibleResponses[0][1]) {
-          data['correct_response'] = 0
+          data['correct_trial'] = 0
         } else {
-          data['correct_response'] = 1
+          data['correct_trial'] = 1
         }
       }
     } else {
-      data['correct_response'] = null
+      data['correct_trial'] = null
     }
     randomIndexN = Math.floor(Math.random() * nArray.length);
     n = nArray[randomIndexN]
@@ -698,9 +698,9 @@ var practiceFeedbackBlock = {
     if (last.response == null) {
       return '<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>'
     }
-    if (last.correct_response == 1) {
+    if (last.correct_trial == 1) {
       return '<div class = centerbox><p class = center-block-text>Correct!</div></div>'
-    } else if (last.correct_response == 0) {
+    } else if (last.correct_trial == 0) {
       return '<div class = centerbox><p class = center-block-text>Incorrect!</div></div>'
     }
   },
@@ -749,7 +749,7 @@ var practiceNode = {
           if (data.trials[i].rt != null) {
             sumRT += data.trials[i].rt;
             sumResponses += 1;
-            if (data.trials[i].correct_response == 1) {
+            if (data.trials[i].correct_trial == 1) {
               correct += 1
             }
           }
@@ -814,7 +814,7 @@ var testNode = {
           if (data.trials[i].rt != null) {
             sumRT += data.trials[i].rt;
             sumResponses += 1;
-            if (data.trials[i].correct_response == 1) {
+            if (data.trials[i].correct_trial == 1) {
               correct += 1
             }
           }

@@ -1126,10 +1126,7 @@ var testNode1 = {
     var avgRT = sumRT / sumResponses;
     var mismatchPercent = mismatchPress / totalTrials;
 
-
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-
-
 
     if (currentAttentionCheckData == undefined) {
       attentionCheckData = shuffleChecksArray(attentionChecks)
@@ -1137,7 +1134,6 @@ var testNode1 = {
     }
 
     delay = delays.shift()
-
 
     if (testCount == numTestBlocks) {
       feedbackText =

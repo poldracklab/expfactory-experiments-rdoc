@@ -153,8 +153,6 @@ var attentionCheckData = [
 attentionCheckData = shuffleArray(attentionCheckData)
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-
-
 var getInstructFeedback = function() {
   return (
     '<div class = centerbox><p class = center-block-text>' +
