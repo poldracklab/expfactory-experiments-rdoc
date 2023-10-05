@@ -626,6 +626,7 @@ for (let i = 0; i < practiceLen; i++) {
       return Object.assign({}, getStimData(), {
         trial_id: "practice_trial",
         exp_stage: "practice",
+        choices: choices,
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration,
       });
@@ -784,6 +785,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       return Object.assign({}, getStimData(), {
         trial_id: "test_trial",
         exp_stage: "test",
+        choices: choices,
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration,
       });

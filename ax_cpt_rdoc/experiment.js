@@ -666,6 +666,7 @@ for (i = 0; i < practiceLen; i++) {
         trial_id: 'practice_probe',
         exp_stage: 'practice',
         condition: getCondition(),
+        choices: choices,
         trial_duration: probeTrialDuration,
         stimulus_duration: probeStimulusDuration,
         correct_response:
@@ -804,6 +805,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
         trial_id: 'test_probe',
         exp_stage: 'test',
         condition: getCondition(),
+        choices: choices,
         trial_duration: probeTrialDuration,
         stimulus_duration: probeStimulusDuration,
         correct_response:

@@ -555,7 +555,7 @@ var accuracyThresh = 0.6;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 var processingThresh = .6;
-var equationChoices = ["t", "f"];
+var processingChoices = ["t", "f"];
 
 var processingAccThresh = .6;
 var processingRTThresh = 1000;
@@ -642,7 +642,7 @@ var opSpanInstructions = '<div class="centerbox">' +
   `<h3 class="block-text">${currCondition == 'same-domain' ? 'Sub-task #1' : 'Sub-task #2'}</h3>` +
   '<p class="block-text">' +
   'In this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. ' +
-  `Press the <i>${equationChoices[0]} key</i> if the grid is symmetric and press the <i>${equationChoices[1]} key</i> if it is not.` +
+  `Press the <i>${processingChoices[0]} key</i> if the grid is symmetric and press the <i>${processingChoices[1]} key</i> if it is not.` +
   '</p>' +
   '<p class="block-text">' +
   `When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgements as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell. ` +
@@ -797,7 +797,7 @@ var waitBlock = {
       return getRandomSpatial()
     }
   },
-  choices: equationChoices,
+  choices: processingChoices,
   stimulus_duration: processingStimulusDuration,
   trial_duration: processingTrialDuration,
   response_ends_trial: true,
@@ -822,6 +822,7 @@ var waitBlock = {
       trial_id: 'inter-stimulus',
       exp_stage: getExpStage(),
       condition: getCurrCondition(),
+      choices: getCurrCondition() == 'same-domain' ? processingChoices: '',
       trial_duration: processingTrialDuration,
       stimulus_duration: processingStimulusDuration,
     };
@@ -938,6 +939,7 @@ var testTrial = {
       trial_id: "response",
       exp_stage: getExpStage(),
       correct_response: getCurrSeq(),
+      choices: ["NO_KEYS"],
       trial_duration: responseBlockDuration,
       stimulus_duration: responseBlockDuration,
     };

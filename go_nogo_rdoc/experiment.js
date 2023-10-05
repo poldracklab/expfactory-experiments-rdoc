@@ -601,7 +601,7 @@ for (var i = 0; i < practiceLen; i++) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getStim,
     data: function() {
-      return Object.assign(getData(), { exp_stage: "practice" });
+      return Object.assign(getData(), { exp_stage: "practice", choices: [goResponse] });
     },
     choices: [goResponse],
     stimulus_duration: stimStimulusDuration, // 1000,
@@ -739,7 +739,7 @@ for (var i = 0; i < numTrialsPerBlock; i++) {
     stimulus: getStim,
     choices: [goResponse],
     data: function() {
-      return Object.assign(getData(), { exp_stage: "test" });
+      return Object.assign(getData(), { exp_stage: "test", choices: [goResponse] });
     },
     post_trial_gap: 0,
     stimulus_duration: stimStimulusDuration, // 1000

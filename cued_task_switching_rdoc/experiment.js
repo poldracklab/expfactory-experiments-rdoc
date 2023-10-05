@@ -714,6 +714,7 @@ for (var i = 0; i < practiceLen + 1; i++) {
     data: {
       exp_stage: 'practice',
       trial_id: 'practice_trial',
+      choices: choices,
       trial_duration: stimTrialDuration,
       stimulus_duration: stimStimulusDuration
     },
@@ -896,6 +897,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     data: {
       trial_id: 'test_trial',
       exp_stage: 'test',
+      choices: choices,
       trial_duration: stimTrialDuration,
       stimulus_duration: stimStimulusDuration
     },

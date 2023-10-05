@@ -423,12 +423,14 @@ var testTrial = {
     if (getExpStage() == 'practice') {
       return {
         trial_id: 'practice_trial',
+        choices: choices,
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration
       }
     } else {
       return {
         trial_id: 'test_trial',
+        choices: choices,
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration
       }

@@ -683,6 +683,7 @@ for (i = 0; i < practiceLen; i++) {
         trial_id: "practice_trial",
         exp_stage: "practice",
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
+        choices: choices,
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration
       });
@@ -796,6 +797,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       return Object.assign({}, getStimData(), {
         trial_id: "test_trial",
         exp_stage: "test",
+        choices: choices,
         correct_response: getKeyAnswer(), // changed this to getKeyAnswer() to fetch correct response
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration
