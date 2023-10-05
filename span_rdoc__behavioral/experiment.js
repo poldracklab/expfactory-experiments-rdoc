@@ -167,65 +167,6 @@ var getExpStage = function() {
   return expStage;
 };
 
-
-function assessPerformance() {
-  var responseGridData = jsPsych.data
-    .get()
-    .filter({ exp_stage: "test", trial_id: "response" }).trials;
-
-  var responseProcessingData = jsPsych.data
-    .get()
-    .filter({ exp_stage: "test", trial_id: "processing" }).trials;
-
-  var missedCount = 0;
-  var trialCount = responseGridData.length;
-  var correct = 0;
-
-
-  for (var i = 0; i < trialCount; i++) {
-    if (responseGridData[i].correct_trial == null) {
-      missedCount += 1
-    } else {
-      if (responseGridData[i].correct_trial == 1) {
-        correct += 1
-      }
-    }
-  }
-  var missedPercent = missedCount / trialCount;
-  var accuracy = correct / trialCount;
-
-  var correctProcessing = 0;
-  var missedProcessing = 0;
-  var processingRT = 0
-  var numProcessingTrialsWithResponse = 0;
-
-  for (var i = 0; i < responseProcessingData.length; i++) {
-    if (responseProcessingData[i].correct_response == null) {
-      missedProcessing += 1
-    } else {
-      numProcessingTrialsWithResponse += 1
-      processingRT += responseProcessingData[i].rt;
-
-      if (responseProcessingData[i].correct_response == 1) {
-        correctProcessing += 1
-      }
-    }
-  }
-
-  var avgProcessingRT = processingRT / numProcessingTrialsWithResponse
-  var avgProcessingAcc = correctProcessing / numProcessingTrialsWithResponse
-
-
-  creditVar = missedPercent < 0.3 && missedProcessing < 0.3;
-  jsPsych.data.get().addToLast({
-    final_credit_var: creditVar,
-    final_missed_percent: missedPercent,
-    final_accuracy: accuracy,
-    final_avg_processing_rt: avgProcessingRT,
-    final_avg_processing_acc: avgProcessingAcc
-  });
-}
-
 function shuffleChecksArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -878,7 +819,7 @@ var waitBlock = {
   },
   data: function() {
     return {
-      trial_id: 'processing',
+      trial_id: 'inter-stimulus',
       exp_stage: getExpStage(),
       condition: getCurrCondition(),
       trial_duration: processingTrialDuration,
@@ -1041,18 +982,18 @@ var ITIBlock = {
       return {
         trial_id: 'practice_ITI',
         ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5
+          min: 2,
+          max: 20,
+          mean: 5
         }
       }
     } else {
       return {
         trial_id: 'test_ITI',
         ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5
+          min: 2,
+          max: 20,
+          mean: 5
         }
       }
     }
@@ -1141,7 +1082,7 @@ var practiceNode = {
       var avgProcessingRT = null;
       var passProcessing = true
     } else {
-      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'processing', exp_stage: 'practice', condition: getCurrCondition() }).trials
+      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'inter-stimulus', exp_stage: 'practice', condition: getCurrCondition() }).trials
 
       var processingCorrect = 0;
       var totalTrials = responseProcessingData.length;
@@ -1317,7 +1258,7 @@ var testNode = {
       var avgProcessingMissed = null
       var avgProcessingRT = null;
     } else {
-      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'processing', exp_stage: 'test', condition: getCurrCondition() }).trials
+      var responseProcessingData = jsPsych.data.get().filter({ trial_id: 'inter-stimulus', exp_stage: 'test', condition: getCurrCondition() }).trials
 
       var processingCorrect = 0;
       var totalTrials = responseProcessingData.length;
@@ -1439,7 +1380,6 @@ var endBlock = {
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
   },
 };
