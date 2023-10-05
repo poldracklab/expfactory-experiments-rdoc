@@ -400,7 +400,6 @@ var speedReminder =
 // generic task variables
 var sumInstructTime = 0 // ms
 var instructTimeThresh = 1 // /in seconds
-var credit_var = 0
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true
 // eslint-disable-next-line no-unused-vars

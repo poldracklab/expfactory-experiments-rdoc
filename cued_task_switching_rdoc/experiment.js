@@ -398,7 +398,6 @@ var runAttentionChecks = true;
 
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
-var creditVar = 0;
 
 /* ******************************* */
 /* TASK TEXT */

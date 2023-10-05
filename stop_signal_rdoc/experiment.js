@@ -387,7 +387,6 @@ const stimTrialDuration = 1500;
 // generic task variables
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
-// var credit_var = 0;
 var runAttentionChecks = true;
 
 var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditions.length

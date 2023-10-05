@@ -264,7 +264,6 @@ var runAttentionChecks = true;
 // var attentionCheckThresh = 0.45;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
-var creditVar = 0;
 var goResponse = " "; // spacebar
 
 // task specific variables

@@ -364,7 +364,6 @@ const stimTrialDuration = 1500;
 var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1;
-var creditVar = 0;
 
 var expLen = 198;
 var practiceLen = 10;

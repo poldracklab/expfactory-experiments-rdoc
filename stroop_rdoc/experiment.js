@@ -244,7 +244,6 @@ var expStage = 'practice'
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
 
-var creditVar = 0;
 // eslint-disable-next-line no-unused-vars
 var runAttentionChecks = true;
 // var attention_check_thresh = 0.45;

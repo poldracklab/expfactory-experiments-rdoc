@@ -166,65 +166,6 @@ var getFeedback = function() {
   ); // <font color="white">
 };
 
-function assessPerformance() {
-  var experimentData = jsPsych.data
-    .get()
-    .filter({ exp_stage: "test", trial_id: "test_trials" }).trials;
-  var missedCount = 0;
-  var trialCount = 0;
-  var rtArray = [];
-  var rt = 0;
-  var correct = 0;
-  // var key = null;
-
-  // record choices participants made
-  var choiceCounts = {};
-  choiceCounts[null] = 0;
-
-  for (var k = 0; k < choices.length; k++) {
-    choiceCounts[choices[k]] = 0;
-  }
-
-  for (var i = 0; i < experimentData.length; i++) {
-    if (experimentData[i].possibleResponses != "none") {
-      trialCount += 1;
-      rt = experimentData[i].rt;
-      key = experimentData[i].response;
-      choiceCounts[key] += 1;
-      if (rt == null) {
-        missedCount += 1;
-      } else {
-        rtArray.push(rt);
-      }
-      if (key == experimentData[i].correctResponse) {
-        correct += 1;
-      }
-    }
-  }
-  // calculate average rt
-  var avgRT = -1;
-  if (rtArray.length !== 0) {
-    avgRT = math.median(rtArray);
-  }
-  // calculate whether response distribution is okay
-  var responsesOK = true;
-  Object.keys(choiceCounts).forEach(function(key, index) {
-    if (choiceCounts[key] > trialCount * 0.85) {
-      responsesOK = false;
-    }
-  });
-  var missedPercent = missedCount / trialCount;
-  var accuracy = correct / trialCount;
-  creditVar = missedPercent < 0.4 && avgRT > 200 && responsesOK;
-  jsPsych.data.get().addToLast({
-    final_credit_var: creditVar,
-    final_missed_percent: missedPercent,
-    final_avg_RT: avgRT,
-    final_responses_OK: responsesOK,
-    final_accuracy: accuracy,
-  });
-}
-
 var trialTargetPresent;
 function getStim() {
   const containerWidth = window.innerWidth * 0.7; // Adjusted width (90% of window width)
@@ -889,7 +830,6 @@ var endBlock = {
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
   },
 };
