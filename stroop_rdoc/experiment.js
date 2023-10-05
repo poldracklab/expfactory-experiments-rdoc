@@ -178,7 +178,6 @@ function appendData() {
     correctTrial = 1;
   }
   jsPsych.data.get().addToLast({ correct_trial: correctTrial });
-  console.log(jsPsych.data.get().last(1).values()[0])
 }
 
 var getInstructFeedback = function() {
@@ -276,7 +275,6 @@ function renameDataProperties() {
       obj.stim_color = 'green'
     }
   });
-  console.log(jsPsych.data.get().trials)
 }
 
 // creating stimuli for stroop task, string replace XXX and YYY
