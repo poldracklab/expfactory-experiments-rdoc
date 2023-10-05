@@ -175,60 +175,6 @@ var getExpStage = function() {
     return expStage;
 };
 
-
-function assessPerformance() {
-    var experiment_data = jsPsych.data.get().filter({ exp_stage: 'test', trial_id: 'test_trial' }).trials
-    var missed_count = 0
-    var trial_count = 0
-    var rt_array = []
-    var rt = 0
-    var correct = 0
-
-    // record choices participants made
-    var choice_counts = {}
-    choice_counts[null] = 0
-    choice_counts[choices[0]] = 0
-    choice_counts[choices[1]] = 0
-
-    for (var i = 0; i < experiment_data.length; i++) {
-        trial_count += 1
-        rt = experiment_data[i].rt
-        key = experiment_data[i].response
-        choice_counts[key] += 1
-        if (rt == null) {
-            missed_count += 1
-        } else {
-            rt_array.push(rt)
-        }
-        if (key == experiment_data[i].correct_response) {
-            correct += 1
-        }
-    }
-
-    // calculate average rt
-    var avg_rt = null
-    if (rt_array.length !== 0) {
-        avg_rt = math.median(rt_array)
-    }
-    // calculate whether response distribution is okay
-    var responses_ok = true
-    Object.keys(choice_counts).forEach(function(key, index) {
-        if (choice_counts[key] > trial_count * 0.85) {
-            responses_ok = false
-        }
-    })
-    var missed_percent = missed_count / trial_count
-    var accuracy = correct / trial_count
-    credit_var = (missed_percent < 0.4 && avg_rt > 200 && responses_ok && accuracy > 0.60)
-    jsPsych.data.get().addToLast({
-        final_credit_var: credit_var,
-        final_missed_percent: missed_percent,
-        final_avg_RT: avg_rt,
-        final_responses_OK: responses_ok,
-        final_accuracy: accuracy
-    })
-}
-
 var getInstructFeedback = function() {
     return '<div class = centerbox><p class = center-block-text>' + feedback_instruct_text +
         '</p></div>'
@@ -657,7 +603,6 @@ var end_block = {
     choices: ['Enter'],
     post_trial_gap: 0,
     on_finish: function() {
-        assessPerformance()
         evalAttentionChecks()
     }
 };

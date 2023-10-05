@@ -188,76 +188,6 @@ function renameDataProperties() {
 
 }
 
-function assessPerformance() {
-  var experimentData = jsPsych.data
-    .get()
-    .filter({ trial_id: "test_trial" }).trials;
-  var missedCount = 0;
-  var trialCount = 0;
-  var rtArray = [];
-  // var rt = 0;
-  var correct = 0;
-  var allTrials = 0;
-
-  // record choices participants made
-  var choiceCounts = {};
-  choiceCounts[null] = 0;
-  choiceCounts[choices[0]] = 0;
-  choiceCounts[choices[1]] = 0;
-
-  for (var i = 0; i < experimentData.length; i++) {
-    allTrials += 1;
-    key = experimentData[i].response;
-    choiceCounts[key] += 1;
-    if (experimentData[i].condition == "go") {
-      trialCount += 1;
-    }
-    if (
-      experimentData[i].condition == "go" &&
-      experimentData[i].rt != null
-    ) {
-      rtArray.push(experimentData[i].rt);
-      if (experimentData[i].response == experimentData[i].correct_response) {
-        correct += 1;
-      }
-    } else if (
-      experimentData[i].condition == "stop" &&
-      experimentData[i].rt != null
-    ) {
-      rtArray.push(experimentData[i].rt);
-    } else if (
-      experimentData[i].condition == "go" &&
-      experimentData[i].rt == null
-    ) {
-      missedCount += 1;
-    }
-  }
-  // calculate average rt
-  var avgRt = null;
-  if (rtArray.length !== 0 && rtArray.every((value) => value !== undefined)) {
-    avgRt = math.median(rtArray);
-  }
-
-  // calculate whether response distribution is okay
-  var responsesOk = true;
-  Object.keys(choiceCounts).forEach(function(key, index) {
-    if (choiceCounts[key] > allTrials * 0.85) {
-      responsesOk = false;
-    }
-  });
-  var missedPercent = missedCount / trialCount;
-  var accuracy = correct / trialCount;
-  var creditVar =
-    missedPercent < 0.25 && avgRt > 200 && responsesOk && accuracy > 0.6;
-  jsPsych.data.get().addToLast({
-    final_credit_var: creditVar,
-    final_missed_percent: missedPercent,
-    final_avg_RT: avgRt,
-    final_responses_OK: responsesOk,
-    final_accuracy: accuracy,
-  });
-}
-
 var getFeedback = function() {
   return (
     "<div class = bigbox><div class = picture_box><p class = block-text>" +
@@ -1065,7 +995,6 @@ var endBlock = {
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
     renameDataProperties()
   },

@@ -165,70 +165,6 @@ var getExpStage = function() {
   return expStage;
 };
 
-function assessPerformance() {
-  /* Function to calculate the "creditVar", which is a boolean used to
-     credit individual experiments in expfactory. 
-  */
-
-  const { trials: experimentData } = jsPsych.data
-    .get()
-    .filter({ trial_id: "test_trial" });
-
-  const rtArray = [];
-  let missedCount = 0;
-  let trialCount = 0;
-  let correct = 0;
-
-  // record choices participants made
-  const choiceCounts = { [null]: 0 };
-  for (const choice of choices) {
-    choiceCounts[choice] = 0;
-  }
-
-
-  // eslint-disable-next-line camelcase
-  for (const { rt, response: key, correct_trial } of experimentData) {
-    trialCount++;
-    // eslint-disable-next-line camelcase
-    if (correct_trial === 1) {
-      correct++;
-    }
-    choiceCounts[key]++;
-    if (rt == null) {
-      missedCount++;
-    } else {
-      rtArray.push(rt);
-    }
-  }
-
-  // calculate average rt
-  let avgRT = null;
-  if (rtArray.length !== 0) {
-    avgRT = math.median(rtArray);
-  }
-
-  // calculate missed percent
-  const missedPercent = missedCount / trialCount;
-
-  // calculate whether response distribution is okay
-  let responsesOk = true;
-  for (const key of Object.keys(choiceCounts)) {
-    if (choiceCounts[key] > trialCount * 0.85) {
-      responsesOk = false;
-      break;
-    }
-  }
-
-  const creditVar = missedPercent < 0.4 && avgRT > 200 && responsesOk;
-  jsPsych.data.get().addToLast({
-    final_credit_var: creditVar,
-    final_missed_percent: missedPercent,
-    final_avg_RT: avgRT,
-    final_responses_OK: responsesOk,
-    final_accuracy: correct / trialCount,
-  });
-}
-
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
   if (data.response == data.correct_response) {
@@ -237,7 +173,6 @@ function appendData() {
     var correctTrial = 0;
   }
   jsPsych.data.get().addToLast({ correct_trial: correctTrial });
-  console.log(jsPsych.data.get().last(1))
 }
 
 var getInstructFeedback = function() {
@@ -258,6 +193,7 @@ var getFeedback = function() {
 
 var getCue = function() {
   currStim = blockStims.pop();
+  console.log(currStim)
   return currStim.cue_stimulus;
 };
 
@@ -355,6 +291,8 @@ for (let i = 0; i < 2; i++) {
     stimulus: images[loc].star + images[noloc].box + fixation,
     cue_stimulus: images[loc].box + images[noloc].box + fixation,
     data: {
+      cue_location: 'none',
+      stim_location: loc,
       condition: "nocue",
       correct_response: choices[i],
     },
@@ -363,6 +301,8 @@ for (let i = 0; i < 2; i++) {
     stimulus: images[loc].star + images[noloc].box + fixation,
     cue_stimulus: images[loc].bold + images[noloc].bold + fixation,
     data: {
+      cue_location: 'both',
+      stim_location: loc,
       condition: "doublecue",
       correct_response: choices[i],
     },
@@ -371,6 +311,8 @@ for (let i = 0; i < 2; i++) {
     stimulus: images[loc].star + images[noloc].box + fixation,
     cue_stimulus: images[loc].bold + images[noloc].box + fixation,
     data: {
+      cue_location: loc,
+      stim_location: loc,
       condition: "valid",
       correct_response: choices[i],
     },
@@ -380,6 +322,8 @@ for (let i = 0; i < 2; i++) {
       stimulus: images[loc].star + images[noloc].box + fixation,
       cue_stimulus: images[loc].box + images[noloc].bold + fixation,
       data: {
+        cue_location: noloc,
+        stim_location: loc,
         condition: "invalid",
         correct_response: choices[i],
       },
@@ -392,6 +336,7 @@ for (let i = 0; i < 2; i++) {
     invalidTrials
   );
 }
+
 
 var promptText =
   "<div class = prompt_box>" +
@@ -953,7 +898,6 @@ var endBlock = {
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
   },
 };

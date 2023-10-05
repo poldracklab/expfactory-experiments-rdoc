@@ -173,80 +173,6 @@ var getExpStage = function() {
   return expStage;
 };
 
-function assessPerformance() {
-  /* Function to calculate the "creditVar", which is a boolean used to
-  credit individual experiments in expfactory. */
-
-  var experimentData = jsPsych.data.get().filter({ trial_id: "test_trial" }).values();
-  var filteredData = [];
-
-  for (var i = 0; i < experimentData.length; i++) {
-    filteredData.push({
-      rt: experimentData[i].rt,
-      response: experimentData[i].response,
-      correct_response: experimentData[i].correct_response,
-      condition: experimentData[i].condition,
-    });
-  }
-
-  var missedCount = 0;
-  var trialCount = 0;
-  var rtArray = [];
-  var rt = 0;
-  var correct = 0;
-  // record choices participants made
-  var choiceCounts = {};
-  choiceCounts[null] = 0;
-  choiceCounts[goResponse] = 0;
-
-  for (var i = 0; i < filteredData.length; i++) {
-    trialCount += 1;
-    key = filteredData[i].response;
-    choiceCounts[key] += 1;
-    if (filteredData[i].condition == "go") {
-      if (filteredData[i].response == filteredData[i].correct_response) {
-        correct += 1;
-      }
-      if (filteredData[i].rt == null) {
-        missedCount += 1;
-      } else {
-        rt = filteredData[i].rt;
-        rtArray.push(rt);
-      }
-    } else if (filteredData[i].condition == "nogo") {
-      if (filteredData[i].rt == null) {
-        correct += 1;
-      } else {
-        rt = filteredData[i].rt;
-        rtArray.push(rt);
-      }
-    }
-
-    // calculate average rt
-    var avgRT = null;
-    if (rtArray.length !== 0) {
-      avgRT = math.median(rtArray);
-    }
-    // calculate whether response distribution is okay
-    var responsesOK = true;
-    Object.keys(choiceCounts).forEach(function(key, index) {
-      if (choiceCounts[key] > trialCount * 0.95) {
-        responsesOK = false;
-      }
-    });
-    var missedPercent = missedCount / trialCount;
-    var accuracy = correct / trialCount;
-    creditVar = missedPercent < 0.25 && avgRT > 200 && accuracy > 0.6;
-    jsPsych.data.get().addToLast({
-      final_credit_var: creditVar,
-      final_missed_percent: missedPercent,
-      final_avg_RT: avgRT,
-      final_responses_OK: responsesOK,
-      final_accuracy: accuracy,
-    });
-  }
-}
-
 /* Append gap and current trial to data and then recalculate for next trial*/
 var appendData = function(data) {
   var currentTrial = jsPsych.data.get().last().trials[0];
@@ -926,7 +852,6 @@ var endBlock = {
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
   },
 };

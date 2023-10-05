@@ -181,65 +181,6 @@ var getCTI = function() {
   return CTI;
 };
 
-function assessPerformance() {
-  /* Function to calculate the "creditVar", which is a boolean used to
-  credit individual experiments in expfactory. */
-
-  var experimentData = jsPsych.data.get().filter({ exp_stage: 'test', trial_id: 'test_trial' }).values();
-  var missedCount = 0;
-  var trialCount = 0;
-  var rtArray = [];
-  var rt = 0;
-  var correct = 0;
-  // record choices participants made
-  var choiceCounts = {};
-  choiceCounts[null] = 0;
-  choiceCounts[possibleResponses[0][1]] = 0;
-  choiceCounts[possibleResponses[1][1]] = 0;
-
-  for (var i = 0; i < experimentData.length; i++) {
-    if (experimentData[i].trial_id === 'test_trial') {
-      trialCount += 1;
-      rt = experimentData[i].rt;
-      key = experimentData[i].response;
-      choiceCounts[key] += 1;
-      if (rt === null) {
-        missedCount += 1;
-      } else {
-        rtArray.push(rt);
-      }
-
-      if (key === experimentData[i].correct_response) {
-        correct += 1;
-      }
-    }
-  }
-
-  // calculate average rt
-  var avgRT = null;
-  if (rtArray.length !== 0) {
-    avgRT = math.median(rtArray);
-  }
-  // calculate whether response distribution is okay
-  var responsesOK = true;
-  Object.values(choiceCounts).forEach(function(value) {
-    if (value > trialCount * 0.85) {
-      responsesOK = false;
-    }
-  });
-  var missedPercent = missedCount / trialCount;
-  var accuracy = correct / trialCount;
-  creditVar = missedPercent < 0.25 && avgRT > 200 && responsesOK && accuracy > 0.6;
-
-  jsPsych.data.get().addToLast({
-    final_credit_var: creditVar,
-    final_missed_percent: missedPercent,
-    final_avg_RT: avgRT,
-    final_responses_OK: responsesOK,
-    final_accuracy: accuracy,
-  });
-}
-
 /* Append gap and current trial to data and then recalculate for next trial*/
 var appendData = function() {
   var currTrial = jsPsych.getProgress().current_trial_global;
@@ -1080,7 +1021,6 @@ var endBlock = {
   choices: ['Enter'],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
   },
 };

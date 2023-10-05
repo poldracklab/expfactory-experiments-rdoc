@@ -67,63 +67,6 @@ var getExpStage = function() {
   return expStage;
 };
 
-
-function assessPerformance() {
-  var experimentData = jsPsych.data
-    .get()
-    .filter({ trial_id: "test_trial" }).trials;
-  var missedCount = 0;
-  var trialCount = 0;
-  var rtArray = [];
-  var rt = 0;
-  var correct = 0;
-  // record choices participants made
-  var choiceCounts = {};
-  choiceCounts[-1] = 0;
-  choiceCounts[possibleResponses[0]] = 0;
-  choiceCounts[possibleResponses[1]] = 0;
-  for (var i = 0; i < experimentData.length; i++) {
-    trialCount += 1;
-    rt = experimentData[i].rt;
-    key = experimentData[i].response;
-    choiceCounts[key] += 1;
-    if (rt == -1) {
-      missedCount += 1;
-    } else {
-      rtArray.push(rt);
-    }
-
-    if (key == experimentData[i].correct_response) {
-      correct += 1;
-    }
-  }
-
-  // calculate average rt
-  var avgRT = null;
-  if (rtArray.length !== 0) {
-    avgRT = math.median(rtArray);
-  }
-  // calculate whether response distribution is okay
-  var responsesOK = true;
-  Object.keys(choiceCounts).forEach(function(key, index) {
-    if (choiceCounts[key] > trialCount * 0.85) {
-      responsesOK = false;
-    }
-  });
-  var missedPercent = missedCount / trialCount;
-  var accuracy = correct / trialCount;
-  creditVar =
-    missedPercent < 0.25 && avgRT > 200 && responsesOK && accuracy > 0.6;
-
-  jsPsych.data.get().addToLast({
-    final_credit_var: creditVar,
-    final_missed_percent: missedPercent,
-    final_avg_RT: avgRT,
-    final_responses_OK: responsesOK,
-    final_accuracy: accuracy,
-  });
-}
-
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
   correctrial = 0;
@@ -695,7 +638,6 @@ for (i = 0; i < practiceLen; i++) {
       return Object.assign({}, getStimData(), {
         trial_id: "practice_trial",
         exp_stage: "practice",
-        current_trial: i,
         trial_duration: stimTrialDuration,
         stimulus_duration: stimStimulusDuration
       });
@@ -843,7 +785,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       return Object.assign({}, getStimData(), {
         trial_id: "test_trial",
         exp_stage: "test",
-        current_trial: i,
         current_block: testCount,
         trial_duration: stimStimulusDuration,
         stimulus_duration: stimTrialDuration
@@ -959,7 +900,6 @@ var endBlock = {
   choices: ["Enter"],
   post_trial_gap: 0,
   on_finish: function() {
-    assessPerformance();
     evalAttentionChecks();
   },
 };
