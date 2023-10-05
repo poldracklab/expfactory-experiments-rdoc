@@ -113,7 +113,7 @@ var jsPsychAttentionCheckRdoc = (function(jspsych) {
 
                 // gather the data to store for the trial
                 var trial_data = {
-                    current_question: current_question,
+                    attention_check_question: current_question,
                     current_key_answer: current_key_answer,
                     correct_trial: keyString == response.key,
                     response: response.key,
@@ -170,7 +170,7 @@ var jsPsychAttentionCheckRdoc = (function(jspsych) {
         }
         create_simulation_data(trial, simulation_options) {
             const default_data = {
-                current_question: current_question,
+                attention_check_question: current_question,
                 current_key_answer: current_key_answer,
                 rt: this.jsPsych.randomization.sampleExGaussian(500, 50, 1 / 150, true),
                 response: this.jsPsych.pluginAPI.getValidKey(trial.choices),
