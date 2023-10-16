@@ -406,9 +406,6 @@ var practiceLen = 16; // divisible by 4,  2 (switch or stay) by 2 (mag or parity
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
-practiceLen = 1;
-numTrialsPerBlock = 1;
-
 var accuracy_thresh = 0.75;
 var rt_thresh = 1000;
 var missed_response_thresh = 0.1;
@@ -825,7 +822,6 @@ var practiceNode = {
       <div class="centerbox">
         <p class="block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-        ${speedReminder}
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>
       `;

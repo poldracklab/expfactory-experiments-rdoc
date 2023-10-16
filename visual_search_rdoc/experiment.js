@@ -364,9 +364,6 @@ var practiceLen = 6;
 var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 
-numTrialsPerBlock = 1;
-practiceLen = 1;
-
 var practiceCount = 0;
 var practiceThresh = 3;
 var expStage = "practice";
@@ -737,7 +734,6 @@ var practiceNode = {
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-        ${speedReminder}
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

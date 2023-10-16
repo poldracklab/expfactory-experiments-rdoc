@@ -424,9 +424,6 @@ var practiceLen = 16; // must be divisible by 4
 var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 
-practiceLen = 2;
-numTrialsPerBlock = 2;
-
 var practiceThresh = 3; // 3 blocks of 16 trials
 var rtThresh = 1000;
 var missedResponseThresh = 0.1;
@@ -782,7 +779,6 @@ var practiceNode = {
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
           <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-          ${speedReminder}
           <p class="block-text">Press <i>enter</i> to continue.</p>
         </div>
       `;

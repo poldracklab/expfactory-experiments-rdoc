@@ -341,10 +341,6 @@ var numTrialsPerBlock = 11;
 var numTestBlocks = expLen / numTrialsPerBlock; //  18 blocks total
 var practiceThresh = 3;
 
-practiceLen = 1;
-numTrialsPerBlock = 1;
-numTestBlocks = 4;
-
 function shuffleChecksArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -804,7 +800,6 @@ var practiceNode1 = {
         delay === 1 ? "trial" : "trials"
       } ago.</p>
           <p class="block-text">Capitalization does not matter, so "T" matches with "t".</p>
-          ${speedReminder}
           <p class="block-text">Press <i>enter</i> to continue.</p>
         </div>
       `;
@@ -887,7 +882,6 @@ var practiceNode2 = {
         delay === 1 ? "trial" : "trials"
       } ago.</p>
         <p class="block-text">Capitalization does not matter, so "T" matches with "t".</p>
-        ${speedReminder}
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>
     `;

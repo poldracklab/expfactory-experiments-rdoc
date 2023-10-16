@@ -250,10 +250,6 @@ var numTrialsPerBlock = trialProportions.length * 5; // 50
 var practiceLen = trialProportions.length; // 10
 var currCondition = "";
 
-practiceLen = 1;
-numTrialsPerBlock = 1;
-numTestBlocks = 3;
-
 var expStage = "practice";
 
 /* ************************************ */
@@ -719,7 +715,6 @@ var practiceNode = {
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-        ${speedReminder}
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

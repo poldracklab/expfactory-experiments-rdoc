@@ -156,12 +156,10 @@ function appendData() {
   } else {
     var correctTrial = 0;
   }
-  jsPsych.data
-    .get()
-    .addToLast({
-      correct_trial: correctTrial,
-      block_num: getExpStage() == "practice" ? practiceCount : testCount,
-    });
+  jsPsych.data.get().addToLast({
+    correct_trial: correctTrial,
+    block_num: getExpStage() == "practice" ? practiceCount : testCount,
+  });
 }
 
 var getInstructFeedback = function () {
@@ -241,9 +239,6 @@ var practiceThresh = 3; // 3 blocks max
 var practiceLen = 12; // 12
 var numTestBlocks = 3;
 var numTrialsPerBlock = 72; // should be multiple of 24
-
-practiceLen = 1;
-numTrialsPerBlock = 1;
 
 const responseKeys = `<p class='block-text'>Press your <b>${possibleResponses[0][0]}</b> if the star (*) appears in the left box and your <b>${possibleResponses[1][0]}</b> if the star (*) appears in the right box.</p>`;
 var currStim = "";
@@ -676,7 +671,6 @@ var practiceNode = {
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
           <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-          ${speedReminder}
           <p class="block-text">Press <i>enter</i> to continue.</p>
         </div>
       `;

@@ -282,9 +282,6 @@ var practiceLen = 12; // must be divisible by 4
 var numTrialsPerBlock = 32; // must be divisible by 4
 var numTestBlocks = 3;
 
-practiceLen = 1;
-numTrialsPerBlock = 1;
-
 var promptTextList = `
   <ul style="text-align:left;">
     <li>Indicate the identity of the middle letter.</li>
@@ -674,7 +671,6 @@ var practiceNode = {
       feedbackText = ` <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-        ${speedReminder}
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

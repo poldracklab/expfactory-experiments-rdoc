@@ -362,9 +362,6 @@ var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditi
 var numTrialsPerBlock = 60; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTestBlocks = 3;
 
-practiceLen = 1;
-numTrialsPerBlock = 1;
-
 var practiceThresh = 3; // max number of times to repeat practice
 var accuracyThresh = 0.75;
 var missedResponseThresh = 0.1;
@@ -695,19 +692,22 @@ var practiceNode = {
     practiceCount += 1;
     currentTrial = 0;
 
-    // var totalTrials = 0;
-    // var sumStopRT = 0;
-    var sumGoRT = 0;
-    var sumGoCorrect = 0;
-    // var sumStopCorrect = 0;
-    var numGoResponses = 0;
-    var numStopResponses = 0;
+    var totalTrials = 0;
+
+    // go trials
     var goLength = 0;
+    var sumGoRT = 0;
+    var numGoResponses = 0;
+    var sumGoCorrect = 0;
+    // stop trials
     var stopLength = 0;
+    var sumStopRT = 0;
+    var numStopResponses = 0;
+    var sumStopCorrect = 0;
 
     for (i = 0; i < data.trials.length; i++) {
       if (data.trials[i].trial_id == "practice_trial") {
-        // totalTrials += 1;
+        totalTrials += 1;
       }
 
       if (data.trials[i].condition == "go") {
@@ -723,9 +723,9 @@ var practiceNode = {
         stopLength += 1;
         if (data.trials[i].rt != null) {
           numStopResponses += 1;
-          // sumStopRT += data.trials[i].rt;
+          sumStopRT += data.trials[i].rt;
         } else {
-          // sumStopCorrect += 1;
+          sumStopCorrect += 1;
         }
       }
     }
@@ -734,6 +734,11 @@ var practiceNode = {
     var missedResponses = (goLength - numGoResponses) / goLength;
     var aveShapeRespondCorrect = sumGoCorrect / goLength;
     var stopSignalRespond = numStopResponses / stopLength;
+
+    console.log("average rt for go", avgRT);
+    console.log("missed responses", missedResponses);
+    console.log("average respond correct to go", aveShapeRespondCorrect);
+    console.log("average respond to stop signal", stopSignalRespond);
 
     if (
       practiceCount == practiceThresh ||
@@ -745,7 +750,6 @@ var practiceNode = {
       <div class="centerbox">
         <p class="block-text">We will now begin the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
-        ${speedReminder}
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
@@ -759,19 +763,27 @@ var practiceNode = {
 
       if (aveShapeRespondCorrect < accuracyThresh) {
         feedbackText += `
-    <p class="block-text">Your accuracy is low. Remember:</p>
-    ${promptTextList}`;
+        <p class="block-text">Your accuracy is low. Remember:</p>
+        ${promptTextList}`;
       }
 
       if (avgRT > rtThresh) {
         feedbackText += `
-    <p class="block-text">You have been responding too slowly.</p>
-    ${speedReminder}`;
+        <p class="block-text">You have been responding too slowly.</p>
+        ${speedReminder}`;
       }
 
       if (missedResponses > missedResponseThresh) {
-        feedbackText += `
-    <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>`;
+        // NOTE: what's with these if statements? should the first statement have promptTextList? It is second in network study.
+        if (aveShapeRespondCorrect < accuracyThresh) {
+          feedbackText += `
+        <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>
+         ${promptTextList}`;
+        } else {
+          feedbackText += `
+          <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>
+        `;
+        }
       }
 
       if (stopSignalRespond === maxStopCorrectPractice) {
@@ -782,7 +794,7 @@ var practiceNode = {
 
       if (stopSignalRespond === minStopCorrectPractice) {
         feedbackText += `
-    <p class="block-text">You have been responding too slowly. Do not wait for the star. Respond as quickly and accurately to each stimulus that requires a response.</p>`;
+        <p class="block-text">You have been responding too slowly. Do not wait for the star. Respond as quickly and accurately to each stimulus that requires a response.</p>`;
       }
 
       feedbackText +=
