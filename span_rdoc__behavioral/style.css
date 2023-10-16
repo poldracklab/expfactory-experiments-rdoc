@@ -71,11 +71,24 @@ body {
   font-size: 24px;
 }
 
-.prompt_box {
+
+.prompt_box_simple {
   width: 75%;
   height: 20%;
   position: absolute;
   top: 15%;
+  left: 15%;
+  transform: translate(-50%, -45%);
+  margin-right: 0%;
+  background-color: none;
+  text-align: center;
+}
+
+.prompt_box_operation {
+  width: 75%;
+  height: 20%;
+  position: absolute;
+  top: 12.5%;
   left: 15%;
   transform: translate(-50%, -45%);
   margin-right: 0%;
@@ -149,6 +162,9 @@ img.center {
 .spacebar-box {
   background-color: white;
   /* Color for spacebar selection */
+}
+.jspsych-instructions-nav {
+  display: flex !important;
 }
 
 .numbox {
