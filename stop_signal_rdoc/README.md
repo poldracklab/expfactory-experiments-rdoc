@@ -7,11 +7,31 @@ fixation : 500ms
 probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
+--- 
+```code 
+2500ms trial duration 
+* 3 blocks
+* 60 trials per block 
+/ 1000 
+/ 60
+= 7.5min
+```
+
 - practice trial
 fixation : 500ms
 probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
 feedback : 500ms  
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3000ms trial duration 
+* 1 block
+* 18 trials per block 
+/ 1000 
+/ 60
+= .9min
+```
 
 ## Stop-signal Conditions and Proportions
 Go/NoGo

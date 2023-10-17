@@ -11,6 +11,17 @@ to-be-remembered stim : 1000ms (1000ms stim presentation)
 response : 5000ms
 ITI : 5000ms (mean), 2000ms (min), 20000ms (max)
 
+--- 
+```code 
+26000ms trial duration 
+* 3 blocks 
+* 8 trials per block 
+* 2 (simple & operation)
+/ 1000 
+/ 60
+= 20.8min
+```
+
 - practice trial
 inter-stimulus : 3000ms
 to-be-remembered stim : 1000ms (1000ms stim presentation)
@@ -18,6 +29,17 @@ to-be-remembered stim : 1000ms (1000ms stim presentation)
 response : 5000ms
 feedback : 500ms
 ITI : 5000ms (mean), 2000ms (min), 20000ms (max)
+
+--- 
+```code 
+26500ms trial duration 
+* 1 block
+* 3 trials per block 
+* 2 (simple & operation)
+/ 1000 
+/ 60
+= 2.65min for 1 practice block of simple and 1 practice block of operation
+```
 
 # Span (simple & operation) Conditions
 (block-level)

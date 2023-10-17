@@ -7,11 +7,31 @@ fixation : 500ms
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
+--- 
+```code 
+2500ms trial duration 
+* 18 blocks 
+* 11 trials per block 
+/ 1000 
+/ 60
+= 8.25min
+```
+
 - practice trial
 fixation : 500ms
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 practice feedback : 500ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3000ms trial duration 
+* 2 blocks (1-back, 2-back)
+* 10 trials per block 
+/ 1000 
+/ 60
+= 1min for 1 block of 1-back and 1 block of 2-back
+```
 
 ## n-Back Conditions and Proportions
 (trial-level)

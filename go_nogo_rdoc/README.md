@@ -7,11 +7,31 @@ fixation : 500ms
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
+--- 
+```code 
+2500ms trial duration 
+* 3 blocks 
+* 84 trials per block 
+/ 1000 
+/ 60
+= 10.5min
+```
+
 - practice trial
 fixation : 500ms
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 practice feedback : 500ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3000ms trial duration 
+* 1 block 
+* 7 trials per block 
+/ 1000 
+/ 60
+= .35 min
+```
 
 ## Go-NoGo Conditions and Proportions
 Go : 85.71% (6/7)

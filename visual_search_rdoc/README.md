@@ -7,11 +7,31 @@ fixation : 500ms
 probe : 2000ms (1500ms stimulus presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
+--- 
+```code 
+3000ms trial duration 
+* 3 blocks
+* 64 trials per block 
+/ 1000 
+/ 60
+= 9.6min
+```
+
 - practice trial
 fixation : 500ms
 probe : 2000ms (1500ms stimulus presentation, 500ms blank screen)
 feedback : 500ms  
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3500ms trial duration 
+* 1 block
+* 6 trials per block 
+/ 1000 
+/ 60
+= .35min
+```
 
 ## Visual Search Conditions and Proportions
 Feature : 50%

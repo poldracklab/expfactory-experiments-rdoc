@@ -230,13 +230,13 @@ var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
 // generic task variables
 var runAttentionChecks = true;
 
-var instructTimeThresh = 1; // /in seconds
+var instructTimeThresh = 1; // in seconds
 var accuracyThresh = 0.75;
 var rtThresh = 1000;
 var missedResponseThresh = 0.1;
-var practiceThresh = 3; // 3 blocks max
+var practiceThresh = 3;
 
-var practiceLen = 12; // 12
+var practiceLen = 12;
 var numTestBlocks = 3;
 var numTrialsPerBlock = 72; // should be multiple of 24
 

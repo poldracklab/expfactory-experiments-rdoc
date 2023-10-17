@@ -5,10 +5,20 @@ Spatial Cueing
 ## Spatial Cueing trial timing
 - test trial
 fixation : 500ms
-cue : Math.floor(Math.random() * 1200) + 400;
+cue : Math.floor(Math.random() * 1200) + 400; (999.5ms average, rounded to 1000ms for calculations below, values range between 400-1600)
 fixation : 500ms
 probe : 1000ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3500ms trial duration 
+* 3 blocks 
+* 72 trials per block 
+/ 1000 
+/ 60
+= 12.6min
+```
 
 - practice trial
 fixation : 500ms
@@ -17,6 +27,16 @@ fixation : 500ms
 probe : 1000ms
 feedback : 500ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+4000ms trial duration 
+* 1 block
+* 12 trials per block 
+/ 1000 
+/ 60
+= .8min
+```
 
 ## Spatial Cueing Conditions and Proportions
 No Cue : 33.33% (8/24)

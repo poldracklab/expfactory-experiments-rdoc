@@ -8,12 +8,32 @@ cue : 150ms
 probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
+--- 
+```code 
+2650ms trial duration 
+* 3 blocks
+* 64 trials per block 
+/ 1000 
+/ 60
+= 7.95min
+```
+
 - practice trial
 fixation : 500ms 
 cue : 150ms
 probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
 feedback : 500ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3150ms trial duration 
+* 1 block
+* 16 trials per block 
+/ 1000 
+/ 60
+= .84min
+```
 
 ## Spatial Task Switching Conditions and Proportions
 task_switch_cue_switch = 50%

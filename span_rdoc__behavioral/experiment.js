@@ -7145,7 +7145,6 @@ var currCondition = allConditions.shift();
 
 var numStimuli = 4;
 
-// important variables used throughout
 var expStage = "practice";
 var currSeq = [];
 

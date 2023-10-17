@@ -468,6 +468,9 @@ var testTrial = {
     data["num_stimuli"] = n;
     data["condition"] = getCurrCondition();
     data["exp_stage"] = getExpStage();
+    data["correct_response"] = trialTargetPresent
+      ? possibleResponses[0][1]
+      : possibleResponses[1][1];
 
     if (data.response !== null) {
       if (trialTargetPresent) {

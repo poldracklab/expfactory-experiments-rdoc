@@ -12,12 +12,32 @@ cue : 150ms
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
+--- 
+```code 
+2650ms trial duration 
+* 3 blocks 
+* 64 trials per block 
+/ 1000 
+/ 60
+= 8.48min
+```
+
 - practice trial
 fixation : 500ms
 cue : 150ms 
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 practice feedback : 500ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
+
+--- 
+```code 
+3150ms trial duration 
+* 1 block
+* 16 trials per block 
+/ 1000 
+/ 60
+= .84 min per practice block
+```
 
 ## CuedTS Conditions and Proportions
 task_switch_cue_switch = 50%
