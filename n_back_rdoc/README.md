@@ -10,11 +10,11 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 --- 
 ```code 
 2500ms trial duration 
-* 18 blocks 
-* 11 trials per block 
+* 10 blocks 
+* 13.5 trials per block (includes extra 1 N/A trial for 1-back and extra 2 N/A for 2-back)
 / 1000 
 / 60
-= 8.25min
+= 5.625min
 ```
 
 - practice trial
@@ -26,17 +26,17 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 --- 
 ```code 
 3000ms trial duration 
-* 2 blocks (1-back, 2-back)
-* 10 trials per block 
+* 2 blocks (1-back, 2-back) 
+* 6.5 trials per block (includes extra 1 N/A trial for 1-back and extra 2 N/A for 2-back)
 / 1000 
 / 60
-= 1min for 1 block of 1-back and 1 block of 2-back
+= .65min for 1 block of 1-back and 1 block of 2-back
 ```
 
 ## n-Back Conditions and Proportions
 (trial-level)
-Match : 80% 
-Mismatch : 20%
+Mismatch : 80% 
+Match : 20%
 
 (block-level)
 1-back : 50%

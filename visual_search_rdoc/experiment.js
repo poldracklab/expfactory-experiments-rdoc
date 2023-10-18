@@ -360,7 +360,7 @@ const rtThresh = 1000;
 const missedResponseThresh = 0.1;
 
 // trial nums
-var practiceLen = 6;
+var practiceLen = 4;
 var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 

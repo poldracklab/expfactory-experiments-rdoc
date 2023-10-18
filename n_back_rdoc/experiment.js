@@ -335,10 +335,10 @@ var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1;
 
-var expLen = 198;
-var practiceLen = 10;
-var numTrialsPerBlock = 11;
-var numTestBlocks = expLen / numTrialsPerBlock; //  18 blocks total
+var expLen = 120;
+var practiceLen = 5;
+var numTrialsPerBlock = 12;
+var numTestBlocks = expLen / numTrialsPerBlock; //  10 test blocks total
 var practiceThresh = 3;
 
 function shuffleChecksArray(array) {

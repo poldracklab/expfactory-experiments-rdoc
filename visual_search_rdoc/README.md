@@ -27,10 +27,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 3500ms trial duration 
 * 1 block
-* 6 trials per block 
+* 4 trials per block 
 / 1000 
 / 60
-= .35min
+= .233min
 ```
 
 ## Visual Search Conditions and Proportions

@@ -12,10 +12,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 2650ms trial duration 
 * 3 blocks
-* 64 trials per block 
+* 65 trials per block (includes 1 extra N/A trial)
 / 1000 
 / 60
-= 7.95min
+= 8.61min
 ```
 
 - practice trial
@@ -29,10 +29,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 3150ms trial duration 
 * 1 block
-* 16 trials per block 
+* 5 trials per block (includes 1 extra N/A trial)
 / 1000 
 / 60
-= .84min
+= .263min
 ```
 
 ## Spatial Task Switching Conditions and Proportions

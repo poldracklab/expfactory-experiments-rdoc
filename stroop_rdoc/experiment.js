@@ -320,8 +320,8 @@ colors.forEach(function (color, colorIndex) {
 // end generating stimuli
 
 var stims = [].concat(congruentStim, congruentStim, incongruentStim);
-var practiceLen = 12;
-var numTrialsPerBlock = 32;
+var practiceLen = 4;
+var numTrialsPerBlock = 40;
 var numTestBlocks = 3;
 
 var responseKeys = `

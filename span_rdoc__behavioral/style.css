@@ -96,6 +96,19 @@ body {
   text-align: center;
 }
 
+
+.prompt_box_response {
+  width: 75%;
+  height: 20%;
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-right: 0%;
+  background-color: none;
+  text-align: center;
+}
+
 img.center {
   height: auto;
   width: auto\9;

@@ -420,7 +420,7 @@ var promptText = `
   </div>
 `;
 
-var practiceLen = 16; // must be divisible by 4
+var practiceLen = 4; // must be divisible by 4
 var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 

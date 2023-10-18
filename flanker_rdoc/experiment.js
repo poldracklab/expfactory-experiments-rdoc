@@ -278,8 +278,8 @@ var testStimuli = [
   },
 ];
 
-var practiceLen = 12; // must be divisible by 4
-var numTrialsPerBlock = 32; // must be divisible by 4
+var practiceLen = 4; // must be divisible by 4
+var numTrialsPerBlock = 40; // must be divisible by 4
 var numTestBlocks = 3;
 
 var promptTextList = `

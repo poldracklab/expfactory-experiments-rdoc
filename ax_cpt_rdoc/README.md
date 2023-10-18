@@ -5,36 +5,36 @@ AX-CPT
 - test trial
 fixation : 500ms
 cue : 500ms 
-inter-stimulus (fixation between cue and probe) : 1500ms
+inter-stimulus (fixation between cue and probe) : 3000ms
 probe : 1500ms (1000ms stim presentation, 500ms blank screen)
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
 --- 
 ```code 
-4500ms trial duration 
+6000ms trial duration 
 * 3 blocks 
 * 50 trials per block 
 / 1000 
 / 60
-= 11.25min
+= 15min
 ```
 
 - practice trial
 fixation : 500ms
 cue : 500ms 
-inter-stimulus (fixation between cue and probe) : 1500ms
+inter-stimulus (fixation between cue and probe) : 3000ms
 probe : 1500ms 
 practice feedback : 500ms
 ITI : 500ms (mean), 0ms (min), 5000ms (max)
 
 --- 
 ```code 
-5000ms trial duration 
+6500ms trial duration 
 * 1 block
-* 10 trials per block 
+* 5 trials per block 
 / 1000 
 / 60
-= .83min per practice block
+= .542min per practice block
 ```
 
 ## AX-CPT conditions and proportions

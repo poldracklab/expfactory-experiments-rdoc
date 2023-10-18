@@ -34,11 +34,11 @@ ITI : 5000ms (mean), 2000ms (min), 20000ms (max)
 ```code 
 26500ms trial duration 
 * 1 block
-* 3 trials per block 
+* 1 trials per block 
 * 2 (simple & operation)
 / 1000 
 / 60
-= 2.65min for 1 practice block of simple and 1 practice block of operation
+= .883min for 1 practice block of simple and 1 practice block of operation
 ```
 
 # Span (simple & operation) Conditions

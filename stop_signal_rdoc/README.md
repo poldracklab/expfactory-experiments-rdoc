@@ -27,10 +27,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 3000ms trial duration 
 * 1 block
-* 18 trials per block 
+* 6 trials per block 
 / 1000 
 / 60
-= .9min
+= .3min
 ```
 
 ## Stop-signal Conditions and Proportions

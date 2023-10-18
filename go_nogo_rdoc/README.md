@@ -11,10 +11,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 2500ms trial duration 
 * 3 blocks 
-* 84 trials per block 
+* 63 trials per block 
 / 1000 
 / 60
-= 10.5min
+= 7.88min
 ```
 
 - practice trial
@@ -38,8 +38,8 @@ Go : 85.71% (6/7)
 NoGo : 14.29% (1/7)
 
 3 test blocks
-84 test trials for each test block
-= 252 test trials total 
+63 test trials for each test block
+= 189 test trials total 
 
 3 practice blocks (maxiumum)
 7 trials for practice

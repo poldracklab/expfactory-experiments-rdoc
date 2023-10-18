@@ -319,7 +319,7 @@ var missedResponseThresh = 0.1;
 
 var practiceLen = 7;
 var practiceThresh = 3;
-var numTrialsPerBlock = 84; // multiple of 7 (6go:1nogo)
+var numTrialsPerBlock = 63; // multiple of 7 (6go:1nogo)
 var numTestBlocks = 3;
 
 var promptTextList = `

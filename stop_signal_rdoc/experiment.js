@@ -358,7 +358,7 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 var runAttentionChecks = true;
 
-var practiceLen = 18; // must be divisible by shapes.length * stopSignalsConditions.length
+var practiceLen = 6; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTrialsPerBlock = 60; // must be divisible by shapes.length * stopSignalsConditions.length
 var numTestBlocks = 3;
 

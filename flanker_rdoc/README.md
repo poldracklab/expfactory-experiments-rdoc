@@ -11,10 +11,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 2500ms trial duration 
 * 3 blocks 
-* 32 trials per block 
+* 40 trials per block 
 / 1000 
 / 60
-= 4min
+= 5min
 ```
 
 - practice trial
@@ -27,10 +27,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 3000ms trial duration 
 * 1 block
-* 12 trials per block 
+* 4 trials per block 
 / 1000 
 / 60
-= .6 min
+= .2 min
 ```
 
 ## Flanker Conditions and Proportions

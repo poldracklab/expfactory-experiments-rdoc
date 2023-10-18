@@ -1,10 +1,6 @@
 # CuedTS Description
 CuedTS
 
-    practiceTrial,
-    practiceFeedbackBlock,
-    ITIBlock
-
 ## CuedTS trial timing
 - test trial
 fixation : 500ms
@@ -16,10 +12,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 2650ms trial duration 
 * 3 blocks 
-* 64 trials per block 
+* 65 trials per block (this includes 1 extra N/A trial per block)
 / 1000 
 / 60
-= 8.48min
+= 8.61min
 ```
 
 - practice trial
@@ -33,10 +29,10 @@ ITI : 500ms (mean), 0ms (min), 5000ms (max)
 ```code 
 3150ms trial duration 
 * 1 block
-* 16 trials per block 
+* 5 trials per block (this includes 1 extra N/A trial per block)
 / 1000 
 / 60
-= .84 min per practice block
+= .263 min per practice block
 ```
 
 ## CuedTS Conditions and Proportions

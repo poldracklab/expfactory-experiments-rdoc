@@ -7148,6 +7148,11 @@ var numStimuli = 4;
 var expStage = "practice";
 var currSeq = [];
 
+var practicePromptResponse = `<div class = prompt_box_response>
+  <p class = center-block-text style = "font-size:16px; line-height:80%%;">Use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells colored black in the order they were shown.
+  </p>
+</div>`;
+
 var practicePromptText = `<div class = prompt_box_simple>
   <p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the black colored cells.</p>
   </div>`;
@@ -7493,14 +7498,6 @@ var practiceFeedbackBlock = {
   choices: ["NO_KEYS"],
   stimulus_duration: 500,
   trial_duration: 500,
-  prompt: function () {
-    if (getExpStage() == "practice" && getCurrCondition() == "same-domain") {
-      return promptText;
-    }
-    if (getExpStage() == "practice") {
-      return practicePromptText;
-    }
-  },
   on_finish: function (data) {
     data["num_block"] = practiceCount;
   },
@@ -7525,6 +7522,11 @@ var testTrial = {
   },
   trial_duration: responseBlockDuration,
   stimulus_duration: responseBlockDuration,
+  prompt: function () {
+    if (getExpStage() == "practice") {
+      return practicePromptResponse;
+    }
+  },
   on_finish: function (data) {
     if (getExpStage() == "practice") {
       var stimTrials = jsPsych.data
@@ -7611,14 +7613,6 @@ var ITIBlock = {
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
-  },
-  prompt: function () {
-    if (getExpStage() == "practice" && getCurrCondition() == "same-domain") {
-      return promptText;
-    }
-    if (getExpStage() == "practice") {
-      return practicePromptText;
-    }
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;

@@ -114,6 +114,7 @@ var setStims = function () {
       break;
   }
 };
+
 var getChar = function () {
   return (
     "<div class = centerbox><div class = AX_text>" +
@@ -247,7 +248,7 @@ var trialProportions = [
 
 var numTestBlocks = 3;
 var numTrialsPerBlock = trialProportions.length * 5; // 50
-var practiceLen = trialProportions.length; // 10
+var practiceLen = trialProportions.length / 2; // 5
 var currCondition = "";
 
 var expStage = "practice";
