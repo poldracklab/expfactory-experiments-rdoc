@@ -340,7 +340,7 @@ var endText = `
 
 var feedbackInstructText = `
   <p class="center-block-text">
-    Welcome! This experiment will take around 15 minutes.
+    Welcome! This experiment will take around 10 minutes.
   </p>
   <p class="center-block-text">
     To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and in fullscreen mode for the whole duration of each task.
