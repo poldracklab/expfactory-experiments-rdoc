@@ -1,5 +1,4 @@
 .DS_Store
 static
-results.txt
-/results.csv
-/results.pretty.json
+*.csv
+*.json
