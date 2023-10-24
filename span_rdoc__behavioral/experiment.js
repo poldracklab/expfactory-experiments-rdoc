@@ -6840,7 +6840,7 @@ function makeCheinSymmGrids() {
     for (j = 0; j < 8 * 8; j++) {
       if (OG_CHEIN_SYMM_GRIDS[i][j] == "black") {
         colorValue = 0;
-      } else if (OG_CHEIN_SYMM_GRIDS[i][j] == "white") {
+      } else {
         colorValue = 1;
       }
       grid.push(colorValue);
@@ -6902,7 +6902,7 @@ var getRandomSpatial = function () {
   return generateDistractorGrid(stim);
 };
 
-var submittedAnswers;
+var submittedAnswers = [];
 
 var generateGrid = function () {
   const randomIndex = Math.floor(Math.random() * 16);
@@ -6966,12 +6966,13 @@ var generateGrid = function () {
         activeBoxes.push(activeIndex);
         selectedIndexes.push(activeIndex);
         spacebarCount++;
+        submittedAnswers.push(activeIndex);
       }
 
-      if (spacebarCount === 4) {
-        submittedAnswers = activeBoxes;
-        // Reset the event listener or perform any other necessary action
-      }
+      // if (spacebarCount === 4) {
+      //   submittedAnswers = activeBoxes;
+      //   // Reset the event listener or perform any other necessary action
+      // }
 
       // Clear any existing setTimeout calls
       clearTimeout(timeoutId);
@@ -6996,6 +6997,7 @@ var generateGrid = function () {
     document.removeEventListener("keydown", handleKeyDown);
 
     // Clear any remaining state or perform other necessary actions
+    submittedAnswers = [];
   }
 
   return { html, resetGrid };
@@ -7070,6 +7072,14 @@ var getCurrSeq = function () {
 // TODO: Change stim block duration?
 var getCurrCondition = function () {
   return currCondition;
+};
+
+var getCurrBlockNum = function () {
+  if (getExpStage() == "practice") {
+    return practiceCount;
+  } else {
+    return testCount;
+  }
 };
 
 var getExpStage = function () {
@@ -7201,17 +7211,11 @@ var feedbackInstructBlock = {
 
 var opSpanInstructions = `
   <div class="centerbox">
-    <h3 class="block-text">${
-      currCondition == "same-domain" ? "Sub-task #1" : "Sub-task #2"
-    }</h3>
+     <p class="block-text"><b>Sub-task #1</b></p>
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
       During this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. 
-      Press the <b>${
-        processingChoices[0]
-      } key</b> if the grid is symmetric and press the <b>${
-  processingChoices[1]
-} key</b> if it is not.
+      Press the <b>${processingChoices[0]} key</b> if the grid is symmetric and press the <b>${processingChoices[1]} key</b> if it is not.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7225,12 +7229,28 @@ var opSpanInstructions = `
   </div>
 `;
 
+var opSpanFeedback = `
+     <p class="block-text"><b>Sub-task #2</b></p>
+    <p class="block-text">Place your fingers on the arrow keys.</p>
+    <p class="block-text">
+      During this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. 
+      Press the <b>${processingChoices[0]} key</b> if the grid is symmetric and press the <b>${processingChoices[1]} key</b> if it is not.
+    </p>
+    <p class="block-text">
+      When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
+    </p>
+    <p class="block-text">
+      This sequence of 8x8 grids and 4x4 grid will alternate four times. After the fourth time, a blank 4x4 grid will be presented.
+    </p>
+    <p class="block-text">
+      On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
+    </p>
+`;
+
 var simpleSpanInstructions = `
   <div class="centerbox">
     <p class="block-text">Place your fingers on the arrow keys.</p>
-    <h3 class="block-text">${
-      currCondition == "storage-only" ? "Sub-task #1" : "Sub-task #2"
-    }</h3>
+    <p class="block-text"><b>Sub-task #1</b></p>
     <p class="block-text">
       During this sub-task, you will see a fixation (****) followed by a 4x4 grid. This 4x4 grid will have one cell colored black. Try to remember the location of the black cell.
     </p>
@@ -7241,6 +7261,20 @@ var simpleSpanInstructions = `
       On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
     </p>
   </div>
+`;
+
+var simpleSpanFeedback = `
+    <p class="block-text">Place your fingers on the arrow keys.</p>
+    <p class="block-text"><b>Sub-task #2</b></p>
+    <p class="block-text">
+      During this sub-task, you will see a fixation (****) followed by a 4x4 grid. This 4x4 grid will have one cell colored black. Try to remember the location of the black cell.
+    </p>
+    <p class="block-text">
+      This sequence of a fixation (****) and 4x4 grid will alternate four times. After the fourth time, a blank 4x4 grid will be presented.
+    </p>
+    <p class="block-text">
+      On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
+    </p>
 `;
 
 var reminderInstruct = `
@@ -7257,8 +7291,8 @@ var instructionsBlock = {
   type: jsPsychInstructions,
   pages: [
     getCurrCondition() == "storage-only"
-      ? simpleSpanInstructions + "</div>"
-      : opSpanInstructions + "</div>",
+      ? simpleSpanInstructions
+      : opSpanInstructions,
     reminderInstruct,
   ],
   allow_keys: false,
@@ -7341,7 +7375,7 @@ var stimulusBlock = {
         stimulus_duration: stimStimulusDuration,
         block_num: practiceCount,
       };
-    } else if (getExpStage() == "test") {
+    } else {
       return {
         trial_id: "test_stim",
         exp_stage: getExpStage(),
@@ -7405,7 +7439,10 @@ var waitBlock = {
   },
   data: function () {
     return {
-      trial_id: "inter-stimulus",
+      trial_id:
+        getExpStage() == "practice"
+          ? "practice_inter-stimulus"
+          : "test_inter-stimulus",
       exp_stage: getExpStage(),
       condition: getCurrCondition(),
       choices: getCurrCondition() == "same-domain" ? processingChoices : "",
@@ -7429,7 +7466,12 @@ var waitBlock = {
         logResponse = 0;
       }
     }
-    data["correct_spatial_judgement_key"] = spatialAns == 1 ? "t" : "f";
+    if (getCurrCondition() == "same-domain") {
+      data["correct_spatial_judgement_key"] = spatialAns == 1 ? "t" : "f";
+    } else {
+      data["correct_spatial_judgement_key"] = null;
+    }
+
     data["correct_response"] = logResponse;
     data["num_block"] = getExpStage() == "practice" ? practiceCount : testCount;
   },
@@ -7489,7 +7531,7 @@ var practiceFeedbackBlock = {
     }
   },
   data: {
-    expStage: "practice",
+    exp_stage: "practice",
     trial_id: "practice_feedback",
     trial_duration: 500,
     stimulus_duration: 500,
@@ -7517,7 +7559,6 @@ var testTrial = {
       choices: ["NO_KEYS"],
       trial_duration: responseBlockDuration,
       stimulus_duration: responseBlockDuration,
-      block_num: getExpStage() == "practice" ? practiceCount : testCount,
     };
   },
   trial_duration: responseBlockDuration,
@@ -7532,25 +7573,24 @@ var testTrial = {
       var stimTrials = jsPsych.data
         .get()
         .filter({ trial_id: "practice_stim" }).trials;
-    } else if (getExpStage() == "test") {
+    } else {
       var stimTrials = jsPsych.data
         .get()
         .filter({ trial_id: "test_stim" }).trials;
     }
+
     var lastTrials = stimTrials.slice(-4);
     var correctResponses = lastTrials.map(trial => trial.spatial_location);
 
-    if (submittedAnswers == undefined) {
+    data["response"] = submittedAnswers;
+
+    if (submittedAnswers.length < 4) {
       data["correct_trial"] = null;
-      data["response"] = null;
-    } else {
-      if (submittedAnswers.length == 5) {
-        submittedAnswers = submittedAnswers.slice(1, 5);
-        const correct = arraysAreEqual(correctResponses, submittedAnswers);
-        data["response"] = submittedAnswers;
-        data["correct_trial"] = correct ? 1 : 0;
-      }
+    } else if (submittedAnswers.length == 4) {
+      const correct = arraysAreEqual(correctResponses, submittedAnswers);
+      data["correct_trial"] = correct ? 1 : 0;
     }
+
     data["condition"] = getCurrCondition();
 
     if (getExpStage() == "practice") {
@@ -7572,7 +7612,7 @@ var testTrial = {
     }
 
     data["spatial_sequence"] = lastInterStimTrialsCorrectAnswers;
-
+    data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
     activeGrid.resetGrid();
   },
 };
@@ -7630,7 +7670,7 @@ function generatePracticeTrials() {
       }
       returnArray.push(testTrial, practiceFeedbackBlock, ITIBlock);
     }
-  } else if (getCurrCondition() == "storage-only") {
+  } else {
     for (let i = 0; i < practiceLen; i++) {
       for (let j = 0; j < numStimuli; j++) {
         returnArray.push(waitNode, stimulusBlock);
@@ -7648,13 +7688,14 @@ var practiceCount = 0;
 var practiceNode = {
   timeline: [feedbackBlock].concat(practiceTrials),
   loop_function: function () {
-    practiceCount += 1;
     // for response grids - 0, 1, or null
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "practice_response",
-      exp_stage: "practice",
       condition: getCurrCondition(),
+      block_num: getCurrBlockNum(),
     }).trials;
+
+    practiceCount += 1;
     var correct = 0;
     var totalTrials = responseGridData.length;
     var missedCount = 0;
@@ -7681,12 +7722,11 @@ var practiceNode = {
       var avgProcessingAcc = null;
       var avgProcessingMissed = null;
       var avgProcessingRT = null;
-      var passProcessing = null;
     } else {
       var responseProcessingData = jsPsych.data.get().filter({
-        trial_id: "inter-stimulus",
-        exp_stage: "practice",
-        condition: getCurrCondition(),
+        trial_id: "practice_inter-stimulus",
+        condition: "same-domain",
+        block_num: getCurrBlockNum() - 1, // since already indexed block above
       }).trials;
 
       var processingCorrect = 0;
@@ -7694,6 +7734,7 @@ var practiceNode = {
       var missedProcessingCount = 0;
       var responseCount = 0;
       var rt = 0;
+
       // No RTs for response grid
       for (var i = 0; i < totalTrials; i++) {
         if (responseProcessingData[i].correct_response == null) {
@@ -7710,16 +7751,32 @@ var practiceNode = {
       var avgProcessingAcc = processingCorrect / responseCount;
       var avgProcessingMissed = missedProcessingCount / totalTrials;
       var avgProcessingRT = rt / responseCount;
-      var passProcessing = avgProcessingAcc > processingThresh ? true : false;
     }
 
-    if (
-      (passProcessing &&
+    var canProceedToTest;
+
+    if (practiceCount == practiceThresh) {
+      canProceedToTest = true;
+    } else if (getCurrCondition() == "storage-only") {
+      if (accuracy > accuracyThresh) {
+        canProceedToTest = true;
+      } else {
+        canProceedToTest = false;
+      }
+    } else {
+      if (
         accuracy > accuracyThresh &&
-        practiceCount !== practiceThresh) ||
-      accuracy > accuracyThresh ||
-      practiceCount == practiceThresh
-    ) {
+        avgProcessingAcc > processingThresh &&
+        avgProcessingRT < processingRTThresh &&
+        avgProcessingMissed < processingMissedThresh
+      ) {
+        canProceedToTest = true;
+      } else {
+        canProceedToTest = false;
+      }
+    }
+
+    if (canProceedToTest) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         '<p class="block-text">Keep your fingers on the arrow keys.</p>';
@@ -7754,6 +7811,7 @@ var practiceNode = {
 
       feedbackText +=
         "<p class = block-text>Press <i>enter</i> to continue.</p></div>";
+
       expStage = "test";
       practiceCount = 0;
       return false;
@@ -7780,8 +7838,7 @@ var practiceNode = {
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
-            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
-            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>";
+            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
         }
       }
 
@@ -7811,7 +7868,7 @@ function generateTestTrials() {
       }
       returnArray.push(testTrial, ITIBlock);
     }
-  } else if (getCurrCondition() == "storage-only") {
+  } else {
     returnArray.push(attentionNode);
     for (let i = 0; i < numTrialsPerBlock; i++) {
       for (let j = 0; j < numStimuli; j++) {
@@ -7830,15 +7887,15 @@ var testCount = 0;
 var testNode = {
   timeline: [feedbackBlock].concat(testTrials),
   loop_function: function () {
-    testCount += 1;
-
     // for response grids - 0, 1, or null
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "test_response",
       exp_stage: "test",
       condition: getCurrCondition(),
+      block_num: getCurrBlockNum(),
     }).trials;
 
+    testCount += 1;
     var correct = 0;
     var totalTrials = responseGridData.length;
     var missedCount = 0;
@@ -7867,9 +7924,9 @@ var testNode = {
       var avgProcessingRT = null;
     } else {
       var responseProcessingData = jsPsych.data.get().filter({
-        trial_id: "inter-stimulus",
-        exp_stage: "test",
-        condition: getCurrCondition(),
+        trial_id: "test_inter-stimulus",
+        condition: "same-domain",
+        block_num: getCurrBlockNum() - 1, // since already indexed block above
       }).trials;
 
       var processingCorrect = 0;
@@ -7900,14 +7957,14 @@ var testNode = {
 
     if (testCount == numTestBlocks) {
       feedbackText =
-        "<div class = centerbox><p class = center-block-text>Moving to next sub-task.";
+        "<div class = centerbox><p class = center-block-text>Moving to next sub-task.</p>";
 
       currCondition = allConditions.shift();
 
       feedbackText +=
         getCurrCondition() == "storage-only"
-          ? simpleSpanInstructions
-          : opSpanInstructions;
+          ? simpleSpanFeedback
+          : opSpanFeedback;
 
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p></div>";
@@ -7949,8 +8006,7 @@ var testNode = {
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
-            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
-            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>";
+            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
         }
       }
 
@@ -7962,7 +8018,7 @@ var testNode = {
           feedbackText +=
             "<p class = block-text>No feedback on this block.</p>";
         }
-      } else if (getCurrCondition() == "same-domain") {
+      } else {
         if (
           avgProcessingAcc >= processingAccThresh &&
           avgProcessingRT <= processingRTThresh &&
