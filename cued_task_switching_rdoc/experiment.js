@@ -229,6 +229,14 @@ var getStim = function () {
   return stimHTML;
 };
 
+var getCurrBlockNum = function () {
+  if (getExpStage() == "practice") {
+    return practiceCount;
+  } else {
+    return testCount;
+  }
+};
+
 var randomDraw = function (lst) {
   var index = Math.floor(Math.random() * lst.length);
   return lst[index];
@@ -758,7 +766,10 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "practice_trial") {
+      if (
+        data.trials[i].trial_id == "practice_trial" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
@@ -908,7 +919,10 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "test_trial") {
+      if (
+        data.trials[i].trial_id == "test_trial" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;

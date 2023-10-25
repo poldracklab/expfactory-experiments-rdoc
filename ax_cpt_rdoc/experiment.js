@@ -80,6 +80,14 @@ var getStim = function () {
   return currStim;
 };
 
+var getCurrBlockNum = function () {
+  if (getExpStage() == "practice") {
+    return practiceCount;
+  } else {
+    return testCount;
+  }
+};
+
 // Data logging
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
@@ -696,7 +704,10 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "practice_probe") {
+      if (
+        data.trials[i].trial_id == "practice_probe" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
@@ -829,7 +840,10 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "test_probe") {
+      if (
+        data.trials[i].trial_id == "test_probe" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;

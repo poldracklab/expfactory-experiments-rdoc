@@ -171,6 +171,14 @@ function isTargetPresent() {
   return Math.random() < 0.5; // Modify the condition for your target logic
 }
 
+var getCurrBlockNum = function () {
+  if (getExpStage() == "practice") {
+    return practiceCount;
+  } else {
+    return testCount;
+  }
+};
+
 function generateHTML(
   containerWidth,
   containerHeight,
@@ -716,7 +724,10 @@ var practiceNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "practice_trial") {
+      if (
+        data.trials[i].trial_id == "practice_trial" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
@@ -782,7 +793,10 @@ var testNode = {
     var totalTrials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "test_trial") {
+      if (
+        data.trials[i].trial_id == "test_trial" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;

@@ -7034,26 +7034,6 @@ var generateDistractorGrid = function (stim) {
   return html;
 };
 
-// var generateDistractorGrid = function(stim) {
-//   let html = '<div class="container">';
-//   const gridLen = 64;
-//   const firstGrid = stim[0].firstGrid;
-//   const secondGrid = stim[0].secondGrid;
-//   const gridValues = combineArrays(firstGrid, secondGrid)
-
-//   for (let i = 0; i < gridLen; i++) {
-//     if (gridValues[i] == 1) {
-//       html += '<div class="distractor-box active-box"></div>';
-//     } else {
-//       html += '<div class="distractor-box"></div>';
-//     }
-//   }
-
-//   html += '</div>';
-
-//   return html;
-// };
-
 var getInstructFeedback = function () {
   return `<div class = centerbox><p class = center-block-text>
     ${feedbackInstructText}

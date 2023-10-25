@@ -264,6 +264,14 @@ var getStim = function () {
   return stim.image;
 };
 
+var getCurrBlockNum = function () {
+  if (getExpStage() == "practice") {
+    return practiceCount;
+  } else {
+    return testCount;
+  }
+};
+
 function getSSD() {
   return SSD;
 }
@@ -692,8 +700,6 @@ var practiceNode = {
     practiceCount += 1;
     currentTrial = 0;
 
-    var totalTrials = 0;
-
     // go trials
     var goLength = 0;
     var sumGoRT = 0;
@@ -701,16 +707,13 @@ var practiceNode = {
     var sumGoCorrect = 0;
     // stop trials
     var stopLength = 0;
-    var sumStopRT = 0;
     var numStopResponses = 0;
-    var sumStopCorrect = 0;
 
     for (i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "practice_trial") {
-        totalTrials += 1;
-      }
-
-      if (data.trials[i].condition == "go") {
+      if (
+        data.trials[i].condition == "go" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         goLength += 1;
         if (data.trials[i].rt != null) {
           numGoResponses += 1;
@@ -719,13 +722,13 @@ var practiceNode = {
             sumGoCorrect += 1;
           }
         }
-      } else if (data.trials[i].condition == "stop") {
+      } else if (
+        data.trials[i].condition == "stop" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         stopLength += 1;
         if (data.trials[i].rt != null) {
           numStopResponses += 1;
-          sumStopRT += data.trials[i].rt;
-        } else {
-          sumStopCorrect += 1;
         }
       }
     }
@@ -734,11 +737,6 @@ var practiceNode = {
     var missedResponses = (goLength - numGoResponses) / goLength;
     var aveShapeRespondCorrect = sumGoCorrect / goLength;
     var stopSignalRespond = numStopResponses / stopLength;
-
-    console.log("average rt for go", avgRT);
-    console.log("missed responses", missedResponses);
-    console.log("average respond correct to go", aveShapeRespondCorrect);
-    console.log("average respond to stop signal", stopSignalRespond);
 
     if (
       practiceCount == practiceThresh ||
@@ -844,11 +842,8 @@ var testNode = {
     currentTrial = 0;
     testCount += 1;
 
-    // var totalTrials = 0;
-    // var sumStopRT = 0;
     var sumGoRT = 0;
     var sumGoCorrect = 0;
-    // var sumStopCorrect = 0;
     var numGoResponses = 0;
     var numStopResponses = 0;
     var goLength = 0;
@@ -856,10 +851,10 @@ var testNode = {
 
     // probably ahould filter before
     for (i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "test_trial") {
-        // totalTrials += 1;
-      }
-      if (data.trials[i].condition == "go") {
+      if (
+        data.trials[i].condition == "go" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         goLength += 1;
         if (data.trials[i].rt != null) {
           numGoResponses += 1;
@@ -868,13 +863,13 @@ var testNode = {
             sumGoCorrect += 1;
           }
         }
-      } else if (data.trials[i].condition == "stop") {
+      } else if (
+        data.trials[i].condition == "stop" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         stopLength += 1;
         if (data.trials[i].rt != null) {
           numStopResponses += 1;
-          // sumStopRT += data.trials[i].rt;
-        } else {
-          // sumStopCorrect += 1;
         }
       }
     }

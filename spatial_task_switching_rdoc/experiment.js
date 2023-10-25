@@ -323,6 +323,14 @@ var getStim = function () {
   );
 };
 
+var getCurrBlockNum = function () {
+  if (getExpStage() == "practice") {
+    return practiceCount;
+  } else {
+    return testCount;
+  }
+};
+
 var appendData = function () {
   curr_trial = jsPsych.getProgress().current_trial_global;
   trial_id = jsPsych.data.get().filter({ trial_index: curr_trial })
@@ -801,7 +809,10 @@ var practiceNode = {
     var total_trials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "practice_trial") {
+      if (
+        data.trials[i].trial_id == "practice_trial" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         total_trials += 1;
         if (data.trials[i].rt != null) {
           sum_rt += data.trials[i].rt;
@@ -935,7 +946,10 @@ var testNode = {
     var total_trials = 0;
 
     for (var i = 0; i < data.trials.length; i++) {
-      if (data.trials[i].trial_id == "test_trial") {
+      if (
+        data.trials[i].trial_id == "test_trial" &&
+        data.trials[i].block_num == getCurrBlockNum() - 1
+      ) {
         total_trials += 1;
         if (data.trials[i].rt != null) {
           sum_rt += data.trials[i].rt;
