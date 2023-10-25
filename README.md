@@ -56,3 +56,4 @@ To run the RDoC repository, follow these steps:
 
 # See number of trials and trial durations for each task
 [Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit?usp=sharing)
+[Google Sheets Link for RDoC Task Timings](https://docs.google.com/spreadsheets/d/1ImGru0qSTaTMwlrOKQUzkmN939SMLWp3EV94Zj4Mgeg/edit?usp=sharing)
