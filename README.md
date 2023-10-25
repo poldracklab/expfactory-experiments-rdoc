@@ -55,5 +55,5 @@ To run the RDoC repository, follow these steps:
 6. Optional: Use (`command + option + j`) while in the experiment's window to see important information like durations, number of trials/blocks, total durations, etc.
 
 # See number of trials and trial durations for each task
-[Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit?usp=sharing)
-[Google Sheets Link for RDoC Task Timings](https://docs.google.com/spreadsheets/d/1ImGru0qSTaTMwlrOKQUzkmN939SMLWp3EV94Zj4Mgeg/edit?usp=sharing)
+- [Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit?usp=sharing)
+- [Google Sheets Link for RDoC Task Timings](https://docs.google.com/spreadsheets/d/1ImGru0qSTaTMwlrOKQUzkmN939SMLWp3EV94Zj4Mgeg/edit?usp=sharing)
