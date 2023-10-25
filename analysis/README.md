@@ -1,9 +1,5 @@
-# json_to_csv.ipynb
-## Replace filename to the json file you want to convert to csv
-## Run the script
-## csv is generated in root of project
+# JSON to CSV Converter: `json_to_csv.ipynb`
 
-# create_batteries
-## Update rdoc task timings
-## Run the script
-## batteries.csv is generated in this folder
+1. **Specify Your File**: Replace `filename` with the name of the JSON file you wish to convert.
+2. **Execute**: Run the script.
+3. **Output**: A CSV file will be generated and saved in the `data/` directory.
