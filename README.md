@@ -55,44 +55,5 @@ To run the RDoC repository, follow these steps:
 6. Optional: Use (`command + option + j`) while in the experiment's window to see important information like durations, number of trials/blocks, total durations, etc.
 
 # See number of trials and trial durations for each task
-[Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit?usp=sharing)
-
-# Analysis
-
-## Viewing Example Output
-
-For viewing some dummy output, you can access the modified `results.csv` file on Google Sheets: [Google Sheets Link](https://docs.google.com/spreadsheets/d/1mJ4ZCSlJ7E9zrfr6HhoEAed4Dzpn2R57L1Uw7PcNEcY/edit#gid=642158126).
-
-## If on Mac and don't have it already, download and install brew
-
-To download and install brew, navigate [here (brew link)](https://brew.sh/) and follow their instructions:
-
-## If don't have it already, download and install jq
-
-To download and install jq, navigate [here (jq link)](https://jqlang.github.io/jq/download/) and follow their instructions:
-
-## Converting Text to Prettier JSON
-
-To change the text file to JSON file, run the following command:
-
-```bash
-jq '.trialdata | fromjson' < results.txt > results.pretty.json
-```
-
-## Output readable data
-
-To change JSON format to csv file with selected columns, run the following command:
-
-```bash
-echo '"trial_index","rt","stimulus", "trial_id", "trial_type", "condition", "expStage", "correctResponse"' > results.csv && jq -r '.[] | [.trial_index, .rt, .stimulus, .trial_id, .trial_type] | @csv' results.pretty.json >> results.csv
-```
-
-1. `echo '"trial_index","rt","stimulus", "trial_id", "trial_type", "condition", "expStage", "correctResponse"' > results.csv`: This part of the command writes the header line of the CSV file, specifying the column names. It uses the echo command to print the specified column names enclosed in double quotes, and the output is redirected (>) to the results.csv file. This creates or overwrites the results.csv file with the header line.
-
-2. &&: This is a shell operator that allows you to execute multiple commands sequentially. In this case, it ensures that the next command is executed only if the previous command (echo) succeeds.
-
-3. `jq -r '.[] | [.trial_index, .rt, .stimulus, .trial_id, .trial_type] | @csv' results.pretty.json`: This part of the command uses jq, a command-line JSON processor, to extract specific fields from the results.pretty.json file and format them as a CSV. The -r flag ensures that the output is in raw format without any JSON escaping. The expression .[] is used to iterate over each object in the JSON array, and [.trial_index, .rt, .stimulus, .trial_id, .trial_type] selects the desired fields for the CSV. Finally, @csv formats the selected fields as a CSV row.
-
-4. `>> results.csv`: This redirects the output of the previous command to the results.csv file using the >> operator. The >> operator appends the output to the existing results.csv file, preserving the header line written earlier.
-
-**By running this command, the specified columns from the JSON file (results.pretty.json) will be extracted and saved as rows in the CSV file (results.csv).**
+- [Google Sheets Link](https://docs.google.com/spreadsheets/d/1PxkmaEm0JxRYWNtKBB6u5G4rDwxnE9fjT-OGmx-4i_8/edit?usp=sharing)
+- [Google Sheets Link for RDoC Task Timings](https://docs.google.com/spreadsheets/d/1ImGru0qSTaTMwlrOKQUzkmN939SMLWp3EV94Zj4Mgeg/edit?usp=sharing)

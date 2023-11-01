@@ -1,0 +1,6 @@
+question_type	question_text	required	page_number	option_text	option_values	variables
+instruction	Welcome to this survey. Press <strong>Next</strong> to begin.	0	1			
+instruction	Please answer the following questions regarding your demographics.	0	2			
+checkbox	What is your race?	1	3	"American Indian or Alaska Native,Asian,Black or African American,Native Hawaiian or Other Pacific Islander,White,Other (please specify)"	"1,2,3,4,5,6,7"	demographics_3
+textfield	If you chose 'Other' for racial  background how would you describe it?	0	3			demographics_4
+radio	"Are you of Hispanic, Latino or Spanish origin?"	1	3	"Yes, No"	"1,0"	demographics_5
