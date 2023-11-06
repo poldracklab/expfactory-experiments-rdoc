@@ -229,7 +229,7 @@ var expStage = "practice";
 
 // Timing
 const stimStimulusDuration = 1000;
-const stimTrialDuration = stimStimulusDuration; // no pause now
+const stimTrialDuration = 1500;
 const cueStimulusDuration = 500;
 const cueTrialDuration = 500;
 // initialize
