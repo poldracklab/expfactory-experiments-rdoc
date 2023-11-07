@@ -767,15 +767,11 @@ var practiceNode1 = {
     var sumResponses = 0;
     var correct = 0;
     var totalTrials = 0;
-
-    console.log(data);
-
     for (var i = 0; i < data.trials.length; i++) {
       if (
         data.trials[i].trial_id == "practice_trial" &&
         data.trials[i].block_num == getCurrBlockNum() - 1
       ) {
-        console.log(data.trials[i]);
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
