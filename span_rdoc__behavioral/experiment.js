@@ -6903,9 +6903,12 @@ var getRandomSpatial = function () {
 };
 
 var submittedAnswers = [];
-
+var timestamps = [];
 var generateGrid = function () {
   const randomIndex = Math.floor(Math.random() * 16);
+  // Variable to store the initial call time
+  let initialCallTime = Date.now();
+
   let activeIndex = randomIndex;
   const activeBoxes = [];
 
@@ -6961,6 +6964,13 @@ var generateGrid = function () {
     }
 
     if (key === " ") {
+      let currentTime = Date.now();
+      let timeDifference = currentTime - initialCallTime;
+      timestamps.push(timeDifference); // Store timestamp
+
+      // Reset the initialCallTime to the current time for next spacebar press
+      initialCallTime = currentTime;
+
       if (spacebarCount < 4) {
         boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
         activeBoxes.push(activeIndex);
@@ -6998,6 +7008,10 @@ var generateGrid = function () {
 
     // Clear any remaining state or perform other necessary actions
     submittedAnswers = [];
+
+    // Also reset the initial call time when the grid is reset
+    initialCallTime = Date.now();
+    timestamps.length = 0; // Clear the timestamps array
   }
 
   return { html, resetGrid };
@@ -7113,7 +7127,6 @@ var instructTimeThresh = 1; // /in seconds
 var accuracyThresh = 0.6;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
-var processingThresh = 0.5;
 var processingChoices = ["t", "f"];
 
 var processingAccThresh = 0.6;
@@ -7593,6 +7606,13 @@ var testTrial = {
 
     data["spatial_sequence"] = lastInterStimTrialsCorrectAnswers;
     data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
+    data["rt_each_spatial_location_response_grid"] = timestamps.slice(0, 4);
+    data["rt_total_response_grid"] = timestamps
+      .slice(0, 4)
+      .reduce((accumulator, currentValue) => {
+        return accumulator + currentValue;
+      }, 0);
+    console.log(data);
     activeGrid.resetGrid();
   },
 };
@@ -7746,7 +7766,7 @@ var practiceNode = {
     } else {
       if (
         accuracy > accuracyThresh &&
-        avgProcessingAcc > processingThresh &&
+        avgProcessingAcc > processingAccThresh &&
         avgProcessingRT < processingRTThresh &&
         avgProcessingMissed < processingMissedThresh
       ) {
