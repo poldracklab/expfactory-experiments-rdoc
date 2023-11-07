@@ -297,7 +297,7 @@ var appendData = function () {
     delay: delay,
     letter_case: letterCase,
     correct_trial: correctTrial,
-    num_block: getExpStage() == "practice" ? practiceCount : testCount,
+    block_num: getExpStage() == "practice" ? practiceCount : testCount,
   });
 };
 
@@ -372,17 +372,8 @@ function shuffleArray(array) {
 
 var delays = shuffleArray([1, 2]);
 
-delays = [
-  ...delays,
-  ...delays,
-  ...delays,
-  ...delays,
-  ...delays,
-  ...delays,
-  ...delays,
-  ...delays,
-  ...delays,
-]; // length of  num test blocks = 18
+delays = [...delays, ...delays, ...delays, ...delays, ...delays];
+
 var delay = 1;
 var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"];
 var stims = createTrialTypes(practiceLen, delay);
@@ -777,11 +768,14 @@ var practiceNode1 = {
     var correct = 0;
     var totalTrials = 0;
 
+    console.log(data);
+
     for (var i = 0; i < data.trials.length; i++) {
       if (
         data.trials[i].trial_id == "practice_trial" &&
         data.trials[i].block_num == getCurrBlockNum() - 1
       ) {
+        console.log(data.trials[i]);
         totalTrials += 1;
         if (data.trials[i].rt != null) {
           sumRT += data.trials[i].rt;
