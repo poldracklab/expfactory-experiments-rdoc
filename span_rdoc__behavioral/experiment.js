@@ -7612,7 +7612,6 @@ var testTrial = {
       .reduce((accumulator, currentValue) => {
         return accumulator + currentValue;
       }, 0);
-    console.log(data);
     activeGrid.resetGrid();
   },
 };
