@@ -231,8 +231,8 @@ var runAttentionChecks = true;
 /* ******************************* */
 
 var practiceThresh = 3; // 3 blocks max
-var accuracyThresh = 0.75; // min accuracy to proceed to test
-var rtThresh = 1000; // min of 1s on instructions to proceed to practice
+var accuracyThresh = 0.85; // min accuracy to proceed to test
+var rtThresh = 750; // min of 1s on instructions to proceed to practice
 var missedResponseThresh = 0.1; // get feedback if missed responses > 10% of trials
 
 /* ******************************* */

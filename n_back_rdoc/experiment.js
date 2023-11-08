@@ -378,8 +378,8 @@ var delay = 1;
 var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"];
 var stims = createTrialTypes(practiceLen, delay);
 
-var accuracyThresh = 0.75;
-var rtThresh = 1000;
+var accuracyThresh = 0.8;
+var rtThresh = 750;
 var missedResponseThresh = 0.1;
 
 var pathSource = "/static/experiments/n_back_rdoc/images/";

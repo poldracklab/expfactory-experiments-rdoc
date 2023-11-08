@@ -371,9 +371,9 @@ var numTrialsPerBlock = 60; // must be divisible by shapes.length * stopSignalsC
 var numTestBlocks = 3;
 
 var practiceThresh = 3; // max number of times to repeat practice
-var accuracyThresh = 0.75;
+var accuracyThresh = 0.85;
 var missedResponseThresh = 0.1;
-var rtThresh = 1000;
+var rtThresh = 750;
 
 var SSD = 350;
 var maxSSD = 1000;

@@ -321,8 +321,8 @@ var testStimuliBlock = [
   })
 );
 
-var accuracyThresh = 0.75;
-var rtThresh = 1000;
+var accuracyThresh = 0.85;
+var rtThresh = 750;
 var missedResponseThresh = 0.1;
 
 var practiceLen = 7;
