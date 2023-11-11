@@ -414,8 +414,8 @@ var practiceLen = 16; // divisible by 4,  2 (switch or stay) by 2 (mag or parity
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
-var accuracy_thresh = 0.75;
-var rt_thresh = 1000;
+var accuracy_thresh = 0.85;
+var rt_thresh = 750;
 var missed_response_thresh = 0.1;
 var practice_thresh = 3; // 3 blocks of 16 trials
 

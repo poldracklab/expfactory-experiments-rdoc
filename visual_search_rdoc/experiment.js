@@ -363,8 +363,8 @@ var runAttentionChecks = true;
 // thresholds
 const instructTimeThresh = 1; // /in seconds
 var sumInstructTime = 0; // ms
-const accuracyThresh = 0.6;
-const rtThresh = 1000;
+const accuracyThresh = 0.85;
+const rtThresh = 1250;
 const missedResponseThresh = 0.1;
 
 // trial nums

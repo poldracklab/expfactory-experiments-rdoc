@@ -433,9 +433,9 @@ var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 
 var practiceThresh = 3; // 3 blocks of 16 trials
-var rtThresh = 1000;
+var rtThresh = 750;
 var missedResponseThresh = 0.1;
-var accuracyThresh = 0.75;
+var accuracyThresh = 0.85;
 
 var fileTypePNG = ".png'></img>";
 var preFileType =

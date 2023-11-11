@@ -239,8 +239,8 @@ var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
 var runAttentionChecks = true;
 
 var instructTimeThresh = 1; // in seconds
-var accuracyThresh = 0.75;
-var rtThresh = 1000;
+var accuracyThresh = 0.85;
+var rtThresh = 750;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 
