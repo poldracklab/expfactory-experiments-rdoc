@@ -7125,8 +7125,7 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
 var accuracyThresh = 0.6;
-// make accuracy partial instead
-var partialAccuracyThresh = 0.25;
+
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 var processingChoices = ["t", "f"];
