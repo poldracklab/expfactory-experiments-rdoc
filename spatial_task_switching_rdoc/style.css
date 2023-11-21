@@ -73,15 +73,32 @@ body {
 }
 
 .prompt_box {
-  width: 75%;
-  height: 20%;
-  position: absolute;
-  top: 15%;
-  left: 20%;
-  transform: translate(-50%, -45%);
-  margin-right: 0%;
-  background-color: none;
   text-align: center;
+  width: 400px;
+  margin: 0 auto; /* Centers the box horizontally */
+  transform: translateY(10px);
+}
+
+.prompt_content p {
+    font-size: 16px;
+    text-align: center; /* Centers the text horizontally */
+    display: block;
+    margin: 0 auto; /* Centers the block horizontally if it has a defined width */
+}
+
+.prompt_content  ul {
+  display: flex;
+  flex-direction: column;
+  list-style-position: inside;
+}
+
+.prompt_content  ul li {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.prompt_content + .prompt_content {
+    margin-top: 80px; /* Adjust this value to maintain the spacing */
 }
 
 img.center {

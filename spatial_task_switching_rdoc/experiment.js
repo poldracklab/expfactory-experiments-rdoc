@@ -504,16 +504,20 @@ var prompt_text_list = `
 
 var prompt_text = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">Top 2 quadrants, judge number on ${predictable_dimensions_list[0].dim}:</p>
+  <div class='prompt_content' style='margin-bottom: 80px;'>
+    <p>Top 2 quadrants, judge number on ${predictable_dimensions_list[0].dim}:</p>
     <ul>
       <li>${predictable_dimensions_list[0].values[0]}: ${possibleResponses[0][0]}</li>
       <li>${predictable_dimensions_list[0].values[1]}: ${possibleResponses[1][0]}</li>
     </ul>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">Bottom 2 quadrants, judge number on ${predictable_dimensions_list[1].dim}:</p>
+  </div>
+  <div class='prompt_content' style='margin-top: 80px;'>
+    <p>Bottom 2 quadrants, judge number on ${predictable_dimensions_list[1].dim}:</p>
     <ul>
       <li>${predictable_dimensions_list[1].values[0]}: ${possibleResponses[0][0]}</li>
       <li>${predictable_dimensions_list[1].values[1]}: ${possibleResponses[1][0]}</li>
     </ul>
+    </div>
   </div>`;
 
 var pageInstruct = [
