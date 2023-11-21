@@ -63,6 +63,16 @@ function renameDataProperties() {
   });
 }
 
+// Function to randomly select n elements from an array with replacement
+function getRandomElements(arr, n) {
+  let result = [];
+  for (let i = 0; i < n; i++) {
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    result.push(arr[randomIndex]);
+  }
+  return result;
+}
+
 var getCurrAttentionCheckQuestion = function () {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
 };
@@ -252,7 +262,8 @@ const stimTrialDuration = 1500;
 var runAttentionChecks = true;
 var instructTimeThresh = 1;
 
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8; // threshold for block-level feedback
+var practiceAccuracyThresh = 0.75; // threshold to proceed to test, .75 for 3 out of 4 trials
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3; // 3 blocks max
@@ -264,6 +275,7 @@ var stimulusText =
 
 var congruentStim = [];
 var incongruentStim = [];
+var tempStims = [];
 
 // arrays for colors and words to be used for stimuli
 var colors = ["#FF7070", "#7070FF", "#70FF70"];
@@ -328,6 +340,7 @@ colors.forEach(function (color, colorIndex) {
 // end generating stimuli
 
 var stims = [].concat(congruentStim, congruentStim, incongruentStim);
+
 var practiceLen = 4;
 var numTrialsPerBlock = 40;
 var numTestBlocks = 3;
@@ -714,7 +727,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -722,14 +735,29 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
-      blockStims = jsPsych.randomization.repeat(stims, numTrialsPerBlock / 12);
+      // Randomly select two congruent and two incongruent stimuli
+      let selectedCongruent = getRandomElements(
+        congruentStim,
+        numTrialsPerBlock / 2
+      );
+      let selectedIncongruent = getRandomElements(
+        incongruentStim,
+        numTrialsPerBlock / 2
+      );
+
+      // Combine the selected stimuli into a new array
+      let tempArray = selectedCongruent.concat(selectedIncongruent);
+      tempArray = jsPsych.randomization.repeat(tempArray, 1);
+
+      blockStims = tempArray;
+
       expStage = "test";
       return false;
     } else {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
           <p class="block-text">Your accuracy is low. Remember:</p>
           ${responseKeys}`;
@@ -749,7 +777,15 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockStims = jsPsych.randomization.repeat(stims, practiceLen / 12);
+      // Randomly select two congruent and two incongruent stimuli
+      let selectedCongruent = getRandomElements(congruentStim, 2);
+      let selectedIncongruent = getRandomElements(incongruentStim, 2);
+
+      // Combine the selected stimuli into a new array
+      let tempArray = selectedCongruent.concat(selectedIncongruent);
+      tempArray = jsPsych.randomization.repeat(tempArray, 1);
+
+      blockStims = tempArray;
       return true;
     }
   },
@@ -866,7 +902,22 @@ var testNode = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      blockStims = jsPsych.randomization.repeat(stims, numTrialsPerBlock / 12);
+      // Randomly select two congruent and two incongruent stimuli
+      let selectedCongruent = getRandomElements(
+        congruentStim,
+        numTrialsPerBlock / 2
+      );
+      let selectedIncongruent = getRandomElements(
+        incongruentStim,
+        numTrialsPerBlock / 2
+      );
+
+      // Combine the selected stimuli into a new array
+      let tempArray = selectedCongruent.concat(selectedIncongruent);
+      tempArray = jsPsych.randomization.repeat(tempArray, 1);
+
+      blockStims = tempArray;
+
       return true;
     }
   },
@@ -900,7 +951,16 @@ var endBlock = {
 
 stroop_rdoc_experiment = [];
 var stroop_rdoc_init = () => {
-  blockStims = jsPsych.randomization.repeat(stims, practiceLen / 12);
+  // Randomly select two congruent and two incongruent stimuli
+  let selectedCongruent = getRandomElements(congruentStim, 2);
+  let selectedIncongruent = getRandomElements(incongruentStim, 2);
+
+  // Combine the selected stimuli into a new array
+  let tempArray = selectedCongruent.concat(selectedIncongruent);
+  tempArray = jsPsych.randomization.repeat(tempArray, 1);
+
+  blockStims = tempArray;
+
   stroop_rdoc_experiment.push(fullscreen);
   stroop_rdoc_experiment.push(instructionsNode);
   stroop_rdoc_experiment.push(practiceNode);
