@@ -410,11 +410,13 @@ var instructTimeThresh = 1; // /in seconds
 var runAttentionChecks = true;
 
 var expStage = "practice";
-var practiceLen = 16; // divisible by 4,  2 (switch or stay) by 2 (mag or parity)]
+var practiceLen = 4; // divisible by 4,  2 (switch or stay) by 2 (mag or parity)]
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
-var accuracy_thresh = 0.85;
+var accuracy_thresh = 0.8; // 13 out of 16 is .8125
+var practice_accuracy_thresh = 0.75; // 13 out of 16 is .8125
+
 var rt_thresh = 750;
 var missed_response_thresh = 0.1;
 var practice_thresh = 3; // 3 blocks of 16 trials
@@ -828,7 +830,10 @@ var practiceNode = {
     var missed_responses = (total_trials - sum_responses) / total_trials;
     var ave_rt = sum_rt / sum_responses;
 
-    if (accuracy > accuracy_thresh || practiceCount == practice_thresh) {
+    if (
+      accuracy >= practice_accuracy_thresh ||
+      practiceCount == practice_thresh
+    ) {
       feedbackText = `
       <div class="centerbox">
         <p class="block-text">We will now start the test portion.</p>
@@ -845,7 +850,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracy_thresh) {
+      if (accuracy < practice_accuracy_thresh) {
         feedbackText += `
           <p class="block-text">Your accuracy is low. Remember:</p>
           ${prompt_text_list}

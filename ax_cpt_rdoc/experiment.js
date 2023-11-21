@@ -3,8 +3,8 @@
 /* ************************************ */
 
 // ITIs
-var meanITI = 0.5;
 
+var meanITI = 0.5;
 function sampleFromDecayingExponential() {
   // Decay parameter of the exponential distribution λ = 1 / μ
   var lambdaParam = 1 / meanITI;
@@ -231,7 +231,9 @@ var runAttentionChecks = true;
 /* ******************************* */
 
 var practiceThresh = 3; // 3 blocks max
-var accuracyThresh = 0.85; // min accuracy to proceed to test
+var accuracyThresh = 0.8; // block-level accuracy feedback
+var practiceAccuracyThresh = 0.8; // min accuracy to proceed to test
+
 var rtThresh = 750; // min of 1s on instructions to proceed to practice
 var missedResponseThresh = 0.1; // get feedback if missed responses > 10% of trials
 
@@ -722,7 +724,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -740,7 +742,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class = block-text>Your accuracy is low. Remember:</p>
         ${promptTextList}

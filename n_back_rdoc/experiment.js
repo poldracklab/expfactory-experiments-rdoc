@@ -379,6 +379,7 @@ var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"];
 var stims = createTrialTypes(practiceLen, delay);
 
 var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.8;
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 
@@ -787,7 +788,7 @@ var practiceNode1 = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       delay = 2;
       feedbackText = `
         <div class="centerbox">
@@ -812,7 +813,7 @@ var practiceNode1 = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class="block-text">Your accuracy is low. Remember:</p>
        ${promptTextList}
@@ -871,7 +872,7 @@ var practiceNode2 = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       expStage = "test";
       delay = delays.shift();
       feedbackText = `
@@ -896,7 +897,7 @@ var practiceNode2 = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class="block-text">Your accuracy is low. Remember:</p>
         ${promptTextList}

@@ -435,7 +435,8 @@ var numTestBlocks = 3;
 var practiceThresh = 3; // 3 blocks of 16 trials
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8; // min acc for block-level feedback
+var practiceAccuracyThresh = 0.75; // min acc to proceed to test blocks
 
 var fileTypePNG = ".png'></img>";
 var preFileType =
@@ -785,7 +786,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
@@ -809,7 +810,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
           <p class="block-text">Your accuracy is low. Remember:</p>
           ${promptTextList}
@@ -1039,7 +1040,6 @@ var cued_task_switching_rdoc_init = () => {
     cue_switch: "na",
   });
   stims = genStims(practiceLen + 1);
-
   cued_task_switching_rdoc_experiment.push(fullscreen);
   cued_task_switching_rdoc_experiment.push(instructionNode);
   cued_task_switching_rdoc_experiment.push(practiceNode);

@@ -7125,6 +7125,8 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
 var accuracyThresh = 0.6;
+// make accuracy partial instead
+var partialAccuracyThresh = 0.25;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 var processingChoices = ["t", "f"];
@@ -7706,6 +7708,10 @@ var practiceNode = {
         missedCount += 1;
       } else {
         responseCount += 1;
+        // response
+        // spatial_sequence
+        let trial_response = responseGridData[i].response;
+        let trial_spatial_sequence = responseGridData[i].spatial_sequence;
 
         if (responseGridData[i].correct_trial == 1) {
           correct += 1;
@@ -7757,14 +7763,14 @@ var practiceNode = {
     if (practiceCount == practiceThresh) {
       canProceedToTest = true;
     } else if (getCurrCondition() == "storage-only") {
-      if (accuracy > accuracyThresh) {
+      if (accuracy >= accuracyThresh) {
         canProceedToTest = true;
       } else {
         canProceedToTest = false;
       }
     } else {
       if (
-        accuracy > accuracyThresh &&
+        accuracy >= accuracyThresh &&
         avgProcessingAcc > processingAccThresh &&
         avgProcessingRT < processingRTThresh &&
         avgProcessingMissed < processingMissedThresh

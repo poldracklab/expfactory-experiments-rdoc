@@ -132,7 +132,9 @@ const stimTrialDuration = 1500;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.75;
+
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3; // 3 blocks of 12 trials
@@ -678,7 +680,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var aveRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = ` <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
@@ -695,7 +697,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
        <p class="block-text">Your accuracy is too low. Remember: <br>${promptTextList}</p>
       `;
@@ -885,7 +887,6 @@ var flanker_rdoc_init = () => {
 
   // globals
   blockStims = jsPsych.randomization.repeat(testStimuli, practiceLen / 4);
-
   flanker_rdoc_experiment.push(fullscreen);
   flanker_rdoc_experiment.push(instructionNode);
   flanker_rdoc_experiment.push(practiceNode);

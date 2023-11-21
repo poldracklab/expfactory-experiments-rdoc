@@ -321,7 +321,9 @@ var testStimuliBlock = [
   })
 );
 
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8; // min acc for block-level feedback
+var practiceAccuracyThresh = 0.85; // min acc to proceed to test blocks, 6 out of 7 ~ .857
+
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 
@@ -643,7 +645,7 @@ var practiceNode = {
     var missedResponses = missedResponse / totalGoTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -662,7 +664,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
        <p class="block-text">Your accuracy is low. Remember: </p>${promptTextList}
       `;

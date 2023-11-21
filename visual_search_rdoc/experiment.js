@@ -363,7 +363,9 @@ var runAttentionChecks = true;
 // thresholds
 const instructTimeThresh = 1; // /in seconds
 var sumInstructTime = 0; // ms
-const accuracyThresh = 0.85;
+const accuracyThresh = 0.8; // threshhold for block-level feedback
+const practiceAccuracyThresh = 0.75; //threshold to proceed to test blocks, 3 out of 4 trials for .75
+
 const rtThresh = 1250;
 const missedResponseThresh = 0.1;
 
@@ -374,6 +376,7 @@ var numTestBlocks = 3;
 
 var practiceCount = 0;
 var practiceThresh = 3;
+
 var expStage = "practice";
 
 /*  ######## Important text values for display ######## */
@@ -743,7 +746,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -756,7 +759,7 @@ var practiceNode = {
     } else {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText +=
           `<p class="block-text">Your accuracy is low. Remember: </p>` +
           promptTextList;
