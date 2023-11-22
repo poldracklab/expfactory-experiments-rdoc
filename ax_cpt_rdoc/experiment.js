@@ -135,6 +135,7 @@ var getChar = function () {
 /* Define experimental variables */
 /* ************************************ */
 const fixationDuration = 500;
+const conditionValues = ["AX", "BY", "BX", "AY"];
 
 const possibleResponses = [
   ["index finger", ",", "comma key (,)"],
@@ -732,10 +733,9 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
-      blockList = jsPsych.randomization.repeat(
-        trialProportions,
-        numTrialsPerBlock / trialProportions.length
-      );
+      blockList = conditionValues.concat(["AX"]);
+      blockList = jsPsych.randomization.repeat(blockList, 10);
+
       expStage = "test";
       return false;
     } else {
@@ -763,7 +763,8 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockList = jsPsych.randomization.repeat(trialProportions, 1);
+      blockList = conditionValues.concat(["AX"]);
+      blockList = jsPsych.randomization.repeat(blockList, 1);
       return true;
     }
   },
@@ -949,7 +950,8 @@ var endBlock = {
 
 var ax_cpt_rdoc_experiment = [];
 var ax_cpt_rdoc_init = () => {
-  blockList = jsPsych.randomization.repeat(trialProportions, 1);
+  blockList = conditionValues.concat(["AX"]);
+  blockList = jsPsych.randomization.repeat(blockList, 1);
   ax_cpt_rdoc_experiment.push(fullscreen);
   ax_cpt_rdoc_experiment.push(instructionNode);
   ax_cpt_rdoc_experiment.push(practiceNode);

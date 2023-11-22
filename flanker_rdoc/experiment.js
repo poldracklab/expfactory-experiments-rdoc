@@ -884,7 +884,6 @@ var endBlock = {
 flanker_rdoc_experiment = [];
 var flanker_rdoc_init = () => {
   jsPsych.pluginAPI.preloadImages(images);
-
   // globals
   blockStims = jsPsych.randomization.repeat(testStimuli, practiceLen / 4);
   flanker_rdoc_experiment.push(fullscreen);

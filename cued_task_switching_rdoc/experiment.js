@@ -454,21 +454,13 @@ var tasks = {
   },
 };
 
-var taskSwitchTyeps = ["stay", "switch"];
-var cueSwitchTypes = ["stay", "switch"];
+var taskSwitchesArr = [
+  { task_switch: "stay", cue_switch: "stay" },
+  { task_switch: "stay", cue_switch: "switch" },
+  { task_switch: "switch", cue_switch: "switch" },
+  { task_switch: "switch", cue_switch: "switch" },
+];
 
-var taskSwitchesArr = [];
-for (var t = 0; t < taskSwitchTyeps.length; t++) {
-  for (var c = 0; c < cueSwitchTypes.length; c++) {
-    taskSwitchesArr.push({
-      task_switch: taskSwitchTyeps[t],
-      cue_switch: cueSwitchTypes[c],
-    });
-  }
-}
-var practiceStims = genStims(practiceLen);
-// var testStims = genStims(numTrialsPerBlock + 1);
-var stims = practiceStims;
 var currTask = randomDraw(getKeys(tasks));
 var lastTask = "na"; // object that holds the last task, set by setStims()
 var currCue = "na"; // object that holds the current cue, set by setStims()
@@ -989,7 +981,6 @@ var testNode = {
         taskSwitchesArr,
         numTrialsPerBlock / 4
       );
-
       taskSwitches.unshift({
         task_switch: "na",
         cue_switch: "na",

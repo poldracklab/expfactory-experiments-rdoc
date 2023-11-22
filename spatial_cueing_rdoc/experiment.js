@@ -30,6 +30,23 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function sampleWithoutReplacement(arr, n) {
+  let result = [];
+  let tempArray = [...arr];
+
+  for (let i = 0; i < n; i++) {
+    if (tempArray.length === 0) {
+      break;
+    }
+
+    const index = Math.floor(Math.random() * tempArray.length);
+    result.push(tempArray[index]);
+    tempArray.splice(index, 1);
+  }
+
+  return result;
+}
+
 function evalAttentionChecks() {
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
@@ -269,6 +286,7 @@ var images = {
 };
 
 var stimuli = [];
+var practiceStimuli = [];
 // making 24 stimuli: 4 nocue left, 4 nocue right; 4 doublecue left, 4 doublecue right; 3 valid left, 1 invalid left, 3 valid right, 1 invalid right
 for (let i = 0; i < 2; i++) {
   var loc = ["left", "right"][i];
@@ -323,6 +341,11 @@ for (let i = 0; i < 2; i++) {
     invalidTrials
   );
 }
+
+var noCueStim = stimuli.filter(obj => obj.data.condition === "nocue");
+var doubleCueStim = stimuli.filter(obj => obj.data.condition === "doublecue");
+var validCueStim = stimuli.filter(obj => obj.data.condition === "valid");
+var invalidCueStim = stimuli.filter(obj => obj.data.condition === "invalid");
 
 var promptText = `
   <div class="prompt_box">
@@ -722,9 +745,14 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockStims = jsPsych.randomization
-        .repeat(stimuli, 1)
-        .slice(0, practiceLen);
+      practiceStimuli.push(
+        ...sampleWithoutReplacement(doubleCueStim, 4),
+        ...sampleWithoutReplacement(noCueStim, 4),
+        ...sampleWithoutReplacement(validCueStim, 3),
+        ...sampleWithoutReplacement(invalidCueStim, 1)
+      );
+      blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
+
       return true;
     }
   },
@@ -924,7 +952,14 @@ var endBlock = {
 
 var spatial_cueing_rdoc_experiment = [];
 var spatial_cueing_rdoc_init = () => {
-  blockStims = jsPsych.randomization.repeat(stimuli, 1).slice(0, practiceLen);
+  practiceStimuli.push(
+    ...sampleWithoutReplacement(doubleCueStim, 4),
+    ...sampleWithoutReplacement(noCueStim, 4),
+    ...sampleWithoutReplacement(validCueStim, 3),
+    ...sampleWithoutReplacement(invalidCueStim, 1)
+  );
+  blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
+
   spatial_cueing_rdoc_experiment.push(fullscreen);
   spatial_cueing_rdoc_experiment.push(instructionNode);
   spatial_cueing_rdoc_experiment.push(practiceNode);

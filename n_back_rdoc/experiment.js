@@ -152,7 +152,8 @@ var randomDraw = function (lst) {
   return lst[index];
 };
 
-var createTrialTypes = function (numTrialsPerBlock, delay) {
+var createTrialTypes = function (numTrialsPerBlock, delay, exp_stage) {
+  stims = [];
   firstStims = [];
   var correctResponse;
   var nbackCondition;
@@ -172,20 +173,34 @@ var createTrialTypes = function (numTrialsPerBlock, delay) {
   }
   stims = [];
 
-  for (
-    var numIterations = 0;
-    numIterations < numTrialsPerBlock / nbackConditions.length;
-    numIterations++
-  ) {
-    for (
-      var numNBackConds = 0;
-      numNBackConds < nbackConditions.length;
-      numNBackConds++
-    ) {
-      // always sampling nbackcondition, for each stim
-      const randomIndex = Math.floor(Math.random() * 4) + 1;
+  console.log("first stims", firstStims);
 
-      nbackCondition = nbackConditions[randomIndex];
+  if (exp_stage == "practice") {
+    for (
+      var numIterations = 0;
+      numIterations < numTrialsPerBlock / nbackConditions.length;
+      numIterations++
+    ) {
+      for (
+        var numNBackConds = 0;
+        numNBackConds < nbackConditions.length;
+        numNBackConds++
+      ) {
+        nbackCondition = nbackConditions[numNBackConds];
+
+        stim = {
+          condition: nbackCondition,
+          correct_response:
+            nbackCondition == "match"
+              ? possibleResponses[0][1]
+              : possibleResponses[1][1],
+        };
+        stims.push(stim);
+      }
+    }
+  } else {
+    for (var i = 0; i < numTrialsPerBlock; i++) {
+      nbackCondition = testNBackConditions.shift();
 
       stim = {
         condition: nbackCondition,
@@ -198,6 +213,7 @@ var createTrialTypes = function (numTrialsPerBlock, delay) {
     }
   }
 
+  console.log("stims", stims);
   stims = shuffleArray(stims);
   stims = firstStims.concat(stims);
 
@@ -247,6 +263,7 @@ var createTrialTypes = function (numTrialsPerBlock, delay) {
 
     newStims.push(stim);
   }
+  console.log("new stims", newStims);
   return newStims;
 };
 
@@ -375,9 +392,9 @@ var delays = shuffleArray([1, 2]);
 delays = [...delays, ...delays, ...delays, ...delays, ...delays];
 
 var delay = 1;
-var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"];
-var stims = createTrialTypes(practiceLen, delay);
+var nbackConditions = ["match", "mismatch", "mismatch", "mismatch", "mismatch"];
 
+var stims = createTrialTypes(practiceLen, delay, "practice");
 var accuracyThresh = 0.8;
 var practiceAccuracyThresh = 0.8;
 var rtThresh = 750;
@@ -806,7 +823,7 @@ var practiceNode1 = {
         </div>
       `;
 
-      stims = createTrialTypes(practiceLen, delay);
+      stims = createTrialTypes(practiceLen, delay, "practice");
       practiceCount = 0;
       return false;
     } else {
@@ -837,7 +854,7 @@ var practiceNode1 = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      stims = createTrialTypes(practiceLen, delay);
+      stims = createTrialTypes(practiceLen, delay, "practice");
       return true;
     }
   },
@@ -891,7 +908,7 @@ var practiceNode2 = {
       </div>
     `;
 
-      stims = createTrialTypes(numTrialsPerBlock, delay);
+      stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     } else {
       feedbackText =
@@ -921,7 +938,7 @@ var practiceNode2 = {
         <p class=block-text>Press <i>enter</i> to begin.</p>
         </div>`;
 
-      stims = createTrialTypes(practiceLen, delay);
+      stims = createTrialTypes(practiceLen, delay, "practice");
       return true;
     }
   },
@@ -1058,7 +1075,7 @@ var testNode1 = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      stims = createTrialTypes(numTrialsPerBlock, delay);
+      stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     }
   },
@@ -1147,7 +1164,7 @@ var testNode2 = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      stims = createTrialTypes(numTrialsPerBlock, delay);
+      stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     }
   },
@@ -1183,6 +1200,11 @@ var endBlock = {
 
 var n_back_rdoc_experiment = [];
 var n_back_rdoc_init = () => {
+  testNBackConditions = jsPsych.randomization.repeat(
+    nbackConditions,
+    (numTrialsPerBlock * numTestBlocks) / nbackConditions.length
+  );
+
   jsPsych.pluginAPI.preloadImages(images);
   n_back_rdoc_experiment.push(fullscreen);
   n_back_rdoc_experiment.push(instructionNode);

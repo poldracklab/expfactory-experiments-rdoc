@@ -146,29 +146,57 @@ attentionCheckData = shuffleArray(attentionCheckData);
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 var trialTargetPresent;
-function getStim() {
+var condition;
+var numberStim;
+
+function getStims(
+  blockStimNums,
+  blockStimTargets,
+  blockStimConditions,
+  length
+) {
   const containerWidth = window.innerWidth * 0.7; // Adjusted width (90% of window width)
   const containerHeight = window.innerHeight * 0.7; // Adjusted height (90% of window height)
   const boxWidth = 40;
   const boxHeight = 80; // Adjust the height as desired
+  var stims = [];
 
-  const targetIndex = Math.floor(Math.random() * n); // Randomly select an index for the target div
-  const targetPresent = isTargetPresent();
-  trialTargetPresent = targetPresent;
-  const html = generateHTML(
-    containerWidth,
-    containerHeight,
-    targetPresent,
-    targetIndex,
-    boxWidth,
-    boxHeight
-  );
+  for (var i = 0; i < length; i++) {
+    const targetPresent = blockStimTargets.shift();
+    const stimCondition = blockStimConditions.shift();
+    const stimNum = blockStimNums.shift();
+    const targetIndex = Math.floor(Math.random() * stimNum);
 
-  return html;
+    const html = generateHTML(
+      containerWidth,
+      containerHeight,
+      targetPresent,
+      targetIndex,
+      boxWidth,
+      boxHeight,
+      stimCondition,
+      stimNum
+    );
+
+    var obj = {
+      html: html,
+      targetPresent: targetPresent,
+      condition: stimCondition,
+      stimNum: stimNum,
+    };
+
+    stims.push(obj);
+  }
+
+  return stims;
 }
 
-function isTargetPresent() {
-  return Math.random() < 0.5; // Modify the condition for your target logic
+function getStim() {
+  stim = blockStims.shift();
+  trialTargetPresent = stim.targetPresent;
+  condition = stim.condition;
+  numberStim = stim.stimNum;
+  return stim.html;
 }
 
 var getCurrBlockNum = function () {
@@ -185,7 +213,9 @@ function generateHTML(
   targetPresent,
   targetIndex,
   boxWidth,
-  boxHeight
+  boxHeight,
+  stimCondition,
+  stimNum
 ) {
   let html;
 
@@ -195,14 +225,15 @@ function generateHTML(
     "px; height: " +
     containerHeight +
     'px;">';
+
   const positions = [];
   let rows;
   let cols;
 
-  if (n === 8) {
+  if (stimNum === 8) {
     rows = 4;
     cols = 2;
-  } else if (n === 24) {
+  } else if (stimNum === 24) {
     rows = 6;
     cols = 4;
   } else {
@@ -212,7 +243,7 @@ function generateHTML(
   const spacingX = (containerWidth - cols * boxWidth) / (cols + 1);
   const spacingY = (containerHeight - rows * boxHeight) / (rows + 1);
 
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < stimNum; i++) {
     const row = Math.floor(i / cols);
     const col = i % cols;
 
@@ -224,7 +255,13 @@ function generateHTML(
     if (i === targetIndex && targetPresent) {
       html += generateTargetElement(left, top, boxWidth, boxHeight);
     } else {
-      html += generateDistractorElement(left, top, boxWidth, boxHeight);
+      html += generateDistractorElement(
+        left,
+        top,
+        boxWidth,
+        boxHeight,
+        stimCondition
+      );
     }
   }
 
@@ -247,8 +284,8 @@ function generateTargetElement(left, top, width, height) {
   );
 }
 
-function generateDistractorElement(left, top, width, height) {
-  if (getCurrCondition() === "feature") {
+function generateDistractorElement(left, top, width, height, stimCondition) {
+  if (stimCondition === "feature") {
     return (
       '<div id="black-distractor-element" class="box" style="position: absolute; left: ' +
       left +
@@ -260,7 +297,7 @@ function generateDistractorElement(left, top, width, height) {
       height +
       'px; background-color: black;"></div>'
     );
-  } else if (getCurrCondition() === "conjunction") {
+  } else if (stimCondition === "conjunction") {
     if (Math.random() < 0.5) {
       return (
         '<div id="white-distractor-element"  class="box" style="position: absolute; left: ' +
@@ -392,15 +429,13 @@ const promptTextList = `
   <li>Target absent: press your ${possibleResponses[1][0]}</li>
 </ul>`;
 
-// setting first value for 8 or 24 stim, random 50/50 after
-const nArray = [8, 24];
-var randomIndexN = Math.floor(Math.random() * nArray.length);
-var n = nArray[randomIndexN];
-
 // setting first value for feature/conjunction condition
 const conditionArray = ["feature", "conjunction"];
-var randomIndexCondition = Math.floor(Math.random() * conditionArray.length);
-var condition = conditionArray[randomIndexCondition];
+
+var blockStims = [];
+var blockStimNums = [];
+var blockStimTargets = [];
+var blockStimConditions = [];
 
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -476,15 +511,15 @@ var testTrial = {
   },
   on_finish: function (data) {
     data["target_present"] = trialTargetPresent ? 1 : 0;
-    data["num_stimuli"] = n;
-    data["condition"] = getCurrCondition();
+    data["num_stimuli"] = numberStim;
+    data["condition"] = condition;
     data["exp_stage"] = getExpStage();
     data["correct_response"] = trialTargetPresent
       ? possibleResponses[0][1]
       : possibleResponses[1][1];
 
     if (data.response !== null) {
-      if (trialTargetPresent) {
+      if (trialTargetPresent == 1) {
         if (data.response == possibleResponses[0][1]) {
           data["correct_trial"] = 1;
         } else {
@@ -500,16 +535,10 @@ var testTrial = {
     } else {
       data["correct_trial"] = null;
     }
-    randomIndexN = Math.floor(Math.random() * nArray.length);
-    n = nArray[randomIndexN];
-
-    randomIndexCondition = Math.floor(Math.random() * conditionArray.length);
-    condition = conditionArray[randomIndexCondition];
   },
 };
 
 // / This ensures that the subject does not read through the instructions too quickly. If they do it too quickly, then we will go over the loop again.
-// TODO: Change instructions
 var instructionsBlock = {
   type: jsPsychInstructions,
   pages: pageInstruct,
@@ -754,6 +783,36 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
+      blockStimNums = [];
+      blockStimTargets = [];
+      blockStimConditions = [];
+
+      for (let i = 0; i < numTrialsPerBlock; i++) {
+        if (i % 2 == 0) {
+          blockStimTargets.push(0);
+          blockStimNums.push(8);
+          blockStimConditions.push("feature");
+        } else {
+          blockStimTargets.push(1);
+          blockStimNums.push(24);
+          blockStimConditions.push("conjunction");
+        }
+      }
+
+      blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
+      blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
+      blockStimConditions = jsPsych.randomization.repeat(
+        blockStimConditions,
+        1
+      );
+
+      blockStims = getStims(
+        blockStimNums,
+        blockStimTargets,
+        blockStimConditions,
+        numTrialsPerBlock
+      );
+
       expStage = "test";
       return false;
     } else {
@@ -774,6 +833,36 @@ var practiceNode = {
       feedbackText +=
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
+
+      blockStimNums = [];
+      blockStimTargets = [];
+      blockStimConditions = [];
+
+      for (let i = 0; i < practiceLen; i++) {
+        if (i % 2 == 0) {
+          blockStimTargets.push(0);
+          blockStimNums.push(8);
+          blockStimConditions.push("feature");
+        } else {
+          blockStimTargets.push(1);
+          blockStimNums.push(24);
+          blockStimConditions.push("conjunction");
+        }
+      }
+
+      blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
+      blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
+      blockStimConditions = jsPsych.randomization.repeat(
+        blockStimConditions,
+        1
+      );
+
+      blockStims = getStims(
+        blockStimNums,
+        blockStimTargets,
+        blockStimConditions,
+        practiceLen
+      );
 
       return true;
     }
@@ -853,6 +942,24 @@ var testNode = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
+      blockStimNums = [];
+      blockStimTargets = [];
+      blockStimConditions = [];
+
+      blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
+      blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
+      blockStimConditions = jsPsych.randomization.repeat(
+        blockStimConditions,
+        1
+      );
+
+      blockStims = getStims(
+        blockStimNums,
+        blockStimTargets,
+        blockStimConditions,
+        numTrialsPerBlock
+      );
+
       return true;
     }
   },
@@ -885,6 +992,29 @@ var endBlock = {
 
 var visual_search_rdoc_experiment = [];
 var visual_search_rdoc_init = () => {
+  for (let i = 0; i < practiceLen; i++) {
+    if (i % 2 == 0) {
+      blockStimTargets.push(0);
+      blockStimNums.push(8);
+      blockStimConditions.push("feature");
+    } else {
+      blockStimTargets.push(1);
+      blockStimNums.push(24);
+      blockStimConditions.push("conjunction");
+    }
+  }
+
+  blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
+  blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
+  blockStimConditions = jsPsych.randomization.repeat(blockStimConditions, 1);
+
+  blockStims = getStims(
+    blockStimNums,
+    blockStimTargets,
+    blockStimConditions,
+    practiceLen
+  );
+
   visual_search_rdoc_experiment.push(fullscreen);
   visual_search_rdoc_experiment.push(instructionNode);
   visual_search_rdoc_experiment.push(practiceNode);
