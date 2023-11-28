@@ -3,8 +3,8 @@
 /* ************************************ */
 
 // ITIs
-var meanITI = 0.5;
 
+var meanITI = 0.5;
 function sampleFromDecayingExponential() {
   // Decay parameter of the exponential distribution λ = 1 / μ
   var lambdaParam = 1 / meanITI;
@@ -131,15 +131,36 @@ var getChar = function () {
   );
 };
 
+function getKeyMappingForTask(group_index) {
+  if (group_index % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
 const fixationDuration = 500;
+const conditionValues = ["AX", "BY", "BX", "AY"];
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -210,6 +231,7 @@ var pageInstruct = [
 /* ******************************* */
 /* TIMINGS */
 /* ******************************* */
+var possibleResponses;
 
 // cue
 const cueStimulusDuration = 500;
@@ -231,7 +253,9 @@ var runAttentionChecks = true;
 /* ******************************* */
 
 var practiceThresh = 3; // 3 blocks max
-var accuracyThresh = 0.85; // min accuracy to proceed to test
+var accuracyThresh = 0.8; // block-level accuracy feedback
+var practiceAccuracyThresh = 0.8; // min accuracy to proceed to test
+
 var rtThresh = 750; // min of 1s on instructions to proceed to practice
 var missedResponseThresh = 0.1; // get feedback if missed responses > 10% of trials
 
@@ -722,7 +746,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -730,17 +754,16 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
-      blockList = jsPsych.randomization.repeat(
-        trialProportions,
-        numTrialsPerBlock / trialProportions.length
-      );
+      blockList = conditionValues.concat(["AX"]);
+      blockList = jsPsych.randomization.repeat(blockList, 10);
+
       expStage = "test";
       return false;
     } else {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class = block-text>Your accuracy is low. Remember:</p>
         ${promptTextList}
@@ -761,7 +784,8 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockList = jsPsych.randomization.repeat(trialProportions, 1);
+      blockList = conditionValues.concat(["AX"]);
+      blockList = jsPsych.randomization.repeat(blockList, 1);
       return true;
     }
   },
@@ -799,7 +823,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: choices,
     data: function () {
       return {
-        trial_id: "test_probe",
+        trial_id: "test_trial",
         exp_stage: "test",
         condition: getCondition(),
         choices: choices,
@@ -841,7 +865,7 @@ var testNode = {
 
     for (var i = 0; i < data.trials.length; i++) {
       if (
-        data.trials[i].trial_id == "test_probe" &&
+        data.trials[i].trial_id == "test_trial" &&
         data.trials[i].block_num == getCurrBlockNum() - 1
       ) {
         totalTrials += 1;
@@ -947,7 +971,8 @@ var endBlock = {
 
 var ax_cpt_rdoc_experiment = [];
 var ax_cpt_rdoc_init = () => {
-  blockList = jsPsych.randomization.repeat(trialProportions, 1);
+  blockList = conditionValues.concat(["AX"]);
+  blockList = jsPsych.randomization.repeat(blockList, 1);
   ax_cpt_rdoc_experiment.push(fullscreen);
   ax_cpt_rdoc_experiment.push(instructionNode);
   ax_cpt_rdoc_experiment.push(practiceNode);

@@ -30,6 +30,38 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function sampleWithoutReplacement(arr, n) {
+  let result = [];
+  let tempArray = [...arr];
+
+  for (let i = 0; i < n; i++) {
+    if (tempArray.length === 0) {
+      break;
+    }
+
+    const index = Math.floor(Math.random() * tempArray.length);
+    result.push(tempArray[index]);
+    tempArray.splice(index, 1);
+  }
+
+  return result;
+}
+
+function getCTIs(blockLen) {
+  let result = [];
+  let CTIArr = [...CTIVals]; // Create a copy of CTIVals
+
+  while (result.length < blockLen) {
+    if (CTIArr.length === 0) {
+      CTIArr = [...CTIVals]; // Reset CTIArr by creating a new copy of CTIVals
+    }
+    let index = Math.floor(Math.random() * CTIArr.length);
+    result.push(CTIArr[index]);
+    CTIArr.splice(index, 1); // Remove the sampled element
+  }
+  return result;
+}
+
 function evalAttentionChecks() {
   if (runAttentionChecks) {
     var attentionChecksTrials = jsPsych.data
@@ -54,6 +86,7 @@ var getCurrAttentionCheckQuestion = function () {
 var getCurrAttentionCheckAnswer = function () {
   return currentAttentionCheckData.A;
 };
+
 function shuffleArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -233,13 +266,15 @@ const stimTrialDuration = 1500;
 const cueStimulusDuration = 500;
 const cueTrialDuration = 500;
 // initialize
-var fixationDuration2 = Math.floor(Math.random() * 1200) + 400; // CTI
+var fixationDuration2;
+var CTIVals = [100, 550, 1000];
 
 // generic task variables
 var runAttentionChecks = true;
 
 var instructTimeThresh = 1; // in seconds
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.83; // 2 wrong, 10 out of 12 is .833
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
@@ -268,6 +303,7 @@ var images = {
 };
 
 var stimuli = [];
+var practiceStimuli = [];
 // making 24 stimuli: 4 nocue left, 4 nocue right; 4 doublecue left, 4 doublecue right; 3 valid left, 1 invalid left, 3 valid right, 1 invalid right
 for (let i = 0; i < 2; i++) {
   var loc = ["left", "right"][i];
@@ -322,6 +358,11 @@ for (let i = 0; i < 2; i++) {
     invalidTrials
   );
 }
+
+var noCueStim = stimuli.filter(obj => obj.data.condition === "nocue");
+var doubleCueStim = stimuli.filter(obj => obj.data.condition === "doublecue");
+var validCueStim = stimuli.filter(obj => obj.data.condition === "valid");
+var invalidCueStim = stimuli.filter(obj => obj.data.condition === "invalid");
 
 var promptText = `
   <div class="prompt_box">
@@ -604,16 +645,21 @@ for (let i = 0; i < practiceLen; i++) {
     data: {
       trial_id: "practice_fixation_2",
       exp_stage: "practice",
-      trial_duration: fixationDuration2,
-      stimulus_duration: fixationDuration2,
     },
     post_trial_gap: 0,
-    stimulus_duration: fixationDuration2,
-    trial_duration: fixationDuration2,
+    stimulus_duration: function () {
+      return fixationDuration2;
+    },
+    trial_duration: function () {
+      return fixationDuration2;
+    },
     prompt: promptText,
     on_finish: function (data) {
-      fixationDuration2 = Math.floor(Math.random() * 1200) + 400;
       data["block_num"] = practiceCount;
+      data["trial_duration"] = fixationDuration2;
+      data["stimulus_duration"] = fixationDuration2;
+      data["CTI"] = fixationDuration2;
+      fixationDuration2 = CTIs.shift();
     },
   };
   var testTrial = {
@@ -677,7 +723,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
@@ -691,6 +737,8 @@ var practiceNode = {
         stimuli,
         numTrialsPerBlock / stimuli.length
       );
+      CTIs = [];
+      CTIs = getCTIs(numTrialsPerBlock);
 
       expStage = "test";
       return false;
@@ -698,7 +746,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class="block-text">Your accuracy is low. Remember: </p>
         ${responseKeys}
@@ -721,9 +769,16 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockStims = jsPsych.randomization
-        .repeat(stimuli, 1)
-        .slice(0, practiceLen);
+      practiceStimuli.push(
+        ...sampleWithoutReplacement(doubleCueStim, 4),
+        ...sampleWithoutReplacement(noCueStim, 4),
+        ...sampleWithoutReplacement(validCueStim, 3),
+        ...sampleWithoutReplacement(invalidCueStim, 1)
+      );
+      blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
+      CTIs = [];
+      CTIs = getCTIs(practiceLen);
+
       return true;
     }
   },
@@ -890,6 +945,9 @@ var testNode = {
         stimuli,
         numTrialsPerBlock / stimuli.length
       );
+      CTIs = [];
+      CTIs = getCTIs(numTrialsPerBlock);
+
       return true;
     }
   },
@@ -923,8 +981,15 @@ var endBlock = {
 
 var spatial_cueing_rdoc_experiment = [];
 var spatial_cueing_rdoc_init = () => {
-  blockStims = jsPsych.randomization.repeat(stimuli, 1).slice(0, practiceLen);
-
+  practiceStimuli.push(
+    ...sampleWithoutReplacement(doubleCueStim, 4),
+    ...sampleWithoutReplacement(noCueStim, 4),
+    ...sampleWithoutReplacement(validCueStim, 3),
+    ...sampleWithoutReplacement(invalidCueStim, 1)
+  );
+  blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
+  CTIs = getCTIs(practiceLen);
+  fixationDuration2 = CTIs.shift();
   spatial_cueing_rdoc_experiment.push(fullscreen);
   spatial_cueing_rdoc_experiment.push(instructionNode);
   spatial_cueing_rdoc_experiment.push(practiceNode);

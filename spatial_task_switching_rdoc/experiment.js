@@ -377,10 +377,32 @@ var appendData = function () {
 // common variables
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index / 2) % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -410,17 +432,17 @@ var instructTimeThresh = 1; // /in seconds
 var runAttentionChecks = true;
 
 var expStage = "practice";
-var practiceLen = 16; // divisible by 4,  2 (switch or stay) by 2 (mag or parity)]
+var practiceLen = 4; // divisible by 4,  2 (switch or stay) by 2 (mag or parity)]
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
-var accuracy_thresh = 0.85;
+var accuracy_thresh = 0.8;
+var practice_accuracy_thresh = 0.75;
+
 var rt_thresh = 750;
 var missed_response_thresh = 0.1;
-var practice_thresh = 3; // 3 blocks of 16 trials
+var practice_thresh = 3;
 
-// // var predictable_conditions = [['switch', 'stay'],
-// ['stay', 'switch']]
 var predictable_dimensions_list = [
   (stim = {
     dim: "magnitude",
@@ -502,16 +524,20 @@ var prompt_text_list = `
 
 var prompt_text = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">Top 2 quadrants, judge number on ${predictable_dimensions_list[0].dim}:</p>
+  <div class='prompt_content' style='margin-bottom: 80px;'>
+    <p>Top 2 quadrants, judge number on ${predictable_dimensions_list[0].dim}:</p>
     <ul>
       <li>${predictable_dimensions_list[0].values[0]}: ${possibleResponses[0][0]}</li>
       <li>${predictable_dimensions_list[0].values[1]}: ${possibleResponses[1][0]}</li>
     </ul>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">Bottom 2 quadrants, judge number on ${predictable_dimensions_list[1].dim}:</p>
+  </div>
+  <div class='prompt_content' style='margin-top: 80px;'>
+    <p>Bottom 2 quadrants, judge number on ${predictable_dimensions_list[1].dim}:</p>
     <ul>
       <li>${predictable_dimensions_list[1].values[0]}: ${possibleResponses[0][0]}</li>
       <li>${predictable_dimensions_list[1].values[1]}: ${possibleResponses[1][0]}</li>
     </ul>
+    </div>
   </div>`;
 
 var pageInstruct = [
@@ -828,7 +854,10 @@ var practiceNode = {
     var missed_responses = (total_trials - sum_responses) / total_trials;
     var ave_rt = sum_rt / sum_responses;
 
-    if (accuracy > accuracy_thresh || practiceCount == practice_thresh) {
+    if (
+      accuracy >= practice_accuracy_thresh ||
+      practiceCount == practice_thresh
+    ) {
       feedbackText = `
       <div class="centerbox">
         <p class="block-text">We will now start the test portion.</p>
@@ -845,7 +874,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracy_thresh) {
+      if (accuracy < practice_accuracy_thresh) {
         feedbackText += `
           <p class="block-text">Your accuracy is low. Remember:</p>
           ${prompt_text_list}

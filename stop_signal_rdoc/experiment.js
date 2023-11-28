@@ -287,17 +287,8 @@ function getCorrectResponse() {
 var appendData = function (data) {
   currentTrial += 1;
 
-  if (expPhase == "practice1") {
-    currBlock = practiceCount;
-  } else if (expPhase == "practice2") {
-    currBlock = practiceCount;
-  } else if (expPhase == "test") {
-    currBlock = testCount;
-  }
-
   data.stim = stimData.stim;
   data.correct_response = correct_response;
-  data.current_block = currBlock;
   data.currentTrial = currentTrial;
   data.condition = stimData.condition;
   data.block_num = getExpStage() == "practice" ? practiceCount : testCount;
@@ -332,10 +323,31 @@ var appendData = function (data) {
 // common variables
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index / 6) % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 

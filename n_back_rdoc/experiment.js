@@ -152,7 +152,8 @@ var randomDraw = function (lst) {
   return lst[index];
 };
 
-var createTrialTypes = function (numTrialsPerBlock, delay) {
+var createTrialTypes = function (numTrialsPerBlock, delay, exp_stage) {
+  stims = [];
   firstStims = [];
   var correctResponse;
   var nbackCondition;
@@ -172,20 +173,32 @@ var createTrialTypes = function (numTrialsPerBlock, delay) {
   }
   stims = [];
 
-  for (
-    var numIterations = 0;
-    numIterations < numTrialsPerBlock / nbackConditions.length;
-    numIterations++
-  ) {
+  if (exp_stage == "practice") {
     for (
-      var numNBackConds = 0;
-      numNBackConds < nbackConditions.length;
-      numNBackConds++
+      var numIterations = 0;
+      numIterations < numTrialsPerBlock / nbackConditions.length;
+      numIterations++
     ) {
-      // always sampling nbackcondition, for each stim
-      const randomIndex = Math.floor(Math.random() * 4) + 1;
+      for (
+        var numNBackConds = 0;
+        numNBackConds < nbackConditions.length;
+        numNBackConds++
+      ) {
+        nbackCondition = nbackConditions[numNBackConds];
 
-      nbackCondition = nbackConditions[randomIndex];
+        stim = {
+          condition: nbackCondition,
+          correct_response:
+            nbackCondition == "match"
+              ? possibleResponses[0][1]
+              : possibleResponses[1][1],
+        };
+        stims.push(stim);
+      }
+    }
+  } else {
+    for (var i = 0; i < numTrialsPerBlock; i++) {
+      nbackCondition = testNBackConditions.shift();
 
       stim = {
         condition: nbackCondition,
@@ -306,11 +319,34 @@ var appendData = function () {
 /* ************************************ */
 // common variables
 const fixationDuration = 500;
+var possibleResponses;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+function getKeyMappingForTask(group_index) {
+  if (group_index % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+
+var possibleResponses;
+
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -375,10 +411,11 @@ var delays = shuffleArray([1, 2]);
 delays = [...delays, ...delays, ...delays, ...delays, ...delays];
 
 var delay = 1;
-var nbackConditions = ["mismatch", "mismatch", "match", "mismatch", "mismatch"];
-var stims = createTrialTypes(practiceLen, delay);
+var nbackConditions = ["match", "mismatch", "mismatch", "mismatch", "mismatch"];
 
+var stims = createTrialTypes(practiceLen, delay, "practice");
 var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.8;
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 
@@ -787,7 +824,7 @@ var practiceNode1 = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       delay = 2;
       feedbackText = `
         <div class="centerbox">
@@ -805,14 +842,14 @@ var practiceNode1 = {
         </div>
       `;
 
-      stims = createTrialTypes(practiceLen, delay);
+      stims = createTrialTypes(practiceLen, delay, "practice");
       practiceCount = 0;
       return false;
     } else {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class="block-text">Your accuracy is low. Remember:</p>
        ${promptTextList}
@@ -836,7 +873,7 @@ var practiceNode1 = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      stims = createTrialTypes(practiceLen, delay);
+      stims = createTrialTypes(practiceLen, delay, "practice");
       return true;
     }
   },
@@ -871,7 +908,7 @@ var practiceNode2 = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       expStage = "test";
       delay = delays.shift();
       feedbackText = `
@@ -890,13 +927,13 @@ var practiceNode2 = {
       </div>
     `;
 
-      stims = createTrialTypes(numTrialsPerBlock, delay);
+      stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     } else {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
         <p class="block-text">Your accuracy is low. Remember:</p>
         ${promptTextList}
@@ -920,7 +957,7 @@ var practiceNode2 = {
         <p class=block-text>Press <i>enter</i> to begin.</p>
         </div>`;
 
-      stims = createTrialTypes(practiceLen, delay);
+      stims = createTrialTypes(practiceLen, delay, "practice");
       return true;
     }
   },
@@ -1057,7 +1094,7 @@ var testNode1 = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      stims = createTrialTypes(numTrialsPerBlock, delay);
+      stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     }
   },
@@ -1146,7 +1183,7 @@ var testNode2 = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      stims = createTrialTypes(numTrialsPerBlock, delay);
+      stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     }
   },
@@ -1182,6 +1219,11 @@ var endBlock = {
 
 var n_back_rdoc_experiment = [];
 var n_back_rdoc_init = () => {
+  testNBackConditions = jsPsych.randomization.repeat(
+    nbackConditions,
+    (numTrialsPerBlock * numTestBlocks) / nbackConditions.length
+  );
+
   jsPsych.pluginAPI.preloadImages(images);
   n_back_rdoc_experiment.push(fullscreen);
   n_back_rdoc_experiment.push(instructionNode);

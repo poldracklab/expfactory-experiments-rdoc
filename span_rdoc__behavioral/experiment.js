@@ -7125,9 +7125,32 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
 var accuracyThresh = 0.6;
+
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
-var processingChoices = ["t", "f"];
+
+var processingChoices;
+
+function getKeyMappingForTask(group_index) {
+  if (group_index % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    processingChoices = ["o", "p"];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    processingChoices = ["p", "o"];
+  }
+}
+
+var possibleResponses;
+
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 var processingAccThresh = 0.85;
 var processingRTThresh = 1000;
@@ -7142,7 +7165,7 @@ trialList = generateSpatialTrialValues(numStimuli);
 
 var spatialAns;
 
-var allConditions = ["storage-only", "same-domain"];
+var allConditions = ["simple", "operation"];
 allConditions.sort(() => Math.random() - 0.5);
 var currCondition = allConditions.shift();
 
@@ -7283,7 +7306,7 @@ var reminderInstruct = `
 var instructionsBlock = {
   type: jsPsychInstructions,
   pages: [
-    getCurrCondition() == "storage-only"
+    getCurrCondition() == "simple"
       ? simpleSpanInstructions
       : opSpanInstructions,
     reminderInstruct,
@@ -7381,7 +7404,7 @@ var stimulusBlock = {
   },
   choices: ["NO_KEYS"],
   prompt: function () {
-    if (getExpStage() == "practice" && getCurrCondition() == "same-domain") {
+    if (getExpStage() == "practice" && getCurrCondition() == "operation") {
       return promptText;
     }
     if (getExpStage() == "practice") {
@@ -7399,7 +7422,7 @@ var startTime = null;
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    if (getCurrCondition() == "storage-only") {
+    if (getCurrCondition() == "simple") {
       return "<div class = centerbox><div class = fixation>****</div></div>";
     } else {
       return getRandomSpatial();
@@ -7438,7 +7461,7 @@ var waitBlock = {
           : "test_inter-stimulus",
       exp_stage: getExpStage(),
       condition: getCurrCondition(),
-      choices: getCurrCondition() == "same-domain" ? processingChoices : "",
+      choices: getCurrCondition() == "operation" ? processingChoices : "",
       trial_duration: processingTrialDuration,
       stimulus_duration: processingStimulusDuration,
       block_num: getExpStage() == "practice" ? practiceCount : testCount,
@@ -7459,7 +7482,7 @@ var waitBlock = {
         logResponse = 0;
       }
     }
-    if (getCurrCondition() == "same-domain") {
+    if (getCurrCondition() == "operation") {
       data["correct_spatial_judgement_key"] = spatialAns == 1 ? "t" : "f";
     } else {
       data["correct_spatial_judgement_key"] = null;
@@ -7469,7 +7492,7 @@ var waitBlock = {
     data["num_block"] = getExpStage() == "practice" ? practiceCount : testCount;
   },
   prompt: function () {
-    if (getExpStage() == "practice" && getCurrCondition() == "same-domain") {
+    if (getExpStage() == "practice" && getCurrCondition() == "operation") {
       return promptText;
     }
     if (getExpStage() == "practice") {
@@ -7662,7 +7685,7 @@ var ITIBlock = {
 var practiceTrials = [];
 function generatePracticeTrials() {
   var returnArray = [];
-  if (getCurrCondition() == "same-domain") {
+  if (getCurrCondition() == "operation") {
     for (let i = 0; i < practiceLen; i++) {
       for (let j = 0; j < numStimuli; j++) {
         returnArray.push(waitNode, stimulusBlock);
@@ -7706,6 +7729,10 @@ var practiceNode = {
         missedCount += 1;
       } else {
         responseCount += 1;
+        // response
+        // spatial_sequence
+        let trial_response = responseGridData[i].response;
+        let trial_spatial_sequence = responseGridData[i].spatial_sequence;
 
         if (responseGridData[i].correct_trial == 1) {
           correct += 1;
@@ -7717,14 +7744,14 @@ var practiceNode = {
     var missedResponses = missedCount / totalTrials;
 
     // for processing
-    if (getCurrCondition() == "storage-only") {
+    if (getCurrCondition() == "simple") {
       var avgProcessingAcc = null;
       var avgProcessingMissed = null;
       var avgProcessingRT = null;
     } else {
       var responseProcessingData = jsPsych.data.get().filter({
         trial_id: "practice_inter-stimulus",
-        condition: "same-domain",
+        condition: "operation",
         block_num: getCurrBlockNum() - 1, // since already indexed block above
       }).trials;
 
@@ -7756,15 +7783,15 @@ var practiceNode = {
 
     if (practiceCount == practiceThresh) {
       canProceedToTest = true;
-    } else if (getCurrCondition() == "storage-only") {
-      if (accuracy > accuracyThresh) {
+    } else if (getCurrCondition() == "simple") {
+      if (accuracy >= accuracyThresh) {
         canProceedToTest = true;
       } else {
         canProceedToTest = false;
       }
     } else {
       if (
-        accuracy > accuracyThresh &&
+        accuracy >= accuracyThresh &&
         avgProcessingAcc > processingAccThresh &&
         avgProcessingRT < processingRTThresh &&
         avgProcessingMissed < processingMissedThresh
@@ -7780,7 +7807,7 @@ var practiceNode = {
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         '<p class="block-text">Keep your fingers on the arrow keys.</p>';
 
-      if (getCurrCondition() == "same-domain") {
+      if (getCurrCondition() == "operation") {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
@@ -7824,7 +7851,7 @@ var practiceNode = {
           "<p class = block-text>Try your best to recall the black colored cells.</p>";
       }
 
-      if (getCurrCondition() == "same-domain") {
+      if (getCurrCondition() == "operation") {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
@@ -7858,7 +7885,7 @@ var practiceNode = {
 var testTrials = [];
 function generateTestTrials() {
   var returnArray = [];
-  if (getCurrCondition() == "same-domain") {
+  if (getCurrCondition() == "operation") {
     returnArray.push(attentionNode);
     for (let i = 0; i < numTrialsPerBlock; i++) {
       // number of trials
@@ -7917,14 +7944,14 @@ var testNode = {
     var missedResponses = missedCount / totalTrials;
 
     // for processing
-    if (getCurrCondition() == "storage-only") {
+    if (getCurrCondition() == "simple") {
       var avgProcessingAcc = null;
       var avgProcessingMissed = null;
       var avgProcessingRT = null;
     } else {
       var responseProcessingData = jsPsych.data.get().filter({
         trial_id: "test_inter-stimulus",
-        condition: "same-domain",
+        condition: "operation",
         block_num: getCurrBlockNum() - 1, // since already indexed block above
       }).trials;
 
@@ -7961,9 +7988,7 @@ var testNode = {
       currCondition = allConditions.shift();
 
       feedbackText +=
-        getCurrCondition() == "storage-only"
-          ? simpleSpanFeedback
-          : opSpanFeedback;
+        getCurrCondition() == "simple" ? simpleSpanFeedback : opSpanFeedback;
 
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p></div>";
@@ -7992,7 +8017,7 @@ var testNode = {
       }
 
       // feedback specific to processing phase symmetric judgement in operation span
-      if (getCurrCondition() == "same-domain") {
+      if (getCurrCondition() == "operation") {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
@@ -8009,7 +8034,7 @@ var testNode = {
         }
       }
 
-      if (getCurrCondition() == "storage-only") {
+      if (getCurrCondition() == "simple") {
         if (
           accuracy >= accuracyThresh &&
           missedResponses <= missedResponseThresh

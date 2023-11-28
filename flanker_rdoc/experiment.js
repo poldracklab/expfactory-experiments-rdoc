@@ -94,10 +94,31 @@ var getCurrBlockNum = function () {
 // common variables
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index / 12) % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -132,7 +153,9 @@ const stimTrialDuration = 1500;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.75;
+
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3; // 3 blocks of 12 trials
@@ -678,7 +701,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var aveRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = ` <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
@@ -695,7 +718,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
        <p class="block-text">Your accuracy is too low. Remember: <br>${promptTextList}</p>
       `;
@@ -882,10 +905,8 @@ var endBlock = {
 flanker_rdoc_experiment = [];
 var flanker_rdoc_init = () => {
   jsPsych.pluginAPI.preloadImages(images);
-
   // globals
   blockStims = jsPsych.randomization.repeat(testStimuli, practiceLen / 4);
-
   flanker_rdoc_experiment.push(fullscreen);
   flanker_rdoc_experiment.push(instructionNode);
   flanker_rdoc_experiment.push(practiceNode);

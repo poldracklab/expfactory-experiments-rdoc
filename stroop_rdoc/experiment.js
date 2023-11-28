@@ -63,6 +63,24 @@ function renameDataProperties() {
   });
 }
 
+// Function to randomly select n elements from an array without replacement
+function getRandomElements(arr, n) {
+  let result = [];
+  let tempArray = [...arr]; // Create a copy of the array to avoid modifying the original array
+
+  for (let i = 0; i < n; i++) {
+    if (tempArray.length === 0) {
+      break; // Break if there are no more elements to select
+    }
+
+    const randomIndex = Math.floor(Math.random() * tempArray.length);
+    result.push(tempArray[randomIndex]);
+    tempArray.splice(randomIndex, 1); // Remove the selected element from the temporary array
+  }
+
+  return result;
+}
+
 var getCurrAttentionCheckQuestion = function () {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
 };
@@ -211,11 +229,39 @@ var getCurrBlockNum = function () {
 /* ************************************ */
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-  ["ring finger", "/", "slash key (/)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index) % 3 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+      ["ring finger", "/", "slash key (/)"],
+    ];
+  } else if (Math.floor(group_index) % 3 === 1) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+      ["ring finger", "/", "slash key (/)"],
+    ];
+  } else if (Math.floor(group_index) % 3 === 2) {
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["ring finger", "/", "slash key (/)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [
   possibleResponses[0][1],
@@ -252,7 +298,8 @@ const stimTrialDuration = 1500;
 var runAttentionChecks = true;
 var instructTimeThresh = 1;
 
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8; // threshold for block-level feedback
+var practiceAccuracyThresh = 0.75; // threshold to proceed to test, .75 for 3 out of 4 trials
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3; // 3 blocks max
@@ -262,72 +309,139 @@ var currStim = "";
 var stimulusText =
   '<div class = centerbox><div class = stroop-stim style = "color:XXX">YYY</div></div>';
 
-var congruentStim = [];
 var incongruentStim = [];
+var tempStims = [];
 
 // arrays for colors and words to be used for stimuli
 var colors = ["#FF7070", "#7070FF", "#70FF70"];
 var words = ["red", "blue", "green"];
 
-// Generate congruent stimuli
-colors.forEach(function (color, index) {
-  var tempWord = "";
-  switch (color) {
-    case colors[0]:
-      tempWord = words[0];
-      break;
-    case colors[1]:
-      tempWord = words[1];
-      break;
-    case colors[2]:
-      tempWord = words[2];
-      break;
-    default:
-      break;
-  }
-  var stimulus = stimulusText.replace("XXX", color).replace("YYY", tempWord); // so each color and word are equivalent, can just use color for both
-  var data = {
-    trial_id: "stim",
-    condition: "congruent",
-    stim_color: color,
-    stim_word: words[index],
-    correct_response: possibleResponses[index][1],
-  };
+var congruentStim = [
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#FF7070">red</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "congruent",
+      stim_color: "#FF7070",
+      stim_word: "red",
+      correct_response: possibleResponses[0][1],
+    },
+    key_answer: possibleResponses[0][1],
+  },
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#7070FF">blue</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "congruent",
+      stim_color: "#7070FF",
+      stim_word: "blue",
+      correct_response: possibleResponses[1][1],
+    },
+    key_answer: possibleResponses[1][1],
+  },
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#70FF70">green</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "congruent",
+      stim_color: "#70FF70",
+      stim_word: "green",
+      correct_response: possibleResponses[2][1],
+    },
+    key_answer: possibleResponses[2][1],
+  },
+];
 
-  congruentStim.push({
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: stimulus,
-    data: data,
-    key_answer: possibleResponses[index][1],
-  });
-});
+var colors = ["#FF7070", "#7070FF", "#70FF70"];
+var words = ["red", "blue", "green"];
 
-// Generate incongruent stimuli
-colors.forEach(function (color, colorIndex) {
-  words.forEach(function (word, wordIndex) {
-    if (color !== word) {
-      var stimulus = stimulusText.replace("XXX", color).replace("YYY", word);
-      var data = {
-        trial_id: "stim",
-        condition: "incongruent",
-        stim_color: color,
-        stim_word: word,
-        correct_response: possibleResponses[colorIndex][1],
-      };
-
-      incongruentStim.push({
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: stimulus,
-        data: data,
-        key_answer: possibleResponses[colorIndex][1],
-      });
-    }
-  });
-});
+var incongruentStim = [
+  // red word in blue ink
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#7070FF">red</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "incongruent",
+      stim_color: "#7070FF",
+      stim_word: "red",
+      correct_response: possibleResponses[1][1],
+    },
+    key_answer: possibleResponses[1][1],
+  },
+  // red word in green ink
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#70FF70">red</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "incongruent",
+      stim_color: "#70FF70",
+      stim_word: "red",
+      correct_response: possibleResponses[2][1],
+    },
+    key_answer: possibleResponses[2][1],
+  },
+  // blue word in red ink
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#FF7070">blue</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "incongruent",
+      stim_color: "#FF7070",
+      stim_word: "blue",
+      correct_response: possibleResponses[0][1],
+    },
+    key_answer: possibleResponses[0][1],
+  },
+  // blue word in green ink
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#70FF70">blue</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "incongruent",
+      stim_color: "#70FF70",
+      stim_word: "blue",
+      correct_response: possibleResponses[2][1],
+    },
+    key_answer: possibleResponses[2][1],
+  },
+  // green word in red ink
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#FF7070">green</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "incongruent",
+      stim_color: "#FF7070",
+      stim_word: "green",
+      correct_response: possibleResponses[0][1],
+    },
+    key_answer: possibleResponses[0][1],
+  },
+  // green word in blue ink
+  {
+    stimulus:
+      '<div class = centerbox><div class = stroop-stim style = "color:#7070FF">green</div></div>',
+    data: {
+      trial_id: "stim",
+      condition: "incongruent",
+      stim_color: "#7070FF",
+      stim_word: "green",
+      correct_response: possibleResponses[1][1],
+    },
+    key_answer: possibleResponses[1][1],
+  },
+];
 
 // end generating stimuli
-
 var stims = [].concat(congruentStim, congruentStim, incongruentStim);
+
 var practiceLen = 4;
 var numTrialsPerBlock = 40;
 var numTestBlocks = 3;
@@ -714,7 +828,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -722,14 +836,14 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
-      blockStims = jsPsych.randomization.repeat(stims, numTrialsPerBlock / 12);
+      blockStims = allTestStim.splice(0, numTrialsPerBlock);
       expStage = "test";
       return false;
     } else {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
           <p class="block-text">Your accuracy is low. Remember:</p>
           ${responseKeys}`;
@@ -749,7 +863,15 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockStims = jsPsych.randomization.repeat(stims, practiceLen / 12);
+      // Randomly select two congruent and two incongruent stimuli
+      let selectedCongruent = getRandomElements(congruentStim, 2);
+      let selectedIncongruent = getRandomElements(incongruentStim, 2);
+
+      // Combine the selected stimuli into a new array
+      let tempArray = selectedCongruent.concat(selectedIncongruent);
+      tempArray = jsPsych.randomization.repeat(tempArray, 1);
+
+      blockStims = tempArray;
       return true;
     }
   },
@@ -866,7 +988,7 @@ var testNode = {
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      blockStims = jsPsych.randomization.repeat(stims, numTrialsPerBlock / 12);
+      blockStims = allTestStim.splice(0, numTrialsPerBlock);
       return true;
     }
   },
@@ -900,7 +1022,28 @@ var endBlock = {
 
 stroop_rdoc_experiment = [];
 var stroop_rdoc_init = () => {
-  blockStims = jsPsych.randomization.repeat(stims, practiceLen / 12);
+  // Randomly select two congruent and two incongruent stimuli
+  let selectedCongruent = getRandomElements(congruentStim, 2);
+  let selectedIncongruent = getRandomElements(incongruentStim, 2);
+  // Combine the selected stimuli into a new array
+  let tempArray = selectedCongruent.concat(selectedIncongruent);
+  tempArray = jsPsych.randomization.repeat(tempArray, 1);
+  blockStims = tempArray;
+
+  testCongruentStim = jsPsych.randomization.repeat(
+    congruentStim,
+    (numTrialsPerBlock * 3) / 2 / congruentStim.length
+  );
+  testIncongruentStim = jsPsych.randomization.repeat(
+    incongruentStim,
+    (numTrialsPerBlock * 3) / 2 / incongruentStim.length
+  );
+
+  allTestStim = jsPsych.randomization.repeat(
+    testCongruentStim.concat(testIncongruentStim),
+    1
+  );
+
   stroop_rdoc_experiment.push(fullscreen);
   stroop_rdoc_experiment.push(instructionsNode);
   stroop_rdoc_experiment.push(practiceNode);

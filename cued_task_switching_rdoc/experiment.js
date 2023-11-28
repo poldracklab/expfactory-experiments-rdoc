@@ -357,10 +357,32 @@ var getResponse = function () {
 // common variables
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index / 2) % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 2; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -435,7 +457,8 @@ var numTestBlocks = 3;
 var practiceThresh = 3; // 3 blocks of 16 trials
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8; // min acc for block-level feedback
+var practiceAccuracyThresh = 0.75; // min acc to proceed to test blocks
 
 var fileTypePNG = ".png'></img>";
 var preFileType =
@@ -453,21 +476,13 @@ var tasks = {
   },
 };
 
-var taskSwitchTyeps = ["stay", "switch"];
-var cueSwitchTypes = ["stay", "switch"];
+var taskSwitchesArr = [
+  { task_switch: "stay", cue_switch: "stay" },
+  { task_switch: "stay", cue_switch: "switch" },
+  { task_switch: "switch", cue_switch: "switch" },
+  { task_switch: "switch", cue_switch: "switch" },
+];
 
-var taskSwitchesArr = [];
-for (var t = 0; t < taskSwitchTyeps.length; t++) {
-  for (var c = 0; c < cueSwitchTypes.length; c++) {
-    taskSwitchesArr.push({
-      task_switch: taskSwitchTyeps[t],
-      cue_switch: cueSwitchTypes[c],
-    });
-  }
-}
-var practiceStims = genStims(practiceLen);
-// var testStims = genStims(numTrialsPerBlock + 1);
-var stims = practiceStims;
 var currTask = randomDraw(getKeys(tasks));
 var lastTask = "na"; // object that holds the last task, set by setStims()
 var currCue = "na"; // object that holds the current cue, set by setStims()
@@ -785,7 +800,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
@@ -809,7 +824,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
           <p class="block-text">Your accuracy is low. Remember:</p>
           ${promptTextList}
@@ -988,7 +1003,6 @@ var testNode = {
         taskSwitchesArr,
         numTrialsPerBlock / 4
       );
-
       taskSwitches.unshift({
         task_switch: "na",
         cue_switch: "na",
@@ -1039,7 +1053,6 @@ var cued_task_switching_rdoc_init = () => {
     cue_switch: "na",
   });
   stims = genStims(practiceLen + 1);
-
   cued_task_switching_rdoc_experiment.push(fullscreen);
   cued_task_switching_rdoc_experiment.push(instructionNode);
   cued_task_switching_rdoc_experiment.push(practiceNode);

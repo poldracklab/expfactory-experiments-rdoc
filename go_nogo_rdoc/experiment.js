@@ -321,7 +321,9 @@ var testStimuliBlock = [
   })
 );
 
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8; // min acc for block-level feedback
+var practiceAccuracyThresh = 0.85; // min acc to proceed to test blocks, 6 out of 7 ~ .857
+
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
 
@@ -347,7 +349,7 @@ var promptText = `
 var pageInstruct = `
   <div class="centerbox">
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b></p>
-    <p class="block-text">In this experiment, on each trial ${stims[0][0]} and ${stims[1][0]} squares will appear on the screen.</p>
+    <p class="block-text">In this experiment, on each trial a ${stims[0][0]} or ${stims[1][0]} square will appear on the screen.</p>
     <p class="block-text">If you see the <b>${stims[0][0]} square</b>, you should respond by pressing your <b>index finger</b> as quickly as possible.</p>
     <p class="block-text">If you see the <b>${stims[1][0]} square</b>, you should <b>not respond</b>.</p>
     <p class="block-text">We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
@@ -643,7 +645,7 @@ var practiceNode = {
     var missedResponses = missedResponse / totalGoTrials;
     var avgRT = sumRT / sumResponses;
 
-    if (accuracy > accuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
@@ -662,7 +664,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
        <p class="block-text">Your accuracy is low. Remember: </p>${promptTextList}
       `;
