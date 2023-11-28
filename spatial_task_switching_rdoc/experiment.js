@@ -377,10 +377,32 @@ var appendData = function () {
 // common variables
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index / 2) % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -414,15 +436,13 @@ var practiceLen = 4; // divisible by 4,  2 (switch or stay) by 2 (mag or parity)
 var numTrialsPerBlock = 64; //  divisible by 4
 var numTestBlocks = 3;
 
-var accuracy_thresh = 0.8; // 13 out of 16 is .8125
-var practice_accuracy_thresh = 0.75; // 13 out of 16 is .8125
+var accuracy_thresh = 0.8;
+var practice_accuracy_thresh = 0.75;
 
 var rt_thresh = 750;
 var missed_response_thresh = 0.1;
-var practice_thresh = 3; // 3 blocks of 16 trials
+var practice_thresh = 3;
 
-// // var predictable_conditions = [['switch', 'stay'],
-// ['stay', 'switch']]
 var predictable_dimensions_list = [
   (stim = {
     dim: "magnitude",

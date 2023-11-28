@@ -229,11 +229,39 @@ var getCurrBlockNum = function () {
 /* ************************************ */
 const fixationDuration = 500;
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-  ["ring finger", "/", "slash key (/)"],
-];
+var possibleResponses;
+
+function getKeyMappingForTask(group_index) {
+  if (Math.floor(group_index) % 3 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+      ["ring finger", "/", "slash key (/)"],
+    ];
+  } else if (Math.floor(group_index) % 3 === 1) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+      ["ring finger", "/", "slash key (/)"],
+    ];
+  } else if (Math.floor(group_index) % 3 === 2) {
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["ring finger", "/", "slash key (/)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [
   possibleResponses[0][1],
@@ -297,9 +325,9 @@ var congruentStim = [
       condition: "congruent",
       stim_color: "#FF7070",
       stim_word: "red",
-      correct_response: ",",
+      correct_response: possibleResponses[0][1],
     },
-    key_answer: ",",
+    key_answer: possibleResponses[0][1],
   },
   {
     stimulus:
@@ -309,9 +337,9 @@ var congruentStim = [
       condition: "congruent",
       stim_color: "#7070FF",
       stim_word: "blue",
-      correct_response: ".",
+      correct_response: possibleResponses[1][1],
     },
-    key_answer: ".",
+    key_answer: possibleResponses[1][1],
   },
   {
     stimulus:
@@ -321,9 +349,9 @@ var congruentStim = [
       condition: "congruent",
       stim_color: "#70FF70",
       stim_word: "green",
-      correct_response: "/",
+      correct_response: possibleResponses[2][1],
     },
-    key_answer: "/",
+    key_answer: possibleResponses[2][1],
   },
 ];
 
@@ -340,9 +368,9 @@ var incongruentStim = [
       condition: "incongruent",
       stim_color: "#7070FF",
       stim_word: "red",
-      correct_response: ".",
+      correct_response: possibleResponses[1][1],
     },
-    key_answer: ".",
+    key_answer: possibleResponses[1][1],
   },
   // red word in green ink
   {
@@ -353,9 +381,9 @@ var incongruentStim = [
       condition: "incongruent",
       stim_color: "#70FF70",
       stim_word: "red",
-      correct_response: "/",
+      correct_response: possibleResponses[2][1],
     },
-    key_answer: "/",
+    key_answer: possibleResponses[2][1],
   },
   // blue word in red ink
   {
@@ -366,9 +394,9 @@ var incongruentStim = [
       condition: "incongruent",
       stim_color: "#FF7070",
       stim_word: "blue",
-      correct_response: ",",
+      correct_response: possibleResponses[0][1],
     },
-    key_answer: ",",
+    key_answer: possibleResponses[0][1],
   },
   // blue word in green ink
   {
@@ -379,9 +407,9 @@ var incongruentStim = [
       condition: "incongruent",
       stim_color: "#70FF70",
       stim_word: "blue",
-      correct_response: "/",
+      correct_response: possibleResponses[2][1],
     },
-    key_answer: "/",
+    key_answer: possibleResponses[2][1],
   },
   // green word in red ink
   {
@@ -392,9 +420,9 @@ var incongruentStim = [
       condition: "incongruent",
       stim_color: "#FF7070",
       stim_word: "green",
-      correct_response: ",",
+      correct_response: possibleResponses[0][1],
     },
-    key_answer: ",",
+    key_answer: possibleResponses[0][1],
   },
   // green word in blue ink
   {
@@ -405,9 +433,9 @@ var incongruentStim = [
       condition: "incongruent",
       stim_color: "#7070FF",
       stim_word: "green",
-      correct_response: ".",
+      correct_response: possibleResponses[1][1],
     },
-    key_answer: ".",
+    key_answer: possibleResponses[1][1],
   },
 ];
 

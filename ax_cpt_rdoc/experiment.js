@@ -131,16 +131,36 @@ var getChar = function () {
   );
 };
 
+function getKeyMappingForTask(group_index) {
+  if (group_index % 2 === 0) {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ];
+  } else {
+    // Assuming even group_index uses ",", odd group_index uses "."
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  }
+}
+
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
 const fixationDuration = 500;
 const conditionValues = ["AX", "BY", "BX", "AY"];
 
-const possibleResponses = [
-  ["index finger", ",", "comma key (,)"],
-  ["middle finger", ".", "period key (.)"],
-];
+if (!window.efVars) {
+  window.efVars = {}; // Initialize efVars if it's not already defined
+}
+let group_index = 1; // Example value for group_index
+
+window.efVars.groupIndex = group_index;
+
+getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
 
@@ -211,6 +231,7 @@ var pageInstruct = [
 /* ******************************* */
 /* TIMINGS */
 /* ******************************* */
+var possibleResponses;
 
 // cue
 const cueStimulusDuration = 500;
@@ -802,7 +823,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: choices,
     data: function () {
       return {
-        trial_id: "test_probe",
+        trial_id: "test_trial",
         exp_stage: "test",
         condition: getCondition(),
         choices: choices,
@@ -844,7 +865,7 @@ var testNode = {
 
     for (var i = 0; i < data.trials.length; i++) {
       if (
-        data.trials[i].trial_id == "test_probe" &&
+        data.trials[i].trial_id == "test_trial" &&
         data.trials[i].block_num == getCurrBlockNum() - 1
       ) {
         totalTrials += 1;
