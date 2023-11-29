@@ -111,12 +111,8 @@ function getKeyMappingForTask(group_index) {
     ];
   }
 }
-if (!window.efVars) {
-  window.efVars = {}; // Initialize efVars if it's not already defined
-}
-let group_index = 1; // Example value for group_index
 
-window.efVars.groupIndex = group_index;
+var group_index = window.efVars.group_index;
 
 getKeyMappingForTask(group_index);
 
