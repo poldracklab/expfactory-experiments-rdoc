@@ -7144,9 +7144,7 @@ function getKeyMappingForTask(group_index) {
 var possibleResponses;
 
 var group_index =
-  typeof window.efVars.group_index !== "undefined"
-    ? window.efVars.group_index
-    : 1;
+  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
 getKeyMappingForTask(group_index);
 
