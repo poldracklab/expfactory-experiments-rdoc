@@ -154,9 +154,7 @@ const fixationDuration = 500;
 const conditionValues = ["AX", "BY", "BX", "AY"];
 
 var group_index =
-  typeof window.efVars.group_index !== "undefined"
-    ? window.efVars.group_index
-    : 1;
+  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
 getKeyMappingForTask(group_index);
 
