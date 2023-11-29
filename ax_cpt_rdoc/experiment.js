@@ -153,7 +153,10 @@ function getKeyMappingForTask(group_index) {
 const fixationDuration = 500;
 const conditionValues = ["AX", "BY", "BX", "AY"];
 
-var group_index = window.efVars.group_index;
+var group_index =
+  typeof window.efVars.group_index !== "undefined"
+    ? window.efVars.group_index
+    : 1;
 
 getKeyMappingForTask(group_index);
 
