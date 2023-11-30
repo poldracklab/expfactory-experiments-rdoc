@@ -179,6 +179,9 @@ var appendData = function () {
   var trialNum = currentTrial - 1; // currentTrial has already been updated with setStims, so subtract one to record data
   var taskSwitch = taskSwitches[trialNum];
 
+  let combinedCondition =
+    "task_" + taskSwitch.task_switch + "_cue_" + taskSwitch.cue_switch;
+
   jsPsych.data.get().addToLast({
     cue: currCue,
     trial_id: trialID,
@@ -186,6 +189,7 @@ var appendData = function () {
     task: currTask,
     task_condition: taskSwitch.task_switch,
     cue_condition: taskSwitch.cue_switch,
+    condition: combinedCondition,
     current_trial: trialNum,
     correct_response: correctResponse,
     CTI: CTI,
