@@ -88,6 +88,16 @@ var getCurrBlockNum = function () {
   }
 };
 
+function extractTextFromStimulus(obj) {
+  // Create a temporary DOM element to parse the HTML string
+  var tempDiv = document.createElement("div");
+  tempDiv.innerHTML = obj.stimulus;
+
+  // Query the desired element and return its text content
+  var textElement = tempDiv.querySelector(".centerbox .AX_text");
+  return textElement ? textElement.textContent : null;
+}
+
 // Data logging
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
@@ -96,7 +106,12 @@ function appendData() {
   if (data.response == data.correct_response) {
     correctTrial = 1;
   }
-  jsPsych.data.get().addToLast({ correct_trial: correctTrial });
+
+  let parsedLetter = extractTextFromStimulus(data);
+
+  jsPsych.data
+    .get()
+    .addToLast({ correct_trial: correctTrial, probe_letter: parsedLetter });
 }
 
 // Task-Specific
@@ -673,6 +688,10 @@ for (i = 0; i < practiceLen; i++) {
     response_ends_trial: false,
     post_trial_gap: 0,
     prompt: promptText,
+    on_finish: function (data) {
+      data["cue_letter"] = extractTextFromStimulus(data);
+      console.log(data);
+    },
   };
   var probeBlock = {
     type: jsPsychHtmlKeyboardResponse,
@@ -812,6 +831,10 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     trial_duration: cueTrialDuration,
     response_ends_trial: false,
     post_trial_gap: 0,
+    on_finish: function (data) {
+      data["cue_letter"] = extractTextFromStimulus(data);
+      console.log(data);
+    },
   };
   var probeBlock = {
     type: jsPsychHtmlKeyboardResponse,
