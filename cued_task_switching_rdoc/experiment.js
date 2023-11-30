@@ -205,8 +205,6 @@ var appendData = function () {
       correct_trial: correctTrial,
     });
   }
-
-  console.log(jsPsych.data.get().last());
 };
 
 var getCue = function () {
