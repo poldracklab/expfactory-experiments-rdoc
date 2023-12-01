@@ -690,7 +690,6 @@ for (i = 0; i < practiceLen; i++) {
     prompt: promptText,
     on_finish: function (data) {
       data["cue_letter"] = extractTextFromStimulus(data);
-      console.log(data);
     },
   };
   var probeBlock = {
@@ -833,7 +832,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     post_trial_gap: 0,
     on_finish: function (data) {
       data["cue_letter"] = extractTextFromStimulus(data);
-      console.log(data);
     },
   };
   var probeBlock = {
