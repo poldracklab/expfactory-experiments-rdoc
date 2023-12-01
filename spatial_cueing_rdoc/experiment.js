@@ -266,7 +266,7 @@ const stimTrialDuration = 1500;
 const cueStimulusDuration = 500;
 const cueTrialDuration = 500;
 // initialize
-var fixationDuration2;
+var ctiDuration;
 var CTIVals = [100, 550, 1000];
 
 // generic task variables
@@ -609,7 +609,7 @@ for (let i = 0; i < practiceLen; i++) {
     stimulus: images.left.box + images.right.box + fixation,
     choices: ["NO_KEYS"],
     data: {
-      trial_id: "practice_fixation_1",
+      trial_id: "practice_fixation",
       exp_stage: "practice",
       trial_duration: fixationDuration,
       stimulus_duration: fixationDuration,
@@ -638,28 +638,28 @@ for (let i = 0; i < practiceLen; i++) {
     prompt: promptText,
     on_finish: data => (data["block_num"] = practiceCount),
   };
-  var secondFixationBlock = {
+  var ctiBlock = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: images.left.box + images.right.box + fixation,
     choices: ["NO_KEYS"],
     data: {
-      trial_id: "practice_fixation_2",
+      trial_id: "practice_CTI",
       exp_stage: "practice",
     },
     post_trial_gap: 0,
     stimulus_duration: function () {
-      return fixationDuration2;
+      return ctiDuration;
     },
     trial_duration: function () {
-      return fixationDuration2;
+      return ctiDuration;
     },
     prompt: promptText,
     on_finish: function (data) {
       data["block_num"] = practiceCount;
-      data["trial_duration"] = fixationDuration2;
-      data["stimulus_duration"] = fixationDuration2;
-      data["CTI"] = fixationDuration2;
-      fixationDuration2 = CTIs.shift();
+      data["trial_duration"] = ctiDuration;
+      data["stimulus_duration"] = ctiDuration;
+      data["CTI"] = ctiDuration;
+      ctiDuration = CTIs.shift();
     },
   };
   var testTrial = {
@@ -685,7 +685,7 @@ for (let i = 0; i < practiceLen; i++) {
   practiceTrials.push(
     firstFixationBlock,
     cueBlock,
-    secondFixationBlock,
+    ctiBlock,
     testTrial,
     practiceFeedbackBlock,
     ITIBlock
@@ -739,6 +739,7 @@ var practiceNode = {
       );
       CTIs = [];
       CTIs = getCTIs(numTrialsPerBlock);
+      ctiDuration = CTIs.shift();
 
       expStage = "test";
       return false;
@@ -778,7 +779,7 @@ var practiceNode = {
       blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
       CTIs = [];
       CTIs = getCTIs(practiceLen);
-
+      ctiDuration = CTIs.shift();
       return true;
     }
   },
@@ -792,7 +793,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     stimulus: images.left.box + images.right.box + fixation,
     choices: ["NO_KEYS"],
     data: {
-      trial_id: "test_fixation_1",
+      trial_id: "test_fixation",
       exp_stage: "test",
       trial_duration: fixationDuration,
       stimulus_duration: fixationDuration,
@@ -819,23 +820,27 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     stimulus_duration: 500,
     trial_duration: 500,
   };
-  var secondFixationBlock = {
+  var ctiBlock = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: images.left.box + images.right.box + fixation,
     choices: ["NO_KEYS"],
     data: {
-      trial_id: "test_fixation_2",
+      trial_id: "test_CTI",
       exp_stage: "test",
-      trial_duration: fixationDuration2,
-      stimulus_duration: fixationDuration2,
-      block_num: testCount,
     },
     post_trial_gap: 0,
-    stimulus_duration: fixationDuration2,
-    trial_duration: fixationDuration2,
-    // prompt: promptText,
-    on_finish: function () {
-      fixationDuration2 = Math.floor(Math.random() * 1200) + 400;
+    stimulus_duration: function () {
+      return ctiDuration;
+    },
+    trial_duration: function () {
+      return ctiDuration;
+    },
+    on_finish: function (data) {
+      data["block_num"] = testCount;
+      data["trial_duration"] = ctiDuration;
+      data["stimulus_duration"] = ctiDuration;
+      data["CTI"] = ctiDuration;
+      ctiDuration = CTIs.shift();
     },
   };
   var testTrial = {
@@ -857,13 +862,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     post_trial_gap: 0,
     on_finish: appendData,
   };
-  testTrials.push(
-    firstFixationBlock,
-    cueBlock,
-    secondFixationBlock,
-    testTrial,
-    ITIBlock
-  );
+  testTrials.push(firstFixationBlock, cueBlock, ctiBlock, testTrial, ITIBlock);
 }
 
 var testCount = 0;
@@ -947,6 +946,7 @@ var testNode = {
       );
       CTIs = [];
       CTIs = getCTIs(numTrialsPerBlock);
+      ctiDuration = CTIs.shift();
 
       return true;
     }
@@ -989,7 +989,7 @@ var spatial_cueing_rdoc_init = () => {
   );
   blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
   CTIs = getCTIs(practiceLen);
-  fixationDuration2 = CTIs.shift();
+  ctiDuration = CTIs.shift();
   spatial_cueing_rdoc_experiment.push(fullscreen);
   spatial_cueing_rdoc_experiment.push(instructionNode);
   spatial_cueing_rdoc_experiment.push(practiceNode);
