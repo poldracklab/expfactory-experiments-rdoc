@@ -497,7 +497,7 @@ var attentionCheckBlock = {
       }
     }
     window.addEventListener("keydown", preventSlash);
-    jsPsych.currentTrial().on_close = function () {
+    jsPsych.getCurrentTrial().on_close = function () {
       window.removeEventListener("keydown", preventSlash);
     };
   },
@@ -583,7 +583,7 @@ var fixationBlock = {
       }
     }
     window.addEventListener("keydown", preventSlash);
-    jsPsych.currentTrial().on_close = function () {
+    jsPsych.getCurrentTrial().on_close = function () {
       window.removeEventListener("keydown", preventSlash);
     };
   },
@@ -610,7 +610,7 @@ var practiceFixationBlock = {
       }
     }
     window.addEventListener("keydown", preventSlash);
-    jsPsych.currentTrial().on_close = function () {
+    jsPsych.getCurrentTrial().on_close = function () {
       window.removeEventListener("keydown", preventSlash);
     };
   },
@@ -648,7 +648,7 @@ var practiceFeedbackBlock = {
       }
     }
     window.addEventListener("keydown", preventSlash);
-    jsPsych.currentTrial().on_close = function () {
+    jsPsych.getCurrentTrial().on_close = function () {
       window.removeEventListener("keydown", preventSlash);
     };
   },
@@ -733,7 +733,7 @@ var ITIBlock = {
       }
     }
     window.addEventListener("keydown", preventSlash);
-    jsPsych.currentTrial().on_close = function () {
+    jsPsych.getCurrentTrial().on_close = function () {
       window.removeEventListener("keydown", preventSlash);
     };
   },
@@ -774,7 +774,7 @@ for (i = 0; i < practiceLen; i++) {
         }
       }
       window.addEventListener("keydown", preventSlash);
-      jsPsych.currentTrial().on_close = function () {
+      jsPsych.getCurrentTrial().on_close = function () {
         window.removeEventListener("keydown", preventSlash);
       };
     },
@@ -898,7 +898,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
         }
       }
       window.addEventListener("keydown", preventSlash);
-      jsPsych.currentTrial().on_close = function () {
+      jsPsych.getCurrentTrial().on_close = function () {
         window.removeEventListener("keydown", preventSlash);
       };
     },
