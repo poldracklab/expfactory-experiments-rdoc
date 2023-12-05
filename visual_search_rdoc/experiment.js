@@ -963,6 +963,18 @@ var testNode = {
       blockStimTargets = [];
       blockStimConditions = [];
 
+      for (let i = 0; i < numTrialsPerBlock; i++) {
+        if (i % 2 == 0) {
+          blockStimTargets.push(0);
+          blockStimNums.push(8);
+          blockStimConditions.push("feature");
+        } else {
+          blockStimTargets.push(1);
+          blockStimNums.push(24);
+          blockStimConditions.push("conjunction");
+        }
+      }
+
       blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
       blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
       blockStimConditions = jsPsych.randomization.repeat(
