@@ -449,7 +449,7 @@ var speedReminder =
 var pageInstruct = [
   `
   <div class="centerbox">
-    <p class="block-text">Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial you will see a letter.</p>
     <p class="block-text">Your task is to match the current letter to the letter that appeared either 1 or 2 trials ago, depending on the delay given to you for that block.</p>
     <p class="block-text">Press your <b>${possibleResponses[0][0]}</b> if the letters <b>match</b>, and your <b>${possibleResponses[1][0]}</b> if they <b>mismatch</b>.</p>
@@ -824,11 +824,8 @@ var practiceNode1 = {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start practice for a delay of ${delay}.</p>
-          <p class="block-text">Keep your <b>${
-            possibleResponses[0][0]
-          }</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${
-        possibleResponses[1][0]
-      }</b> on the <b>${possibleResponses[1][2]}</b></p>
+                  <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
+
           <p class="block-text">Please match the current letter to the letter that appeared <b>${delay}</b> ${
         delay === 1 ? "trial" : "trials"
       } ago.</p>
@@ -909,11 +906,7 @@ var practiceNode2 = {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>${
-          possibleResponses[0][0]
-        }</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${
-        possibleResponses[1][0]
-      }</b> on the <b>${possibleResponses[1][2]}</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text"><b>Your delay for this block is ${delay}</b>. Please match the current letter to the letter that appeared <b>${delay}</b> ${
         delay === 1 ? "trial" : "trials"
       } ago.</p>
