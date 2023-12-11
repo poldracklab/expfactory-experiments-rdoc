@@ -377,9 +377,7 @@ var speedReminder =
 var pageInstruct = [
   `
   <div class="centerbox">
-    <p class="block-text">
-      Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b>
-    </p>
+       <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">
       During this task, on each trial you will see two boxes on the screen, and then a star appear in either the left or right box.
     </p>
@@ -445,7 +443,6 @@ var instructionsBlock = {
   pages: pageInstruct,
   allow_keys: false,
   data: {
-    exp_id: "spatial_cueing_rdoc",
     trial_id: "instructions",
     trial_duration: null,
   },
@@ -727,7 +724,7 @@ var practiceNode = {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
-          <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
           <p class="block-text">Press <i>enter</i> to continue.</p>
         </div>
       `;

@@ -152,7 +152,7 @@ var randomDraw = function (lst) {
   return lst[index];
 };
 
-var createTrialTypes = function (numTrialsPerBlock, delay, exp_stage) {
+var createTrialTypes = function (blockLen, delay, exp_stage) {
   stims = [];
   firstStims = [];
   var correctResponse;
@@ -176,7 +176,7 @@ var createTrialTypes = function (numTrialsPerBlock, delay, exp_stage) {
   if (exp_stage == "practice") {
     for (
       var numIterations = 0;
-      numIterations < numTrialsPerBlock / nbackConditions.length;
+      numIterations < blockLen / nbackConditions.length;
       numIterations++
     ) {
       for (
@@ -197,7 +197,7 @@ var createTrialTypes = function (numTrialsPerBlock, delay, exp_stage) {
       }
     }
   } else {
-    for (var i = 0; i < numTrialsPerBlock; i++) {
+    for (var i = 0; i < blockLen; i++) {
       nbackCondition = testNBackConditions.shift();
 
       stim = {
@@ -408,6 +408,7 @@ var delay = 1;
 var nbackConditions = ["match", "mismatch", "mismatch", "mismatch", "mismatch"];
 
 var stims = createTrialTypes(practiceLen, delay, "practice");
+
 var accuracyThresh = 0.8;
 var practiceAccuracyThresh = 0.8;
 var rtThresh = 750;
@@ -448,7 +449,7 @@ var speedReminder =
 var pageInstruct = [
   `
   <div class="centerbox">
-    <p class="block-text">Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial you will see a letter.</p>
     <p class="block-text">Your task is to match the current letter to the letter that appeared either 1 or 2 trials ago, depending on the delay given to you for that block.</p>
     <p class="block-text">Press your <b>${possibleResponses[0][0]}</b> if the letters <b>match</b>, and your <b>${possibleResponses[1][0]}</b> if they <b>mismatch</b>.</p>
@@ -823,11 +824,8 @@ var practiceNode1 = {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start practice for a delay of ${delay}.</p>
-          <p class="block-text">Keep your <b>${
-            possibleResponses[0][0]
-          }</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${
-        possibleResponses[1][0]
-      }</b> on the <b>${possibleResponses[1][2]}</b></p>
+                  <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
+
           <p class="block-text">Please match the current letter to the letter that appeared <b>${delay}</b> ${
         delay === 1 ? "trial" : "trials"
       } ago.</p>
@@ -908,11 +906,7 @@ var practiceNode2 = {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>${
-          possibleResponses[0][0]
-        }</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${
-        possibleResponses[1][0]
-      }</b> on the <b>${possibleResponses[1][2]}</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text"><b>Your delay for this block is ${delay}</b>. Please match the current letter to the letter that appeared <b>${delay}</b> ${
         delay === 1 ? "trial" : "trials"
       } ago.</p>
@@ -922,6 +916,7 @@ var practiceNode2 = {
     `;
 
       stims = createTrialTypes(numTrialsPerBlock, delay, "test");
+
       return false;
     } else {
       feedbackText =
@@ -1040,8 +1035,6 @@ var testNode1 = {
       currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
     }
 
-    delay = delays.shift();
-
     if (testCount == numTestBlocks) {
       feedbackText = `<div class=centerbox>
         <p class=block-text>Done with this task.</p>
@@ -1050,6 +1043,8 @@ var testNode1 = {
 
       return false;
     } else {
+      delay = delays.shift();
+
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
@@ -1131,14 +1126,14 @@ var testNode2 = {
       currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
     }
 
-    delay = delays.shift();
-
     if (testCount == numTestBlocks) {
       feedbackText =
         "<div class=centerbox><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p></div>";
 
       return false;
     } else {
+      delay = delays.shift();
+
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
@@ -1226,9 +1221,9 @@ var n_back_rdoc_init = () => {
   // practice node 2 - delay 2
   n_back_rdoc_experiment.push(practiceNode2);
 
-  const randomInt = Math.floor(Math.random() * 2);
+  const startingDelay = delays[0];
 
-  if (randomInt == 0) {
+  if (startingDelay == 1) {
     // test node, 1 then 2
     for (var i = 0; i < numTestBlocks / 2; i++) {
       n_back_rdoc_experiment.push(testNode1);

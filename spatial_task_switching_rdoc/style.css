@@ -79,26 +79,21 @@ body {
   transform: translateY(10px);
 }
 
+.prompt_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .prompt_content p {
     font-size: 16px;
-    text-align: center; /* Centers the text horizontally */
+    text-align: center;
     display: block;
-    margin: 0 auto; /* Centers the block horizontally if it has a defined width */
+    margin: 0 auto; 
 }
 
-.prompt_content  ul {
-  display: flex;
-  flex-direction: column;
-  list-style-position: inside;
-}
-
-.prompt_content  ul li {
-  margin-left: 0px;
-  padding-left: 0px;
-}
-
-.prompt_content + .prompt_content {
-    margin-top: 80px; /* Adjust this value to maintain the spacing */
+.prompt_content ul {
+  text-align: left;
 }
 
 img.center {

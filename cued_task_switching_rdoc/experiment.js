@@ -342,15 +342,15 @@ var getResponse = function () {
   switch (currTask) {
     case "magnitude":
       if (currStim.number > 5) {
-        return possibleResponses[0][1];
+        return responseMappings.higherLower.higher;
       } else {
-        return possibleResponses[1][1];
+        return responseMappings.higherLower.lower;
       }
     case "parity":
       if (currStim.number % 2 === 0) {
-        return possibleResponses[0][1];
+        return responseMappings.oddEven.even;
       } else {
-        return possibleResponses[1][1];
+        return responseMappings.oddEven.odd;
       }
   }
 };
@@ -358,33 +358,68 @@ var getResponse = function () {
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
-// common variables
 const fixationDuration = 500;
 
 var possibleResponses;
 
-function getKeyMappingForTask(group_index) {
-  if (Math.floor(group_index / 2) % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["index finger", ",", "comma key (,)"],
-      ["middle finger", ".", "period key (.)"],
-    ];
-  } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["middle finger", ".", "period key (.)"],
-      ["index finger", ",", "comma key (,)"],
-    ];
-  }
-}
+// function getKeyMappingForTask(group_index) {
+//   if (Math.floor(group_index / 2) % 2 === 0) {
+//     possibleResponses = [
+//       ["index finger", ",", "comma key (,)"],
+//       ["middle finger", ".", "period key (.)"],
+//     ];
+//   } else {
+//     possibleResponses = [
+//       ["middle finger", ".", "period key (.)"],
+//       ["index finger", ",", "comma key (,)"],
+//     ];
+//   }
+// }
+
+// var group_index =
+//   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+
+// getKeyMappingForTask(group_index);
 
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
-getKeyMappingForTask(group_index);
+function getResponseMappings(group_index) {
+  var mappings;
 
-const choices = [possibleResponses[0][1], possibleResponses[1][1]];
+  switch (group_index % 4) {
+    case 0: // Condition 1
+      mappings = {
+        higherLower: { higher: ",", lower: "." },
+        oddEven: { odd: ",", even: "." },
+      };
+      break;
+    case 1: // Condition 2
+      mappings = {
+        higherLower: { higher: ".", lower: "," },
+        oddEven: { odd: ",", even: "." },
+      };
+      break;
+    case 2: // Condition 3
+      mappings = {
+        higherLower: { higher: ",", lower: "." },
+        oddEven: { odd: ".", even: "," },
+      };
+      break;
+    case 3: // Condition 4
+      mappings = {
+        higherLower: { higher: ".", lower: "," },
+        oddEven: { odd: ".", even: "," },
+      };
+      break;
+  }
+
+  return mappings;
+}
+
+var responseMappings = getResponseMappings(group_index);
+
+const choices = [",", "."];
 
 var endText = `
   <div class="centerbox">
@@ -438,15 +473,35 @@ var feedbackText =
 
 var promptTextList = `
   <ul style="text-align:left">
-    <li>Cue "Parity" or "Even-Odd": ${possibleResponses[0][0]} if even and ${possibleResponses[1][0]} if odd.</li>
-    <li>Cue "Magnitude" or "High-Low": ${possibleResponses[0][0]} if >5 and ${possibleResponses[1][0]} if <5.</li>
+    <li>Cue "Parity" or "Even-Odd": ${
+      responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+    } if even and ${
+  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+} if odd.</li>
+    <li>Cue "Magnitude" or "High-Low": ${
+      responseMappings.higherLower.higher == ","
+        ? "index finger"
+        : "middle finger"
+    } if >5 and ${
+  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+} if <5.</li>
   </ul>
 `;
 
 var promptText = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Even-Odd": ${possibleResponses[0][0]} if even and ${possibleResponses[1][0]} if odd.</p>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": ${possibleResponses[0][0]} if >5 and ${possibleResponses[1][0]} if <5.</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Even-Odd": ${
+      responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+    } if even and ${
+  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+} if odd.</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": ${
+      responseMappings.higherLower.higher == ","
+        ? "index finger"
+        : "middle finger"
+    } if >5 and ${
+  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+} if <5.</p>
   </div>
 `;
 
@@ -494,7 +549,7 @@ var CTI = 150; // cue-target-interval or cue's length (7/29, changed from 300 to
 var pageInstruct = [
   `
   <div class="centerbox">
-    <p class="block-text">Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, you will respond to a sequence of numbers.</p>
     <p class="block-text">Your response will depend on the current task, which can change each trial. On some trials, you will have to indicate whether the number is <b>even or odd</b>, and on other trials, you will indicate whether the number is <b>higher or lower than 5</b>. Each trial will start with a cue telling you which task to do on that trial.</p>
   </div>
@@ -804,7 +859,7 @@ var practiceNode = {
       feedbackText = `
         <div class="centerbox">
           <p class="center-block-text">We will now start the test portion.</p>
-          <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+          <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
           <p class="block-text">Press <i>enter</i> to continue.</p>
         </div>
       `;

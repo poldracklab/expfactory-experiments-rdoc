@@ -433,7 +433,7 @@ var speedReminder =
 var pageInstruct = [
   `
   <div class="centerbox">
-    <p class="block-text">Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial you will see shapes appear on the screen one at a time.</p>
     <p class="block-text">If the shape is a <b>${shapes[0]}</b>, press your <b>${possibleResponses[0][0]}</b>.</p>
     <p class="block-text">If the shape is a <b>${shapes[1]}</b>, press your <b>${possibleResponses[1][0]}</b>.</p>
@@ -756,7 +756,7 @@ var practiceNode = {
       feedbackText = `
       <div class="centerbox">
         <p class="block-text">We will now begin the test portion.</p>
-        <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

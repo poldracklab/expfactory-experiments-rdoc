@@ -328,7 +328,7 @@ var promptText = `
 
 var pageInstruct = `
   <div class="centerbox">
-    <p class="block-text">Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial you will see a string of F's and H's. For instance, you might see 'FFFFF' or 'HHFHH'.</p>
     <p class="block-text">Your task is to respond by pressing the key corresponding to the <b>middle</b> letter.</p>
     <p class="block-text">If the middle letter is an <b>H</b>, press your <b>${possibleResponses[0][0]}</b>.</p>
@@ -701,7 +701,7 @@ var practiceNode = {
     if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
       feedbackText = ` <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

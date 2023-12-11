@@ -185,9 +185,17 @@ var getCorrectResponse = function (number, predictable_dimension) {
   }
 
   if (predictable_dimension == "magnitude") {
-    correct_response = possibleResponses[mag_ind][1];
+    if (predictable_dimensions_list[0].values[mag_ind] == "high") {
+      correct_response = responseMappings.higherLower.higher;
+    } else {
+      correct_response = responseMappings.higherLower.lower;
+    }
   } else if (predictable_dimension == "parity") {
-    correct_response = possibleResponses[par_ind][1];
+    if (predictable_dimensions_list[1].values[par_ind] == "even") {
+      correct_response = responseMappings.oddEven.even;
+    } else {
+      correct_response = responseMappings.oddEven.odd;
+    }
   }
   return [correct_response, magnitude, parity];
 };
@@ -377,30 +385,68 @@ var appendData = function () {
 // common variables
 const fixationDuration = 500;
 
-var possibleResponses;
+// var possibleResponses;
 
-function getKeyMappingForTask(group_index) {
-  if (Math.floor(group_index / 2) % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["index finger", ",", "comma key (,)"],
-      ["middle finger", ".", "period key (.)"],
-    ];
-  } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["middle finger", ".", "period key (.)"],
-      ["index finger", ",", "comma key (,)"],
-    ];
-  }
-}
+// function getKeyMappingForTask(group_index) {
+//   if (Math.floor(group_index / 2) % 2 === 0) {
+//     // Assuming even group_index uses ",", odd group_index uses "."
+//     possibleResponses = [
+//       ["index finger", ",", "comma key (,)"],
+//       ["middle finger", ".", "period key (.)"],
+//     ];
+//   } else {
+//     // Assuming even group_index uses ",", odd group_index uses "."
+//     possibleResponses = [
+//       ["middle finger", ".", "period key (.)"],
+//       ["index finger", ",", "comma key (,)"],
+//     ];
+//   }
+// }
+
+// var group_index =
+//   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+
+// getKeyMappingForTask(group_index);
 
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
-getKeyMappingForTask(group_index);
+function getResponseMappings(group_index) {
+  var mappings;
 
-const choices = [possibleResponses[0][1], possibleResponses[1][1]];
+  switch (group_index % 4) {
+    case 0: // Condition 1
+      mappings = {
+        higherLower: { higher: ",", lower: "." },
+        oddEven: { odd: ",", even: "." },
+      };
+      break;
+    case 1: // Condition 2
+      mappings = {
+        higherLower: { higher: ".", lower: "," },
+        oddEven: { odd: ",", even: "." },
+      };
+      break;
+    case 2: // Condition 3
+      mappings = {
+        higherLower: { higher: ",", lower: "." },
+        oddEven: { odd: ".", even: "," },
+      };
+      break;
+    case 3: // Condition 4
+      mappings = {
+        higherLower: { higher: ".", lower: "," },
+        oddEven: { odd: ".", even: "," },
+      };
+      break;
+  }
+
+  return mappings;
+}
+
+var responseMappings = getResponseMappings(group_index);
+
+const choices = [",", "."];
 
 var endText = `
   <div class="centerbox">
@@ -510,41 +556,79 @@ var stop_boards = [
 
 var prompt_text_list = `
   <ul style="text-align:left;">
-    <li>Top 2 quadrants: judge number on ${predictable_dimensions_list[0].dim}</li>
-    <li>${predictable_dimensions_list[0].values[0]}: ${possibleResponses[0][0]}</li>
-    <li>${predictable_dimensions_list[0].values[1]}: ${possibleResponses[1][0]}</li>
-    <li>Bottom 2 quadrants: judge number on ${predictable_dimensions_list[1].dim}</li>
-    <li>${predictable_dimensions_list[1].values[0]}: ${possibleResponses[0][0]}</li>
-    <li>${predictable_dimensions_list[1].values[1]}: ${possibleResponses[1][0]}</li>
+    <li>Top 2 quadrants: judge number on ${
+      predictable_dimensions_list[0].dim
+    }</li> 
+    <li>${predictable_dimensions_list[0].values[0]}: ${
+  responseMappings.higherLower.higher == "," ? "index finger" : "middle finger"
+}</li>
+    <li>${predictable_dimensions_list[0].values[1]}: ${
+  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+}</li>
+    <li>Bottom 2 quadrants: judge number on ${
+      predictable_dimensions_list[1].dim
+    }</li>
+    <li>${predictable_dimensions_list[1].values[0]}: ${
+  responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+}</li>
+    <li>${predictable_dimensions_list[1].values[1]}: ${
+  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+}</li>
   </ul>`;
 
 var prompt_text = `
   <div class="prompt_box">
   <div class='prompt_content' style='margin-bottom: 80px;'>
-    <p>Top 2 quadrants, judge number on ${predictable_dimensions_list[0].dim}:</p>
+    <p>Top 2 quadrants, judge number on ${
+      predictable_dimensions_list[0].dim
+    }:</p>
     <ul>
-      <li>${predictable_dimensions_list[0].values[0]}: ${possibleResponses[0][0]}</li>
-      <li>${predictable_dimensions_list[0].values[1]}: ${possibleResponses[1][0]}</li>
+      <li>${predictable_dimensions_list[0].values[0]}: ${
+  responseMappings.higherLower.higher == "," ? "index finger" : "middle finger"
+}</li>
+      <li>${predictable_dimensions_list[0].values[1]}: ${
+  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+}</li>
     </ul>
   </div>
   <div class='prompt_content' style='margin-top: 80px;'>
-    <p>Bottom 2 quadrants, judge number on ${predictable_dimensions_list[1].dim}:</p>
+    <p>Bottom 2 quadrants, judge number on ${
+      predictable_dimensions_list[1].dim
+    }:</p>
     <ul>
-      <li>${predictable_dimensions_list[1].values[0]}: ${possibleResponses[0][0]}</li>
-      <li>${predictable_dimensions_list[1].values[1]}: ${possibleResponses[1][0]}</li>
+      <li>${predictable_dimensions_list[1].values[0]}: ${
+  responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+}</li>
+      <li>${predictable_dimensions_list[1].values[1]}: ${
+  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+}</li>
     </ul>
     </div>
   </div>`;
 
 var pageInstruct = [
   `<div class = centerbox>
-    <p class=block-text>Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class = block-text>During this task, on each trial you will see a single number in one of the four quadrants of the screen.
     Based upon which quadrant the number appears in, you will complete a different task.</p>
-    <p class = block-text>In the top two quadrants, please judge the number based on <b>${predictable_dimensions_list[0].dim}${predictable_dimensions_list[0].exp}</b>.
-    Press your <b>${possibleResponses[0][0]}</b> if <b>${predictable_dimensions_list[0].values[0]}</b>, and your <b>${possibleResponses[1][0]}</b> if <b>${predictable_dimensions_list[0].values[1]}</b>.</p>
-    <p class = block-text>In the bottom two quadrants, please judge the number based on <b>${predictable_dimensions_list[1].dim}${predictable_dimensions_list[1].exp}</b>.
-    Press your <b>${possibleResponses[0][0]}</b> if <b>${predictable_dimensions_list[1].values[0]}</b>, and your <b>${possibleResponses[1][0]}</b> if <b>${predictable_dimensions_list[1].values[1]}</b>.</p>
+    <p class = block-text>In the top two quadrants, please judge the number based on <b>${
+      predictable_dimensions_list[0].dim
+    }${predictable_dimensions_list[0].exp}</b>.
+    Press your <b>${
+      responseMappings.higherLower.higher == ","
+        ? "index finger"
+        : "middle finger"
+    }</b> if <b>${predictable_dimensions_list[0].values[0]}</b>, and your <b>${
+    responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+  }</b> if <b>${predictable_dimensions_list[0].values[1]}</b>.</p>
+    <p class = block-text>In the bottom two quadrants, please judge the number based on <b>${
+      predictable_dimensions_list[1].dim
+    }${predictable_dimensions_list[1].exp}</b>.
+    Press your <b>${
+      responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+    }</b> if <b>${predictable_dimensions_list[1].values[0]}</b>, and your <b>${
+    responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+  }</b> if <b>${predictable_dimensions_list[1].values[1]}</b>.</p>
   </div>`,
   `<div class = centerbox>
     <p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
@@ -691,7 +775,7 @@ for (i = 0; i < practiceLen + 1; i++) {
       stimulus_duration: 500,
     },
     stimulus_duration: 500,
-    trial_duration: 500, // 500
+    trial_duration: 500,
     post_trial_gap: 0,
     prompt: prompt_text,
     on_finish: data => (data["block_num"] = practiceCount),
@@ -857,7 +941,7 @@ var practiceNode = {
       feedbackText = `
       <div class="centerbox">
         <p class="block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>
       `;

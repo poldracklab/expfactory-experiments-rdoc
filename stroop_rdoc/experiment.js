@@ -237,19 +237,19 @@ function getKeyMappingForTask(group_index) {
     possibleResponses = [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
-      ["ring finger", "/", "slash key (/)"],
+      ["ring finger", "/", "forward slash (/)"],
     ];
   } else if (Math.floor(group_index) % 3 === 1) {
     // Assuming even group_index uses ",", odd group_index uses "."
     possibleResponses = [
       ["middle finger", ".", "period key (.)"],
       ["index finger", ",", "comma key (,)"],
-      ["ring finger", "/", "slash key (/)"],
+      ["ring finger", "/", "forward slash (/)"],
     ];
   } else if (Math.floor(group_index) % 3 === 2) {
     possibleResponses = [
       ["middle finger", ".", "period key (.)"],
-      ["ring finger", "/", "slash key (/)"],
+      ["ring finger", "/", "forward slash (/)"],
       ["index finger", ",", "comma key (,)"],
     ];
   }
@@ -465,7 +465,7 @@ var promptText = `
 
 var pageInstruct = [
   `<div class='centerbox'>
-    <p class='block-text'>Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b>, your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b>, and your <b>${possibleResponses[2][0]}</b> on the <b>${possibleResponses[2][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b>, your <b>middle finger</b> on the <b>period key (.)</b>, and your <b>ring finger</b> on the <b>forward slash key (/)</b></p>
     <p class='block-text'>During this task, on each trial you will be presented with a single word on the screen. This word will be <b>'RED'</b>, <b>'BLUE'</b>, or <b>'GREEN'</b>.</p>
     <p class='block-text'>Each word will appear in colored ink. The color of the word may not match the word itself. For example, you might see the word 'RED' in green ink, like this: <span style='color:#70FF70'>RED</span>.</p>
     <p class='block-text'>Your task is to identify the <b>color ink in which the word is displayed</b>, not the word itself. So, if you see the word <b>'RED'</b> in green ink, you should press the key corresponding to <b>green</b>.</p>
@@ -829,7 +829,7 @@ var practiceNode = {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b>, your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b>, and your <b>${possibleResponses[2][0]}</b> on the <b>${possibleResponses[0][2]}</b></p>
+         <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b>, your <b>middle finger</b> on the <b>period key (.)</b>, and your <b>ring finger</b> on the <b>forward slash key (/)</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

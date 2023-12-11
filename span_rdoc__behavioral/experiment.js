@@ -7141,8 +7141,6 @@ function getKeyMappingForTask(group_index) {
   }
 }
 
-var possibleResponses;
-
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
@@ -7807,17 +7805,17 @@ var practiceNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>";
+            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0]}) or not (${processingChoices[1]}).</p>`;
         }
         if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
             "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>";
+            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
             "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
-            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>";
+            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
         }
       }
 
@@ -7851,12 +7849,12 @@ var practiceNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>";
+            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0]}) or not (${processingChoices[1]}).</p>`;
         }
         if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
             "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>";
+            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
@@ -8016,13 +8014,13 @@ var testNode = {
       if (getCurrCondition() == "operation") {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
-            "<p class = block-text>Your accuracy for the 8x8 is low.</p>" +
-            "<p class = block-text>Try your best determining if the 8x8 grid is symmetric (t) or not (f).</p>";
+            "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
+            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0]}) or not (${processingChoices[1]}).</p>`;
         }
         if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
             "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-            "<p class = block-text>Try to respond (t/f) as quickly as accurately as possible as possible.</p>";
+            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=

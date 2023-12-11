@@ -348,7 +348,6 @@ var getFeedback = function () {
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
-// common variables
 const fixationDuration = 500;
 function getKeyMappingForTask(group_index) {
   if (group_index % 2 === 0) {
@@ -397,7 +396,7 @@ var speedReminder =
 
 const pageInstruct = [
   `<div class="centerbox">
-    <p class="block-text">Place your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial rectangles will appear on the screen. The rectangles can be either black or white in color.</p>
     <p class="block-text">On some trials, <b>one</b> of these rectangles will be a <b>vertical white rectangle</b>. We will call this rectangle the 'target'.</p>
     <p class="block-text">Your task is to determine whether a target is present or absent on each trial.</p>
@@ -796,7 +795,7 @@ var practiceNode = {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>${possibleResponses[0][0]}</b> on the <b>${possibleResponses[0][2]}</b> and your <b>${possibleResponses[1][0]}</b> on the <b>${possibleResponses[1][2]}</b></p>
+       <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b>, your <b>middle finger</b> on the <b>period key (.)</b>, and your <b>ring finger</b> on the <b>forward slash key (/)</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
@@ -1032,7 +1031,6 @@ var visual_search_rdoc_init = () => {
       blockStimConditions.push("conjunction");
     }
   }
-
   blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
   blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
   blockStimConditions = jsPsych.randomization.repeat(blockStimConditions, 1);
