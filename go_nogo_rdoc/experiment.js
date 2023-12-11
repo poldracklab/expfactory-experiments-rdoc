@@ -820,7 +820,7 @@ var exitFullscreen = {
 };
 
 // Set up post task questionnaire
-var expID = "go_no_go_rdoc";
+var expID = "go_nogo_rdoc";
 
 var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
