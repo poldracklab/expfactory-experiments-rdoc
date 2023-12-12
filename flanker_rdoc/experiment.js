@@ -29,24 +29,6 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-function evalAttentionChecks() {
-  var checkPercent = 1;
-  if (runAttentionChecks) {
-    var attentionChecksTrials = jsPsych.data
-      .get()
-      .filter({ trial_id: "test_attention_check" }).trials;
-    var checksPassed = 0;
-    for (var i = 0; i < attentionChecksTrials.length; i++) {
-      if (attentionChecksTrials[i].correct_trial === true) {
-        checksPassed += 1;
-      }
-    }
-    checkPercent = checksPassed / attentionChecksTrials.length;
-  }
-  jsPsych.data.get().addToLast({ attention_check_percent: checkPercent });
-  return checkPercent;
-}
-
 var getExpStage = function () {
   return expStage;
 };
@@ -772,7 +754,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
         trial_id: "test_trial",
         exp_stage: "test",
         choices: choices,
-        current_block: testCount,
         trial_duration: stimStimulusDuration,
         stimulus_duration: stimTrialDuration,
         block_num: testCount,
@@ -894,9 +875,6 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
-  on_finish: function () {
-    evalAttentionChecks();
-  },
 };
 
 flanker_rdoc_experiment = [];
