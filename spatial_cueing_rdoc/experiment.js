@@ -62,23 +62,6 @@ function getCTIs(blockLen) {
   return result;
 }
 
-function evalAttentionChecks() {
-  if (runAttentionChecks) {
-    var attentionChecksTrials = jsPsych.data
-      .get()
-      .filter({ trial_id: "test_attention_check" }).trials;
-
-    var checksPassed = 0;
-    for (var i = 0; i < attentionChecksTrials.length; i++) {
-      if (attentionChecksTrials[i].correct_trial === 1) {
-        checksPassed += 1;
-      }
-    }
-    checkPercent = checksPassed / attentionChecksTrials.length;
-  }
-  jsPsych.data.get().addToLast({ attention_check_percent: checkPercent });
-  return checkPercent;
-}
 var getCurrAttentionCheckQuestion = function () {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
 };
@@ -971,9 +954,6 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
-  on_finish: function () {
-    evalAttentionChecks();
-  },
 };
 
 var spatial_cueing_rdoc_experiment = [];
