@@ -246,8 +246,8 @@ var expStage = "practice";
 // Timing
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
-const cueStimulusDuration = 500;
-const cueTrialDuration = 500;
+const cueStimulusDuration = 100;
+const cueTrialDuration = 100;
 // initialize
 var ctiDuration;
 var CTIVals = [100, 550, 1000];
