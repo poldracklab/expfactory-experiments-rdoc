@@ -381,10 +381,18 @@ const pageInstruct = [
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial rectangles will appear on the screen. The rectangles can be either black or white in color.</p>
     <p class="block-text">On some trials, <b>one</b> of these rectangles will be a <b>vertical white rectangle</b>. We will call this rectangle the 'target'.</p>
+    <div style="display: flex; align-items: center; justify-content: center; padding-top: 80px; padding-bottom: 80px;">
+    <p style="width: 70%; font-size: 24px;">The target looks like: </p>
+    <div style="display: flex; justify-content: center; align-items: center; width:100%;">
+    <div id="target" class="box" style="background-color:white; width:40px; height:80px;"></div>
+    </div>
+    </div>
+    </div>
+    `,
+  `
+  <div class="centerbox">
     <p class="block-text">Your task is to determine whether a target is present or absent on each trial.</p>
     <p class="block-text">If you determine a target is <b>present</b>, press your <b>${possibleResponses[0][0]}</b>, and if you determine a target is <b>absent</b>, press your <b>${possibleResponses[1][0]}</b>.</p>
-  </div>`,
-  `<div class="centerbox">
     <p class="block-text">We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
     ${speedReminder}
   </div>`,
@@ -777,7 +785,7 @@ var practiceNode = {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-       <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b>, your <b>middle finger</b> on the <b>period key (.)</b>, and your <b>ring finger</b> on the <b>forward slash key (/)</b></p>
+       <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 

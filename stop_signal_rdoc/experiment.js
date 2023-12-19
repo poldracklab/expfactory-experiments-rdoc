@@ -271,7 +271,7 @@ var appendData = function (data) {
 
   data.stim = stimData.stim;
   data.correct_response = correct_response;
-  data.currentTrial = currentTrial;
+  data.current_trial = currentTrial;
   data.condition = stimData.condition;
   data.block_num = getExpStage() == "practice" ? practiceCount : testCount;
 
