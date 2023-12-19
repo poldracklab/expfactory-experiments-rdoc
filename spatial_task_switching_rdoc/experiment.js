@@ -186,10 +186,10 @@ var getCorrectResponse = function (number, predictable_dimension) {
 // added for spatial task
 var makeTaskSwitches = function (numTrials) {
   task_switch_arr = [
-    "tstay_cstay",
-    "tstay_cswitch",
-    "tswitch_cswitch",
-    "tswitch_cswitch",
+    "task_stay_cue_stay",
+    "task_stay_cue_switch",
+    "task_switch_cue_switch",
+    "task_switch_cue_switch",
   ];
   out = jsPsych.randomization.repeat(task_switch_arr, numTrials / 4);
   return out;
@@ -199,10 +199,10 @@ var makeTaskSwitches = function (numTrials) {
 var getQuad = function (oldQuad, curr_switch) {
   var out;
   switch (curr_switch) {
-    case "tstay_cstay":
+    case "task_stay_cue_stay":
       out = oldQuad;
       break;
-    case "tstay_cswitch":
+    case "task_stay_cue_switch":
       if (oldQuad % 2 == 0) {
         // if even (2,4), subtract 1
         out = oldQuad - 1;
@@ -210,7 +210,7 @@ var getQuad = function (oldQuad, curr_switch) {
         out = oldQuad + 1; // if odd (1,3), add 1
       }
       break;
-    case "tswitch_cswitch":
+    case "task_switch_cue_switch":
       if (oldQuad < 3) {
         // if in top quadrants (1,2)
         out = Math.ceil(Math.random() * 2) + 2; // should return 3 or 4
