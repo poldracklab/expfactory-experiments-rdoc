@@ -680,7 +680,7 @@ for (i = 0; i < practiceLen; i++) {
     choices: choices,
     data: function () {
       return {
-        trial_id: "practice_probe",
+        trial_id: "practice_trial",
         exp_stage: "practice",
         condition: getCondition(),
         choices: choices,
@@ -725,7 +725,7 @@ var practiceNode = {
 
     for (var i = 0; i < data.trials.length; i++) {
       if (
-        data.trials[i].trial_id == "practice_probe" &&
+        data.trials[i].trial_id == "practice_trial" &&
         data.trials[i].block_num == getCurrBlockNum() - 1
       ) {
         totalTrials += 1;
