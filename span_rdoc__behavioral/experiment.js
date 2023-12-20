@@ -7109,8 +7109,8 @@ function getKeyMappingForTask(group_index) {
   } else {
     // Assuming even group_index uses ",", odd group_index uses "."
     processingChoices = [
-      { keycode: "ArrowRight", keyname: "left arrow key" },
-      { keycode: "ArrowLeft", keyname: "right arrow key" },
+      { keycode: "ArrowRight", keyname: "right arrow key" },
+      { keycode: "ArrowLeft", keyname: "left arrow key" },
     ];
   }
 }
