@@ -7101,13 +7101,11 @@ var processingChoices;
 
 function getKeyMappingForTask(group_index) {
   if (group_index % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
     processingChoices = [
       { keycode: "ArrowLeft", keyname: "left arrow key" },
       { keycode: "ArrowRight", keyname: "right arrow key" },
     ];
   } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
     processingChoices = [
       { keycode: "ArrowRight", keyname: "right arrow key" },
       { keycode: "ArrowLeft", keyname: "left arrow key" },
@@ -7441,13 +7439,13 @@ var waitBlock = {
   on_finish: function (data) {
     if (getCurrCondition() == "operation") {
       data["correct_spatial_judgement_key"] =
-        spatialAns == 0
+        spatialAns == 1
           ? processingChoices[0].keycode.toLowerCase()
           : processingChoices[1].keycode.toLowerCase();
 
-      data["grid_symmetry"] = spatialAns == 0 ? "asymmetric" : "symmetric";
+      data["grid_symmetry"] = spatialAns == 1 ? "symmetric" : "asymmetric";
 
-      if (spatialAns == 0) {
+      if (spatialAns == 1) {
         if (data.response == processingChoices[0].keycode.toLowerCase()) {
           data["correct_response"] = 1;
         } else {
