@@ -6864,15 +6864,6 @@ makeCheinSymmGrids();
 
 var bothGrids = shuffleArray(asymmetricGrids.concat(cheinSymmGrids));
 
-// var getRandomSpatial = function() {
-//   if (distractorSpatial.length == 0) {
-//     distractorSpatial = makeDistractorSpatial()
-//   }
-//   const stim = distractorSpatial.shift()
-//   spatialAns = stim[0].symmetric
-//   return generateDistractorGrid(stim)
-// }
-
 var getRandomSpatial = function () {
   if (bothGrids.length == 0) {
     makeCheinSymmGrids();
@@ -6960,11 +6951,6 @@ var generateGrid = function () {
         spacebarCount++;
         submittedAnswers.push(activeIndex);
       }
-
-      // if (spacebarCount === 4) {
-      //   submittedAnswers = activeBoxes;
-      //   // Reset the event listener or perform any other necessary action
-      // }
 
       // Clear any existing setTimeout calls
       clearTimeout(timeoutId);
@@ -7116,10 +7102,16 @@ var processingChoices;
 function getKeyMappingForTask(group_index) {
   if (group_index % 2 === 0) {
     // Assuming even group_index uses ",", odd group_index uses "."
-    processingChoices = ["o", "p"];
+    processingChoices = [
+      { keycode: "ArrowLeft", keyname: "left arrow key" },
+      { keycode: "ArrowRight", keyname: "right arrow key" },
+    ];
   } else {
     // Assuming even group_index uses ",", odd group_index uses "."
-    processingChoices = ["p", "o"];
+    processingChoices = [
+      { keycode: "ArrowRight", keyname: "left arrow key" },
+      { keycode: "ArrowLeft", keyname: "right arrow key" },
+    ];
   }
 }
 
@@ -7161,7 +7153,7 @@ var practicePromptText = `<div class = prompt_box_simple>
 
 var promptText = `<div class=prompt_box_operation>
     <p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the black colored cells.</p>
-    <p class = center-block-text style = "font-size:16px; line-height:80%%;">Press <b>"${processingChoices[0]}"</b> if 8x8 is <b>symmetric</b> and <b>"${processingChoices[1]}"</b> if <b>asymmetric</b>.</p>
+    <p class = center-block-text style = "font-size:16px; line-height:80%%;">Press <b>"${processingChoices[0].keyname}"</b> if 8x8 is <b>symmetric</b> and <b>"${processingChoices[1].keyname}"</b> if <b>asymmetric</b>.</p>
   </div>`;
 
 /* ************************************ */
@@ -7207,7 +7199,7 @@ var opSpanInstructions = `
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
       During this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. 
-      Press the <b>${processingChoices[0]} key</b> if the grid is symmetric and press the <b>${processingChoices[1]} key</b> if it is not.
+      Press the <b>${processingChoices[0].keyname}</b> if the grid is symmetric and press the <b>${processingChoices[1].keyname}</b> if it is not.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7226,7 +7218,7 @@ var opSpanFeedback = `
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
       During this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. 
-      Press the <b>${processingChoices[0]} key</b> if the grid is symmetric and press the <b>${processingChoices[1]} key</b> if it is not.
+      Press the <b>${processingChoices[0].keyname}</b> if the grid is symmetric and press the <b>${processingChoices[1].keyname}</b> if it is not.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7404,7 +7396,7 @@ var waitBlock = {
       return getRandomSpatial();
     }
   },
-  choices: processingChoices,
+  choices: [processingChoices[0].keycode, processingChoices[1].keycode],
   stimulus_duration: processingStimulusDuration,
   trial_duration: processingTrialDuration,
   response_ends_trial: true,
@@ -7437,34 +7429,41 @@ var waitBlock = {
           : "test_inter-stimulus",
       exp_stage: getExpStage(),
       condition: getCurrCondition(),
-      choices: getCurrCondition() == "operation" ? processingChoices : "",
+      choices:
+        getCurrCondition() == "operation"
+          ? [processingChoices[0].keycode, processingChoices[1].keycode]
+          : "",
       trial_duration: processingTrialDuration,
       stimulus_duration: processingStimulusDuration,
       block_num: getExpStage() == "practice" ? practiceCount : testCount,
     };
   },
   on_finish: function (data) {
-    var logResponse;
-    if (data.response == "t") {
-      if (spatialAns == 1) {
-        logResponse = 1;
-      } else {
-        logResponse = 0;
-      }
-    } else if (data.response == "f") {
-      if (spatialAns == 0) {
-        logResponse = 1;
-      } else {
-        logResponse = 0;
-      }
-    }
     if (getCurrCondition() == "operation") {
-      data["correct_spatial_judgement_key"] = spatialAns == 1 ? "t" : "f";
+      data["correct_spatial_judgement_key"] =
+        spatialAns == 0
+          ? processingChoices[0].keycode.toLowerCase()
+          : processingChoices[1].keycode.toLowerCase();
+
+      data["grid_symmetry"] = spatialAns == 0 ? "asymmetric" : "symmetric";
+
+      if (spatialAns == 0) {
+        if (data.response == processingChoices[0].keycode.toLowerCase()) {
+          data["correct_response"] = 1;
+        } else {
+          data["correct_response"] = 0;
+        }
+      } else {
+        if (data.response == processingChoices[0].keycode.toLowerCase()) {
+          data["correct_response"] = 0;
+        } else {
+          data["correct_response"] = 1;
+        }
+      }
     } else {
       data["correct_spatial_judgement_key"] = null;
     }
 
-    data["correct_response"] = logResponse;
     data["num_block"] = getExpStage() == "practice" ? practiceCount : testCount;
   },
   prompt: function () {
@@ -7482,7 +7481,6 @@ var waitNode = {
   loop_function: function (data) {
     var elapsedTime = performance.now() - startTime;
 
-    // Continue looping as long as elapsed time is less than 10,000 ms
     if (elapsedTime >= processingTrialDuration) {
       startTime = null; // Reset startTime for the next trial
       return false; // End the loop
@@ -7506,7 +7504,6 @@ function arraysAreEqual(array1, array2) {
   return true;
 }
 
-// eslint-disable-next-line no-unused-vars
 var activeGrid;
 
 var practiceFeedbackBlock = {
@@ -7737,13 +7734,12 @@ var practiceNode = {
       var responseCount = 0;
       var rt = 0;
 
-      // No RTs for response grid
       for (var i = 0; i < totalTrials; i++) {
-        if (responseProcessingData[i].correct_response == null) {
+        if (responseProcessingData[i].rt == null) {
           missedProcessingCount += 1;
         } else {
-          rt += responseProcessingData[i].rt;
           responseCount += 1;
+          rt += responseProcessingData[i].rt;
           if (responseProcessingData[i].correct_response == 1) {
             processingCorrect += 1;
           }
@@ -7783,34 +7779,6 @@ var practiceNode = {
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         '<p class="block-text">Keep your fingers on the arrow keys.</p>';
 
-      if (getCurrCondition() == "operation") {
-        if (avgProcessingAcc < processingAccThresh) {
-          feedbackText +=
-            "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0]}) or not (${processingChoices[1]}).</p>`;
-        }
-        if (avgProcessingRT > processingRTThresh) {
-          feedbackText +=
-            "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
-        }
-        if (avgProcessingMissed > processingMissedThresh) {
-          feedbackText +=
-            "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>" +
-            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
-        }
-      }
-
-      if (accuracy < accuracyThresh) {
-        feedbackText +=
-          "<p class = block-text>Your accuracy is low.</p>" +
-          "<p class = block-text>Try your best to recall the black colored cells.</p>";
-      }
-      if (missedResponses > missedResponseThresh) {
-        feedbackText +=
-          "<p class = block-text>You have not been responding to some trials. Please respond on every trial that requires a response.</p>";
-      }
-
       feedbackText +=
         "<p class = block-text>Press <i>enter</i> to continue.</p></div>";
 
@@ -7823,7 +7791,7 @@ var practiceNode = {
 
       if (accuracy < accuracyThresh) {
         feedbackText +=
-          "<p class = block-text>Your accuracy is low.</p>" +
+          "<p class = block-text>Your accuracy on the 4x4 grid is low.</p>" +
           "<p class = block-text>Try your best to recall the black colored cells.</p>";
       }
 
@@ -7831,12 +7799,12 @@ var practiceNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0]}) or not (${processingChoices[1]}).</p>`;
+            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0].keyname}) or not (${processingChoices[1].keyname}).</p>`;
         }
         if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
             "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
+            `<p class = block-text>Try to respond (${processingChoices[0].keyname}/${processingChoices[1].keyname}) as quickly as accurately as possible as possible.</p>`;
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
@@ -7903,7 +7871,6 @@ var testNode = {
     var missedCount = 0;
     var responseCount = 0;
 
-    // No RTs for response grid
     for (var i = 0; i < responseGridData.length; i++) {
       if (responseGridData[i].correct_trial == null) {
         missedCount += 1;
@@ -7937,13 +7904,12 @@ var testNode = {
       var responseCount = 0;
       var rt = 0;
 
-      // No RTs for response grid
       for (var i = 0; i < totalTrials; i++) {
-        if (responseProcessingData[i].correct_response == null) {
+        if (responseProcessingData[i].rt == null) {
           missedProcessingCount += 1;
         } else {
-          rt += responseProcessingData[i].rt;
           responseCount += 1;
+          rt += responseProcessingData[i].rt;
           if (responseProcessingData[i].correct_response == 1) {
             processingCorrect += 1;
           }
@@ -7984,7 +7950,7 @@ var testNode = {
       // feedback for either simple or operation span
       if (accuracy < accuracyThresh) {
         feedbackText +=
-          "<p class = block-text>Your accuracy is low. Try your best to recall all the black colored cells.</p>";
+          "<p class = block-text>Your accuracy on the 4x4 grid is low. Try your best to recall all the black colored cells.</p>";
       }
 
       if (missedResponses > missedResponseThresh) {
@@ -7997,12 +7963,12 @@ var testNode = {
         if (avgProcessingAcc < processingAccThresh) {
           feedbackText +=
             "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0]}) or not (${processingChoices[1]}).</p>`;
+            `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0].keyname}) or not (${processingChoices[1].keyname}).</p>`;
         }
         if (avgProcessingRT > processingRTThresh) {
           feedbackText +=
             "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-            `<p class = block-text>Try to respond (${processingChoices[0]}/${processingChoices[1]}) as quickly as accurately as possible as possible.</p>`;
+            `<p class = block-text>Try to respond (${processingChoices[0].keyname}/${processingChoices[1].keyname}) as quickly as accurately as possible as possible.</p>`;
         }
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
