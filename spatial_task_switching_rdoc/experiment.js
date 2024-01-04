@@ -1,9 +1,6 @@
-/* eslint-disable camelcase */
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
-// common
-// PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
 var meanITI = 0.5;
 
 function sampleFromDecayingExponential() {
@@ -131,166 +128,129 @@ function shuffleArray(array) {
 attentionCheckData = shuffleArray(attentionCheckData);
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getCorrectResponse = function (number, predictable_dimension) {
-  if (number > 5) {
-    magnitude = "high";
-  } else if (number < 5) {
-    magnitude = "low";
-  }
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
-  if (number % 2 === 0) {
-    parity = "even";
-  } else if (number % 2 !== 0) {
-    parity = "odd";
-  }
+const task_switch_arr = [
+  "task_stay_cue_stay",
+  "task_stay_cue_switch",
+  "task_switch_cue_switch",
+  "task_switch_cue_switch",
+];
 
-  par_ind = predictable_dimensions_list[0].values.indexOf(parity);
-  if (par_ind == -1) {
-    par_ind = predictable_dimensions_list[1].values.indexOf(parity);
-    mag_ind = predictable_dimensions_list[0].values.indexOf(magnitude);
-  } else {
-    mag_ind = predictable_dimensions_list[1].values.indexOf(magnitude);
-  }
+var makeTaskSwitches = numTrials =>
+  jsPsych.randomization.repeat(task_switch_arr, numTrials / 4);
 
-  if (predictable_dimension == "magnitude") {
-    if (predictable_dimensions_list[0].values[mag_ind] == "high") {
-      correct_response = responseMappings.higherLower.higher;
-    } else {
-      correct_response = responseMappings.higherLower.lower;
-    }
-  } else if (predictable_dimension == "parity") {
-    if (predictable_dimensions_list[1].values[par_ind] == "even") {
-      correct_response = responseMappings.oddEven.even;
-    } else {
-      correct_response = responseMappings.oddEven.odd;
-    }
-  }
-  return [correct_response, magnitude, parity];
-};
-
-// added for spatial task
-var makeTaskSwitches = function (numTrials) {
-  task_switch_arr = [
-    "task_stay_cue_stay",
-    "task_stay_cue_switch",
-    "task_switch_cue_switch",
-    "task_switch_cue_switch",
-  ];
-  out = jsPsych.randomization.repeat(task_switch_arr, numTrials / 4);
-  return out;
-};
-
-// added for spatial task
-var getQuad = function (oldQuad, curr_switch) {
-  var out;
-  switch (curr_switch) {
-    case "task_stay_cue_stay":
-      out = oldQuad;
-      break;
-    case "task_stay_cue_switch":
-      if (oldQuad % 2 == 0) {
-        // if even (2,4), subtract 1
-        out = oldQuad - 1;
-      } else {
-        out = oldQuad + 1; // if odd (1,3), add 1
-      }
-      break;
-    case "task_switch_cue_switch":
-      if (oldQuad < 3) {
-        // if in top quadrants (1,2)
-        out = Math.ceil(Math.random() * 2) + 2; // should return 3 or 4
-      } else {
-        // if in bottom quadrants (3,4)
-        out = Math.ceil(Math.random() * 2); // should return 1 or 2
-      }
-      break;
-  }
-  return out;
-};
 var createTrialTypes = function (task_switches) {
-  // make the first trial
-  var whichQuadStart = jsPsych.randomization.repeat([1, 2, 3, 4], 1).pop();
-  var predictable_dimensions = [
-    predictable_dimensions_list[0].dim,
-    predictable_dimensions_list[0].dim,
-    predictable_dimensions_list[1].dim,
-    predictable_dimensions_list[1].dim,
-  ];
-
-  numbers_list = [
-    [6, 8],
-    [7, 9],
-    [2, 4],
-    [1, 3],
-  ];
-  numbers = [1, 2, 3, 4, 6, 7, 8, 9];
-
-  predictable_dimension = predictable_dimensions[whichQuadStart - 1];
-
-  number = numbers[Math.floor(Math.random() * 8)];
-
-  response_arr = getCorrectResponse(number, predictable_dimension);
-
+  // creating stims for trial
   var stims = [];
+
+  // randomly select location of first quadrant
+  var whichQuadStart = jsPsych.randomization.repeat([1, 2, 3, 4], 1).pop();
+  const quadMapping = {
+    1: quadMappings.top,
+    2: quadMappings.top,
+    3: quadMappings.bottom,
+    4: quadMappings.bottom,
+  };
+  const numbers = [1, 2, 3, 4, 6, 7, 8, 9];
+  var number = numbers[Math.floor(Math.random() * 8)];
+  var spatial_cue = quadMapping[whichQuadStart];
+  var magnitude = number > 5 ? "high" : "low";
+  var parity = number % 2 === 0 ? "even" : "odd";
+
+  if (spatial_cue == "parity") {
+    if (number % 2 == 0) {
+      var correct_response = responseMappings.oddEven.even;
+    } else {
+      var correct_response = responseMappings.oddEven.odd;
+    }
+  } else {
+    if (number > 5) {
+      var correct_response = responseMappings.higherLower.higher;
+    } else {
+      var correct_response = responseMappings.higherLower.lower;
+    }
+  }
 
   var first_stim = {
     whichQuadrant: whichQuadStart,
-    spatial_cue: predictable_dimension,
+    spatial_cue: spatial_cue,
     number: number,
-    magnitude: response_arr[1],
-    parity: response_arr[2],
-    correct_response: response_arr[0],
+    magnitude: magnitude,
+    parity: parity,
+    correct_response: correct_response,
   };
   stims.push(first_stim);
 
-  // build remaining trials from task_switches
-  oldQuad = whichQuadStart;
-  for (var i = 0; i < task_switches.length; i++) {
-    whichQuadStart += 1;
-    quadIndex = whichQuadStart % 4;
-    if (quadIndex === 0) {
-      quadIndex = 4;
+  var last_quad = whichQuadStart;
+
+  for (i = 0; i < task_switches.length; i++) {
+    var current_condition = task_switches[i];
+    var number = numbers[Math.floor(Math.random() * 8)];
+    var magnitude = number > 5 ? "high" : "low";
+    var parity = number % 2 === 0 ? "even" : "odd";
+    var current_quad;
+
+    if (current_condition == "task_stay_cue_stay") {
+      current_quad = last_quad;
+    } else if (current_condition == "task_stay_cue_switch") {
+      current_quad = last_quad;
+      if (last_quad == 1) {
+        current_quad = 2;
+      } else if (last_quad == 2) {
+        current_quad = 1;
+      } else if (last_quad == 3) {
+        current_quad = 4;
+      } else {
+        current_quad = 3;
+      }
+    } else {
+      if (last_quad == 1 || last_quad == 2) {
+        var current_quad = jsPsych.randomization.repeat([3, 4], 1).pop();
+      } else {
+        var current_quad = jsPsych.randomization.repeat([1, 2], 1).pop();
+      }
     }
-    quadIndex = getQuad(oldQuad, task_switches[i]); // changed for spatial task
+    var spatial_cue = quadMapping[current_quad];
 
-    predictable_dimension = predictable_dimensions[quadIndex - 1];
-    number = numbers[Math.floor(Math.random() * 8)];
+    if (spatial_cue == "parity") {
+      if (number % 2 == 0) {
+        var correct_response = responseMappings.oddEven.even;
+      } else {
+        var correct_response = responseMappings.oddEven.odd;
+      }
+    } else {
+      if (number > 5) {
+        var correct_response = responseMappings.higherLower.higher;
+      } else {
+        var correct_response = responseMappings.higherLower.lower;
+      }
+    }
 
-    response_arr = getCorrectResponse(number, predictable_dimension);
-
-    stim = {
-      whichQuadrant: quadIndex,
-      spatial_cue: predictable_dimension,
+    var current_stim = {
+      whichQuadrant: current_quad,
+      spatial_cue: spatial_cue,
       number: number,
-      magnitude: response_arr[1],
-      parity: response_arr[2],
-      correct_response: response_arr[0],
+      magnitude: magnitude,
+      parity: parity,
+      correct_response: correct_response,
     };
+    stims.push(current_stim);
 
-    stims.push(stim);
-    oldQuad = quadIndex; // changed for sptial task
+    last_quad = current_quad;
   }
+
   return stims;
 };
 
-var getFixation = function () {
-  return "<div class = centerbox><div class = fixation>+</div></div>";
-};
+var getFixation = () =>
+  "<div class = centerbox><div class = fixation>+</div></div>";
 
 var getCue = function () {
   stim = stims.shift();
@@ -314,13 +274,8 @@ var getStim = function () {
   );
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 var appendData = function () {
   curr_trial = jsPsych.getProgress().current_trial_global;
@@ -339,7 +294,12 @@ var appendData = function () {
   }
 
   jsPsych.data.get().addToLast({
-    spatial_cue: predictable_dimension,
+    spatial_cue:
+      whichQuadrant === 1
+        ? quadMappings.top
+        : whichQuadrant === 2
+        ? quadMappings.top
+        : quadMappings.bottom,
     condition: task_switch,
     number: number,
     correct_response: correct_response,
@@ -348,7 +308,7 @@ var appendData = function () {
     parity: parity,
     current_trial: current_trial,
     current_block: current_block,
-    block_num: getExpStage() == "practice" ? practiceCount : testCount,
+    block_num: getCurrBlockNum(),
   });
 
   if (trial_id == "practice_trial" || trial_id == "test_trial") {
@@ -365,69 +325,53 @@ var appendData = function () {
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
-// common variables
 const fixationDuration = 500;
-
-// var possibleResponses;
-
-// function getKeyMappingForTask(group_index) {
-//   if (Math.floor(group_index / 2) % 2 === 0) {
-//     // Assuming even group_index uses ",", odd group_index uses "."
-//     possibleResponses = [
-//       ["index finger", ",", "comma key (,)"],
-//       ["middle finger", ".", "period key (.)"],
-//     ];
-//   } else {
-//     // Assuming even group_index uses ",", odd group_index uses "."
-//     possibleResponses = [
-//       ["middle finger", ".", "period key (.)"],
-//       ["index finger", ",", "comma key (,)"],
-//     ];
-//   }
-// }
-
-// var group_index =
-//   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
-
-// getKeyMappingForTask(group_index);
 
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
 function getResponseMappings(group_index) {
-  var mappings;
+  var responseMapping;
+  var quadMappings;
+
+  if (group_index % 2 == 0) {
+    quadMappings = { top: "magnitude", bottom: "parity" };
+  } else {
+    quadMappings = { top: "parity", bottom: "magnitude" };
+  }
 
   switch (group_index % 4) {
     case 0: // Condition 1
-      mappings = {
+      responseMapping = {
         higherLower: { higher: ",", lower: "." },
         oddEven: { odd: ",", even: "." },
       };
       break;
     case 1: // Condition 2
-      mappings = {
+      responseMapping = {
         higherLower: { higher: ".", lower: "," },
         oddEven: { odd: ",", even: "." },
       };
       break;
     case 2: // Condition 3
-      mappings = {
+      responseMapping = {
         higherLower: { higher: ",", lower: "." },
         oddEven: { odd: ".", even: "," },
       };
       break;
     case 3: // Condition 4
-      mappings = {
+      responseMapping = {
         higherLower: { higher: ".", lower: "," },
         oddEven: { odd: ".", even: "," },
       };
       break;
   }
 
-  return mappings;
+  return { responseMapping, quadMappings };
 }
 
-var responseMappings = getResponseMappings(group_index);
+var responseMappings = getResponseMappings(group_index).responseMapping;
+var quadMappings = getResponseMappings(group_index).quadMappings;
 
 const choices = [",", "."];
 
@@ -536,56 +480,95 @@ var stop_boards = [
     ["</div></div></div>"],
   ],
 ];
-
 var prompt_text_list = `
   <ul style="text-align:left;">
-    <li>Top 2 quadrants: judge number on ${
-      predictable_dimensions_list[0].dim
-    }</li> 
-    <li>${predictable_dimensions_list[0].values[0]}: ${
-  responseMappings.higherLower.higher == "," ? "index finger" : "middle finger"
+    <li>Top 2 quadrants: judge number on <b>${quadMappings.top}</b></li> 
+    <li><b>${quadMappings.top == "parity" ? "even" : "high"}</b>: ${
+  quadMappings.top == "parity"
+    ? responseMappings.oddEven.even == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.higher == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-    <li>${predictable_dimensions_list[0].values[1]}: ${
-  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+    <li><b>${quadMappings.top == "parity" ? "odd" : "low"}</b>: ${
+  quadMappings.top == "parity"
+    ? responseMappings.oddEven.odd == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.lower == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-    <li>Bottom 2 quadrants: judge number on ${
-      predictable_dimensions_list[1].dim
-    }</li>
-    <li>${predictable_dimensions_list[1].values[0]}: ${
-  responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+    <li>Bottom 2 quadrants: judge number on <b>${quadMappings.bottom}</b></li>
+    <li><b>${quadMappings.bottom == "parity" ? "even" : "high"}</b>: ${
+  quadMappings.bottom == "parity"
+    ? responseMappings.oddEven.even == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.higher == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-    <li>${predictable_dimensions_list[1].values[1]}: ${
-  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+    <li><b>${quadMappings.bottom == "parity" ? "odd" : "low"}</b>: ${
+  quadMappings.bottom == "parity"
+    ? responseMappings.oddEven.odd == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.lower == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
   </ul>`;
 
 var prompt_text = `
   <div class="prompt_box">
-  <div class='prompt_content' style='margin-bottom: 80px;'>
-    <p>Top 2 quadrants, judge number on ${
-      predictable_dimensions_list[0].dim
-    }:</p>
-    <ul>
-      <li>${predictable_dimensions_list[0].values[0]}: ${
-  responseMappings.higherLower.higher == "," ? "index finger" : "middle finger"
+    <div class='prompt_content' style='margin-bottom: 80px;'>
+      <p>Top 2 quadrants, judge number on <b>${quadMappings.top}</b>:</p>
+      <ul>
+        <li><b>${quadMappings.top == "parity" ? "even" : "high"}</b>: ${
+  quadMappings.top == "parity"
+    ? responseMappings.oddEven.even == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.higher == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-      <li>${predictable_dimensions_list[0].values[1]}: ${
-  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
+        <li><b>${quadMappings.top == "parity" ? "odd" : "low"}</b>: ${
+  quadMappings.top == "parity"
+    ? responseMappings.oddEven.odd == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.lower == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-    </ul>
-  </div>
-  <div class='prompt_content' style='margin-top: 80px;'>
-    <p>Bottom 2 quadrants, judge number on ${
-      predictable_dimensions_list[1].dim
-    }:</p>
-    <ul>
-      <li>${predictable_dimensions_list[1].values[0]}: ${
-  responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+      </ul>
+    </div>
+    <div class='prompt_content' style='margin-top: 80px;'>
+      <p>Bottom 2 quadrants, judge number on <b>${quadMappings.bottom}</b>:</p>
+      <ul>
+        <li><b>${quadMappings.bottom == "parity" ? "even" : "high"}</b>: ${
+  quadMappings.bottom == "parity"
+    ? responseMappings.oddEven.even == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.higher == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-      <li>${predictable_dimensions_list[1].values[1]}: ${
-  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+        <li><b>${quadMappings.bottom == "parity" ? "odd" : "low"}</b>: ${
+  quadMappings.bottom == "parity"
+    ? responseMappings.oddEven.odd == ","
+      ? "index finger"
+      : "middle finger"
+    : responseMappings.higherLower.lower == ","
+    ? "index finger"
+    : "middle finger"
 }</li>
-    </ul>
+      </ul>
     </div>
   </div>`;
 
@@ -593,25 +576,26 @@ var pageInstruct = [
   `<div class = centerbox>
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class = block-text>During this task, on each trial you will see a single number in one of the four quadrants of the screen.
-    Based upon which quadrant the number appears in, you will complete a different task.</p>
+    Based upon which quadrant the number is presented, you will complete a different task for that number.
+    </p>
     <p class = block-text>In the top two quadrants, please judge the number based on <b>${
-      predictable_dimensions_list[0].dim
-    }${predictable_dimensions_list[0].exp}</b>.
-    Press your <b>${
-      responseMappings.higherLower.higher == ","
-        ? "index finger"
-        : "middle finger"
-    }</b> if <b>${predictable_dimensions_list[0].values[0]}</b>, and your <b>${
-    responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
-  }</b> if <b>${predictable_dimensions_list[0].values[1]}</b>.</p>
-    <p class = block-text>In the bottom two quadrants, please judge the number based on <b>${
-      predictable_dimensions_list[1].dim
-    }${predictable_dimensions_list[1].exp}</b>.
-    Press your <b>${
-      responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
-    }</b> if <b>${predictable_dimensions_list[1].values[0]}</b>, and your <b>${
+      quadMappings.top
+    }</b>. Press your <b>${
+    responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+  }</b> if 
+    <b>${quadMappings.top == "parity" ? "even" : "high"}</b> and your <b>${
     responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
-  }</b> if <b>${predictable_dimensions_list[1].values[1]}</b>.</p>
+  }</b> if <b>${quadMappings.top == "parity" ? "odd" : "low"}</b>. 
+    </p>
+     <p class = block-text>In the bottom two quadrants, please judge the number based on <b>${
+       quadMappings.bottom
+     }</b>. Press your <b>${
+    responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
+  }</b> if 
+    <b>${quadMappings.bottom == "parity" ? "even" : "high"}</b> and your <b>${
+    responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
+  }</b> if <b>${quadMappings.bottom == "parity" ? "odd" : "low"}</b>. 
+    </p>
   </div>`,
   `<div class = centerbox>
     <p class = block-text>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
