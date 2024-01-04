@@ -181,13 +181,8 @@ function getStim() {
   return stim.html;
 }
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 function generateHTML(
   containerWidth,
@@ -308,24 +303,15 @@ function generateDistractorElement(left, top, width, height, stimCondition) {
   }
 }
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
-var getCurrCondition = function () {
-  return condition;
-};
+const getCurrCondition = () => condition;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
+
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
 /* ************************************ */
 /* Define experimental variables */

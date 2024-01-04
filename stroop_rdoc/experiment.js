@@ -174,37 +174,23 @@ function appendData() {
   jsPsych.data.get().addToLast({ correct_trial: correctTrial });
 }
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getStim = function () {
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
+
+const getStim = () => {
   currStim = blockStims.pop();
   return currStim.stimulus;
 };
 
-var getStimData = function () {
-  return currStim.data;
-};
+const getStimData = () => currStim.data;
 
-var getKeyAnswer = function () {
-  return currStim.key_answer;
-};
+const getKeyAnswer = () => currStim.key_answer;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 /* ************************************ */
 /* Define experimental variables */

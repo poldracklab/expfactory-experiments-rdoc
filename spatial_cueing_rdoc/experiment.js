@@ -178,37 +178,23 @@ function appendData() {
   });
 }
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getCue = function () {
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
+
+const getCue = () => {
   currStim = blockStims.pop();
   return currStim.cue_stimulus;
 };
 
-var getStim = function () {
-  return currStim.stimulus;
-};
+const getStim = () => currStim.stimulus;
 
-var getStimData = function () {
-  return currStim.data;
-};
+const getStimData = () => currStim.data;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 /* ************************************ */
 /* Define experimental variables */

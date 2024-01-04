@@ -129,9 +129,7 @@ var attentionCheckData = [
 attentionCheckData = shuffleArray(attentionCheckData);
 var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
 /* Append gap and current trial to data and then recalculate for next trial*/
 var appendData = function (data) {
@@ -146,30 +144,11 @@ var appendData = function (data) {
   currentTrial += 1;
 };
 
-var getFeedback = function () {
-  if (stim.key_answer == "NO_KEYS") {
-    return (
-      "<div class = centerbox><div class = center-text>Correct!</div></div>" +
-      promptTextList
-    );
-  } else {
-    return (
-      "<div class = centerbox><div class = center-text>The shape was outlined</div></p></div>" +
-      promptTextList
-    );
-  }
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
 var getStim = function () {
   stim = blockStims.pop();
@@ -177,13 +156,8 @@ var getStim = function () {
   return stim.stimulus;
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 var getData = function () {
   stimData = stim.data;

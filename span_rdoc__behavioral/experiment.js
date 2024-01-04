@@ -7016,37 +7016,21 @@ var generateDistractorGrid = function (stim) {
   return html;
 };
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getCurrSeq = function () {
-  return currSeq;
-};
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
+
+const getCurrSeq = () => currSeq;
 
 // TODO: Change stim block duration?
-var getCurrCondition = function () {
-  return currCondition;
-};
+const getCurrCondition = () => currCondition;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
 /* ************************************ */
 /* Define experimental variables */
@@ -7681,7 +7665,6 @@ var practiceCount = 0;
 var practiceNode = {
   timeline: [feedbackBlock].concat(practiceTrials),
   loop_function: function () {
-    // for response grids - 0, 1, or null
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "practice_response",
       condition: getCurrCondition(),
@@ -7694,17 +7677,11 @@ var practiceNode = {
     var missedCount = 0;
     var responseCount = 0;
 
-    // No RTs for response grid
     for (var i = 0; i < responseGridData.length; i++) {
       if (responseGridData[i].correct_trial == null) {
         missedCount += 1;
       } else {
         responseCount += 1;
-        // response
-        // spatial_sequence
-        let trial_response = responseGridData[i].response;
-        let trial_spatial_sequence = responseGridData[i].spatial_sequence;
-
         if (responseGridData[i].correct_trial == 1) {
           correct += 1;
         }
@@ -7855,7 +7832,6 @@ var testCount = 0;
 var testNode = {
   timeline: [feedbackBlock].concat(testTrials),
   loop_function: function () {
-    // for response grids - 0, 1, or null
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "test_response",
       exp_stage: "test",

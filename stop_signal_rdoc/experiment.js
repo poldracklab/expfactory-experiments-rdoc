@@ -29,17 +29,12 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
 
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
 var attentionCheckData = [
   // key presses
@@ -156,41 +151,6 @@ var getFeedback = function () {
     </font></p></div></div>`;
 };
 
-var getCategorizeFeedback = function () {
-  var last = jsPsych.data.get().last(1).trials[0];
-  if (last.SS_trial_type == "go") {
-    if (last.response == null) {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>" +
-        promptText
-      );
-    } else if (last.response == last.correct_response) {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
-        promptText
-      );
-    } else {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>" +
-        promptText
-      );
-    }
-  } else {
-    // stop
-    if (last.rt == null) {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
-        promptText
-      );
-    } else {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>There was a star</font></div></div>" +
-        promptText
-      );
-    }
-  }
-};
-
 var createTrialTypes = function (numTrialsPerBlock) {
   var uniqueCombos = stopSignalsConditions.length * shapes.length;
 
@@ -246,13 +206,8 @@ var getStim = function () {
   return stim.image;
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 function getSSD() {
   return SSD;
@@ -667,7 +622,40 @@ for (i = 0; i < practiceLen; i++) {
       stimulus_duration: 500,
     },
     choices: ["NO_KEYS"],
-    stimulus: getCategorizeFeedback,
+    stimulus: function () {
+      var last = jsPsych.data.get().last(1).trials[0];
+      if (last.SS_trial_type == "go") {
+        if (last.response == null) {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>" +
+            promptText
+          );
+        } else if (last.response == last.correct_response) {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
+            promptText
+          );
+        } else {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>" +
+            promptText
+          );
+        }
+      } else {
+        // stop
+        if (last.rt == null) {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
+            promptText
+          );
+        } else {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>There was a star</font></div></div>" +
+            promptText
+          );
+        }
+      }
+    },
     post_trial_gap: 0,
     stimulus_duration: 500, // 500
     trial_duration: 500, // 500
@@ -766,7 +754,7 @@ var practiceNode = {
         // NOTE: what's with these if statements? should the first statement have promptTextList? It is second in network study.
         if (aveShapeRespondCorrect < accuracyThresh) {
           feedbackText += `
-        <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>
+          <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>
          ${promptTextList}`;
         } else {
           feedbackText += `

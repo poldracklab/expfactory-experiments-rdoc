@@ -42,16 +42,11 @@ function appendData() {
   jsPsych.data.get().addToLast({ correct_trial: correctTrial });
 }
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
+
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
 var getStim = function () {
   currStim = blockStims.pop();
@@ -62,13 +57,8 @@ var getStimData = function () {
   return currStim.data;
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 /* ************************************ */
 /* Define experimental variables */
@@ -340,13 +330,10 @@ function shuffleArray(array) {
   return shuffledArray;
 }
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
 
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
 var attentionCheckData = [
   // key presses

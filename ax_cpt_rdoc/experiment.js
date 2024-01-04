@@ -30,45 +30,27 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
-var getCondition = function () {
-  return currCondition;
-};
-var getExpStage = function () {
-  return expStage;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getCue = function () {
-  return currCue;
-};
-var getStim = function () {
-  return currStim;
-};
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCondition = () => currCondition;
+
+const getExpStage = () => expStage;
+
+const getCue = () => currCue;
+
+const getStim = () => currStim;
+
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 function extractTextFromStimulus(obj) {
   // Create a temporary DOM element to parse the HTML string
@@ -120,13 +102,11 @@ var setStims = function () {
   }
 };
 
-var getChar = function () {
-  return (
-    "<div class = centerbox><div class = AX_text>" +
-    chars[Math.floor(Math.random() * chars.length)] +
-    "</div></div>"
-  );
-};
+const createHTML = char =>
+  `<div class="centerbox"><div class="AX_text">${char}</div></div>`;
+
+const getChar = () =>
+  createHTML(chars[Math.floor(Math.random() * chars.length)]);
 
 function getKeyMappingForTask(group_index) {
   if (group_index % 2 === 0) {

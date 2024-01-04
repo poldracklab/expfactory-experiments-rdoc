@@ -29,13 +29,10 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
 
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
 const attentionChecks = [
   // key presses
@@ -111,24 +108,17 @@ const attentionChecks = [
     A: 90,
   },
 ];
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
+
 var attentionCheckData = shuffleChecksArray(attentionChecks);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
+
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
 var randomDraw = function (lst) {
   var index = Math.floor(Math.random() * lst.length);
@@ -270,13 +260,8 @@ var getStim = function () {
   );
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 var appendData = function () {
   var currentTrial = jsPsych.data.get().last().trials[0];
