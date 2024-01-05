@@ -29,9 +29,20 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getExpStage = function () {
-  return expStage;
-};
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
+const getExpStage = () => expStage;
 
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
@@ -317,19 +328,6 @@ var images = [];
 images.push(pathSource + "F.png");
 images.push(pathSource + "H.png");
 
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-
 const getCurrAttentionCheckQuestion = () =>
   `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
 
@@ -409,9 +407,9 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
+
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -457,6 +455,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -869,6 +868,7 @@ var flanker_rdoc_init = () => {
   jsPsych.pluginAPI.preloadImages(images);
   // globals
   blockStims = jsPsych.randomization.repeat(testStimuli, practiceLen / 4);
+
   flanker_rdoc_experiment.push(fullscreen);
   flanker_rdoc_experiment.push(instructionNode);
   flanker_rdoc_experiment.push(practiceNode);

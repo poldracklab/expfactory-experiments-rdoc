@@ -29,12 +29,25 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function shuffleChecksArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
 const getCurrAttentionCheckQuestion = () =>
   `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
 
 const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
-const attentionChecks = [
+var attentionCheckData = [
   // key presses
   {
     Q: "<p class='block-text'>Press the Q key</p>",
@@ -108,9 +121,6 @@ const attentionChecks = [
     A: 90,
   },
 ];
-
-var attentionCheckData = shuffleChecksArray(attentionChecks);
-var currentAttentionCheckData = attentionCheckData.shift();
 
 const getExpStage = () => expStage;
 
@@ -347,19 +357,6 @@ var numTrialsPerBlock = 12;
 var numTestBlocks = expLen / numTrialsPerBlock; //  10 test blocks total
 var practiceThresh = 3;
 
-function shuffleChecksArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -459,6 +456,9 @@ var taskBoards = [
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
+var attentionCheckData = shuffleChecksArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift();
+
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -499,6 +499,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: function () {
     return pageInstruct;
@@ -998,11 +999,6 @@ var testNode1 = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-    if (currentAttentionCheckData == undefined) {
-      attentionCheckData = shuffleChecksArray(attentionChecks);
-      currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-    }
-
     if (testCount == numTestBlocks) {
       feedbackText = `<div class=centerbox>
         <p class=block-text>Done with this task.</p>
@@ -1089,11 +1085,6 @@ var testNode2 = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-    if (currentAttentionCheckData == undefined) {
-      attentionCheckData = shuffleChecksArray(attentionChecks);
-      currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-    }
-
     if (testCount == numTestBlocks) {
       feedbackText =
         "<div class=centerbox><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p></div>";
@@ -1179,6 +1170,7 @@ var n_back_rdoc_init = () => {
   );
 
   jsPsych.pluginAPI.preloadImages(images);
+
   n_back_rdoc_experiment.push(fullscreen);
   n_back_rdoc_experiment.push(instructionNode);
   // practice node 1 - delay 1

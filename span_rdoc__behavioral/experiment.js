@@ -6633,6 +6633,19 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function shuffleChecksArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
 var getCurrAttentionCheckQuestion = function () {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
 };
@@ -6716,26 +6729,8 @@ var attentionCheckData = [
   },
 ];
 
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleChecksArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-
-var getExpStage = function () {
-  return expStage;
-};
-
-function shuffleChecksArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
+var currentAttentionCheckData = attentionCheckData.shift();
 
 function shuffleArray(array) {
   // Create a copy of the original array to avoid modifying it directly
@@ -7024,7 +7019,6 @@ const getFeedback = () =>
 
 const getCurrSeq = () => currSeq;
 
-// TODO: Change stim block duration?
 const getCurrCondition = () => currCondition;
 
 const getCurrBlockNum = () =>
@@ -7180,7 +7174,7 @@ var opSpanInstructions = `
      <p class="block-text"><b>Sub-task #1</b></p>
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
-      During this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. 
+      During this sub-task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not. 
       Press the <b>${processingChoices[0].keyname}</b> if the grid is symmetric and press the <b>${processingChoices[1].keyname}</b> if it is not.
     </p>
     <p class="block-text">
@@ -7199,7 +7193,7 @@ var opSpanFeedback = `
      <p class="block-text"><b>Sub-task #2</b></p>
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
-      During this sub-task, you will first encounter an 8x8 grid filled with black and grey cells. You have to determine if the grid is symmetric or not. 
+      During this sub-task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not. 
       Press the <b>${processingChoices[0].keyname}</b> if the grid is symmetric and press the <b>${processingChoices[1].keyname}</b> if it is not.
     </p>
     <p class="block-text">
@@ -7265,6 +7259,12 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: [
+      getCurrCondition() == "simple"
+        ? simpleSpanInstructions
+        : opSpanInstructions,
+      reminderInstruct,
+    ],
   },
   show_clickable_nav: true,
 };

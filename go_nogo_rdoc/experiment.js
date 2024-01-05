@@ -125,9 +125,6 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
-attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 const getExpStage = () => expStage;
 
@@ -317,6 +314,8 @@ var pageInstruct = `
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+attentionCheckData = shuffleArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift();
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -357,6 +356,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: [pageInstruct],
   allow_keys: false,
@@ -798,6 +798,7 @@ var go_nogo_rdoc_init = () => {
     practiceStimuli,
     practiceLen / practiceStimuli.length
   );
+
   go_nogo_rdoc_experiment.push(fullscreen);
   go_nogo_rdoc_experiment.push(instructionNode);
   go_nogo_rdoc_experiment.push(practiceNode);

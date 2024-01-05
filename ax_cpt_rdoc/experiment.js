@@ -3,7 +3,6 @@
 /* ************************************ */
 
 // ITIs
-
 var meanITI = 0.5;
 function sampleFromDecayingExponential() {
   // Decay parameter of the exponential distribution λ = 1 / μ
@@ -28,6 +27,19 @@ function sampleFromDecayingExponential() {
     sample = -Math.log(Math.random()) / lambdaParam;
   } while (sample < minValue || sample > maxValue);
   return sample;
+}
+
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
 }
 
 const getCurrAttentionCheckQuestion = () =>
@@ -255,7 +267,6 @@ var numTestBlocks = 3;
 var numTrialsPerBlock = trialProportions.length * 5; // 50
 var practiceLen = trialProportions.length / 2; // 5
 var currCondition = "";
-
 var expStage = "practice";
 
 /* ************************************ */
@@ -385,19 +396,6 @@ var ITIBlock = {
   },
 };
 
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-
 /* ******************************* */
 /* INSTRUCTION STUFF */
 /* ******************************* */
@@ -422,6 +420,7 @@ var instructionsBlock = {
     exp_id: expID,
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -592,8 +591,9 @@ var attentionCheckData = [
     A: 90,
   },
 ];
+
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
 // Set up attention check node
 var attentionCheckBlock = {

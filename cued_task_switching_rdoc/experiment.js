@@ -31,6 +31,7 @@ function sampleFromDecayingExponential() {
   } while (sample < minValue || sample > maxValue);
   return sample;
 }
+
 function shuffleArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -127,9 +128,8 @@ var attentionCheckData = [
   },
 ];
 
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
 const getInstructFeedback = () =>
   `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
@@ -576,6 +576,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: pageInstruct,
   allow_keys: false,
@@ -1067,6 +1068,7 @@ var cued_task_switching_rdoc_init = () => {
     cue_switch: "na",
   });
   stims = genStims(practiceLen + 1);
+
   cued_task_switching_rdoc_experiment.push(fullscreen);
   cued_task_switching_rdoc_experiment.push(instructionNode);
   cued_task_switching_rdoc_experiment.push(practiceNode);

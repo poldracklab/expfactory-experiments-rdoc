@@ -30,6 +30,19 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
 function renameDataProperties() {
   // Fetch the data from the experiment
   var data = jsPsych.data.get().trials;
@@ -145,25 +158,8 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
 
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
-attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
@@ -450,6 +446,10 @@ var pageInstruct = [
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
+attentionCheckData = shuffleArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -501,6 +501,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: pageInstruct,
   allow_keys: false,
