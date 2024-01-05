@@ -446,9 +446,8 @@ var pageInstruct = [
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
 // Set up attention check node
 var attentionCheckBlock = {
