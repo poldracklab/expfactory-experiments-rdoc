@@ -30,6 +30,19 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
 function sampleWithoutReplacement(arr, n) {
   let result = [];
   let tempArray = [...arr];
@@ -69,19 +82,6 @@ var getCurrAttentionCheckQuestion = function () {
 var getCurrAttentionCheckAnswer = function () {
   return currentAttentionCheckData.A;
 };
-
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
 
 var attentionCheckData = [
   // key presses
@@ -157,13 +157,8 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
-attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
@@ -178,37 +173,23 @@ function appendData() {
   });
 }
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getCue = function () {
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
+
+const getCue = () => {
   currStim = blockStims.pop();
   return currStim.cue_stimulus;
 };
 
-var getStim = function () {
-  return currStim.stimulus;
-};
+const getStim = () => currStim.stimulus;
 
-var getStimData = function () {
-  return currStim.data;
-};
+const getStimData = () => currStim.data;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 /* ************************************ */
 /* Define experimental variables */
@@ -386,6 +367,9 @@ var pageInstruct = [
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+attentionCheckData = shuffleArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift();
+
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -428,6 +412,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -967,6 +952,7 @@ var spatial_cueing_rdoc_init = () => {
   blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
   CTIs = getCTIs(practiceLen);
   ctiDuration = CTIs.shift();
+
   spatial_cueing_rdoc_experiment.push(fullscreen);
   spatial_cueing_rdoc_experiment.push(instructionNode);
   spatial_cueing_rdoc_experiment.push(practiceNode);

@@ -29,17 +29,25 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getExpStage = function () {
-  return expStage;
-};
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
 
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+  return shuffledArray;
+}
+
+const getExpStage = () => expStage;
+
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
 var attentionCheckData = [
   // key presses
@@ -115,81 +123,18 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
-function renameDataProperties() {
-  // Fetch the data from the experiment
-  var data = jsPsych.data.get().trials;
-
-  data.forEach(function (obj) {
-    if (obj.correct === true) {
-      obj.correct_trial = 1;
-    } else if (obj.correct === false) {
-      obj.correct_trial = 0;
-    }
-    delete obj.correct;
-  });
-}
-
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
+const getInstructFeedback =
+  () => `<div class = centerbox><p class = center-block-text>
     ${feedbackInstructText}
     </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
+
+const getFeedback =
+  () => `<div class = bigbox><div class = picture_box><p class = block-text>
     ${feedbackText}
     </font></p></div></div>`;
-};
-
-var getCategorizeFeedback = function () {
-  var last = jsPsych.data.get().last(1).trials[0];
-  if (last.SS_trial_type == "go") {
-    if (last.response == null) {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>" +
-        promptText
-      );
-    } else if (last.response == last.correct_response) {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
-        promptText
-      );
-    } else {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>" +
-        promptText
-      );
-    }
-  } else {
-    // stop
-    if (last.rt == null) {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
-        promptText
-      );
-    } else {
-      return (
-        "<div class = fb_box><div class = center-text><font size = 20>There was a star</font></div></div>" +
-        promptText
-      );
-    }
-  }
-};
 
 var createTrialTypes = function (numTrialsPerBlock) {
   var uniqueCombos = stopSignalsConditions.length * shapes.length;
@@ -215,20 +160,11 @@ var getStopStim = function () {
 };
 
 var getStim = function () {
-  if (expPhase == "practice1") {
-    stim = stims.pop();
-    shape = stim.stim;
-    correct_response = stim.correct_response;
-    condition = "go";
-  } else if (expPhase == "test" || expPhase == "practice2") {
-    stim = stims.pop();
-    shape = stim.stim;
-    correct_response = stim.correct_response;
-    condition = stim.condition;
-    if (condition == "stop") {
-      correct_response = null;
-    }
-  }
+  stim = stims.shift();
+  shape = stim.stim;
+  correct_response = stim.correct_response;
+  condition = stim.condition;
+
   stim = {
     image:
       "<div class = centerbox><div class = cue-text>" +
@@ -239,32 +175,22 @@ var getStim = function () {
     data: {
       stim: shape,
       condition: condition,
-      correct_response: correct_response,
+      correct_response: condition === "go" ? correct_response : null,
     },
   };
+
   stimData = stim.data;
   return stim.image;
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
-function getSSD() {
-  return SSD;
-}
+const getSSD = () => SSD;
 
-function getSSType() {
-  return condition;
-}
+const getCondition = () => condition;
 
-function getCorrectResponse() {
-  return correct_response;
-}
+const getCorrectResponse = () => correct_response;
 
 var appendData = function (data) {
   currentTrial += 1;
@@ -275,34 +201,21 @@ var appendData = function (data) {
   data.condition = stimData.condition;
   data.block_num = getExpStage() == "practice" ? practiceCount : testCount;
 
-  var correctTrial = 0;
-  if (data.response == data.correct_response) {
-    correctTrial = 1;
-  }
-
-  if (expPhase == "test" || expPhase == "practice2") {
-    if (data.condition == "stop") {
-      if (data.response == null && SSD < maxSSD) {
-        data.stop_acc = 1;
-        SSD += 50;
-      } else if (data.response != null && SSD > minSSD) {
-        data.stop_acc = 0;
-        SSD -= 50;
-      }
-    } else if (data.condition == "go") {
-      if (data.response == data.correct_response) {
-        data.go_acc = 1;
-      } else {
-        data.go_acc = 0;
-      }
+  if (data.condition == "stop") {
+    data.correct_trial = data.response === null ? 1 : 0;
+    if (data.response == null && SSD < maxSSD) {
+      SSD += 50;
+    } else if (data.response != null && SSD > minSSD) {
+      SSD -= 50;
     }
+  } else {
+    data.correct_trial = data.response === data.correct_response ? 1 : 0;
   }
 };
 
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
-// common variables
 const fixationDuration = 500;
 
 var possibleResponses;
@@ -370,10 +283,10 @@ var SSD = 350;
 var maxSSD = 1000;
 var minSSD = 0;
 
-currentTrial = 0;
-correct_response = null;
-stimData = null;
-condition = null;
+var currentTrial = 0;
+var correct_response = null;
+var stimData = null;
+var condition = null;
 
 var maxStopCorrect = 0.7;
 var minStopCorrect = 0.3;
@@ -382,12 +295,13 @@ var minStopCorrectPractice = 0;
 
 var stopSignalsConditions = ["go", "go", "stop"];
 var shapes = ["circle", "square"];
-// var color = "black";
+
+// IMAGES
+// path info
 var pathSource = "/static/experiments/stop_signal_rdoc/images/";
 var postFileType = ".png'></img>";
 var preFileType = "<img class = center src='" + pathSource;
-
-// IMAGES TO PRELOAD
+// append to images array to preload
 var images = [pathSource + "stopSignal" + ".png"];
 for (i = 0; i < shapes.length; i++) {
   images.push(pathSource + shapes[i] + ".png");
@@ -424,7 +338,7 @@ var pageInstruct = [
   `,
   `
   <div class="centerbox">
-    <p class="block-text">On some trials, a star will appear around the shape, shortly after the shape appears.</p>
+    <p class="block-text">On some trials, a star will appear around the shape, with or shortly after the shape appears.</p>
     <p class="block-text">If you see the star, please try your best to <b>withhold your response</b> on that trial.</p>
     <p class="block-text">If the star appears and you try your best to withhold your response, you will find that you will be able to stop sometimes, but not always.</p>
     <p class="block-text">Please <b>do not</b> slow down your responses in order to wait for the star. It is equally important to respond quickly on trials without the star as it is to stop on trials with the star.</p>
@@ -438,12 +352,9 @@ var pageInstruct = [
   `,
 ];
 
-var expPhase = "practice2";
-
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
-// Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
@@ -478,12 +389,12 @@ var feedbackInstructBlock = {
   trial_duration: 180000,
 };
 
-// / This ensures that the subject does not read through the instructions too quickly. If they do it too quickly, then we will go over the loop again.
 var instructionsBlock = {
   type: jsPsychInstructions,
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: pageInstruct,
   allow_keys: false,
@@ -493,7 +404,6 @@ var instructionsBlock = {
 
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -637,7 +547,7 @@ for (i = 0; i < practiceLen; i++) {
     type: jsPoldracklabStopSignal,
     stimulus: getStim,
     SS_stimulus: getStopStim,
-    SS_trial_type: getSSType,
+    SS_trial_type: getCondition,
     data: {
       trial_id: "practice_trial",
       exp_stage: "practice",
@@ -667,7 +577,39 @@ for (i = 0; i < practiceLen; i++) {
       stimulus_duration: 500,
     },
     choices: ["NO_KEYS"],
-    stimulus: getCategorizeFeedback,
+    stimulus: function () {
+      var last = jsPsych.data.get().last(1).trials[0];
+      if (last.condition == "stop") {
+        if (last.response === null) {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
+            promptText
+          );
+        } else {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>There was a star</font></div></div>" +
+            promptText
+          );
+        }
+      } else {
+        if (last.response == null) {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>" +
+            promptText
+          );
+        } else if (last.response === last.correct_response) {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
+            promptText
+          );
+        } else {
+          return (
+            "<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>" +
+            promptText
+          );
+        }
+      }
+    },
     post_trial_gap: 0,
     stimulus_duration: 500, // 500
     trial_duration: 500, // 500
@@ -742,7 +684,6 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
-      expPhase = "test";
       expStage = "test";
       stims = createTrialTypes(numTrialsPerBlock);
       return false;
@@ -763,16 +704,8 @@ var practiceNode = {
       }
 
       if (missedResponses > missedResponseThresh) {
-        // NOTE: what's with these if statements? should the first statement have promptTextList? It is second in network study.
-        if (aveShapeRespondCorrect < accuracyThresh) {
-          feedbackText += `
-        <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>
-         ${promptTextList}`;
-        } else {
-          feedbackText += `
-          <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>
-        `;
-        }
+        feedbackText += `
+          <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding quickly and accurately to the shapes.</p>`;
       }
 
       if (stopSignalRespond === maxStopCorrectPractice) {
@@ -783,7 +716,7 @@ var practiceNode = {
 
       if (stopSignalRespond === minStopCorrectPractice) {
         feedbackText += `
-        <p class="block-text">You have been responding too slowly. Do not wait for the star. Respond as quickly and accurately to each stimulus that requires a response.</p>`;
+        <p class="block-text">Please do not slow down and wait for the star to appear. Respond as quickly and accurately as possible when a star does not appear.</p>`;
       }
 
       feedbackText +=
@@ -803,7 +736,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     type: jsPoldracklabStopSignal,
     stimulus: getStim,
     SS_stimulus: getStopStim,
-    SS_trial_type: getSSType,
+    SS_trial_type: getCondition,
     data: {
       trial_id: "test_trial",
       exp_stage: "test",
@@ -811,7 +744,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       stimulus_duration: stimStimulusDuration,
     },
     choices: choices,
-    correct_choice: correct_response,
+    correct_choice: getCorrectResponse,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
     timing_duration: 1500,
@@ -840,7 +773,6 @@ var testNode = {
     var goLength = 0;
     var stopLength = 0;
 
-    // probably ahould filter before
     for (i = 0; i < data.trials.length; i++) {
       if (
         data.trials[i].condition == "go" &&
@@ -899,18 +831,18 @@ var testNode = {
 
       if (missedResponses > missedResponseThresh) {
         feedbackText += `
-        <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding accurately and quickly to the shapes.</p>`;
+          <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding quickly and accurately to the shapes.</p>`;
       }
 
-      if (stopSignalRespond === maxStopCorrectPractice) {
+      if (stopSignalRespond > maxStopCorrect) {
         feedbackText += `
         <p class="block-text">You have not been stopping your response when stars are present.</p>
         <p class="block-text">Please try your best to stop your response if you see a star.</p>`;
       }
 
-      if (stopSignalRespond === minStopCorrectPractice) {
+      if (stopSignalRespond < minStopCorrect) {
         feedbackText += `
-        <p class="block-text">You have been responding too slowly. Do not wait for the star. Respond as quickly and accurately to each stimulus that requires a response.</p>`;
+        <p class="block-text">Please do not slow down and wait for the star to appear. Respond as quickly and accurately as possible when a star does not appear.</p>`;
       }
 
       if (
@@ -953,9 +885,6 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
-  on_finish: function () {
-    renameDataProperties();
-  },
 };
 
 var stop_signal_rdoc_experiment = [];

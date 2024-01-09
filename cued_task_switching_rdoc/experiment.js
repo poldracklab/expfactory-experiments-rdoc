@@ -31,6 +31,7 @@ function sampleFromDecayingExponential() {
   } while (sample < minValue || sample > maxValue);
   return sample;
 }
+
 function shuffleArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -127,32 +128,20 @@ var attentionCheckData = [
   },
 ];
 
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getExpStage = function () {
-  return expStage;
-};
-// Sets the cue-target-interval for the cue block
-var setCTI = function () {
-  return CTI;
-};
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
-var getCTI = function () {
-  return CTI;
-};
+const getExpStage = () => expStage;
+
+const setCTI = () => CTI;
+
+const getCTI = () => CTI;
 
 /* Append gap and current trial to data and then recalculate for next trial*/
 var appendData = function () {
@@ -190,39 +179,28 @@ var appendData = function () {
   }
 };
 
-var getCue = function () {
-  var cueHTML = `
-    <div class="upperbox">
-      <div class="center-text" style="color:white;">${currCue}</div>
-    </div>
-    <div class="lowerbox">
-      <div class="fixation">+</div>
-    </div>
-  `;
-  return cueHTML;
-};
+const getCue = () => `
+  <div class="upperbox">
+    <div class="center-text" style="color:white;">${currCue}</div>
+  </div>
+  <div class="lowerbox">
+    <div class="fixation">+</div>
+  </div>
+`;
 
-var getStim = function () {
-  var stimHTML = `
-    <div class="upperbox">
-      <div class="center-text" style="color:white;">${currCue}</div>
+const getStim = () => `
+  <div class="upperbox">
+    <div class="center-text" style="color:white;">${currCue}</div>
+  </div>
+  <div class="lowerbox">
+    <div class="gng_number">
+      <div class="cue-text">${preFileType}${currStim.number}${fileTypePNG}</div>
     </div>
-    <div class="lowerbox">
-      <div class="gng_number">
-        <div class="cue-text">${preFileType}${currStim.number}${fileTypePNG}</div>
-      </div>
-    </div>
-  `;
-  return stimHTML;
-};
+  </div>
+`;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 var randomDraw = function (lst) {
   var index = Math.floor(Math.random() * lst.length);
@@ -252,11 +230,6 @@ var genStims = function (n) {
   return stims;
 };
 
-/* Index into taskSwitches using the global var currentTrial. Using the task_switch and cue_switch
-change the task. If "stay", keep the same task but change the cue based on "cue switch".
-If "switch new", switch to the task that wasn't the current or last task, choosing a random cue.
-If "switch old", switch to the last task and randomly choose a cue.
-*/
 var setStims = function () {
   var tmp;
   switch (taskSwitches[currentTrial].task_switch) {
@@ -455,19 +428,25 @@ var feedbackText =
   "<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>";
 
 var promptTextList = `
-  <ul style="text-align:left">
+  <ul style="text-align:left;font-size:24px; ">
     <li>Cue "Parity" or "Even-Odd": ${
-      responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
-    } if even and ${
-  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
-} if odd.</li>
+      responseMappings.oddEven.even == ","
+        ? "<b>index finger</b>"
+        : "<b>middle finger</b>"
+    } if <b>even</b> and ${
+  responseMappings.oddEven.odd == ","
+    ? "<b>index finger</b>"
+    : "<b>middle finger</b>"
+} if <b>odd</b>.</li>
     <li>Cue "Magnitude" or "High-Low": ${
       responseMappings.higherLower.higher == ","
-        ? "index finger"
-        : "middle finger"
-    } if >5 and ${
-  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
-} if <5.</li>
+        ? "<b>index finger</b>"
+        : "<b>middle finger</b>"
+    } if <b>>5</b> and ${
+  responseMappings.higherLower.lower == ","
+    ? "<b>index finger</b>"
+    : "<b>middle finger</b>"
+} if <b><5</b>.</li>
   </ul>
 `;
 
@@ -597,6 +576,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: pageInstruct,
   allow_keys: false,
@@ -1088,6 +1068,7 @@ var cued_task_switching_rdoc_init = () => {
     cue_switch: "na",
   });
   stims = genStims(practiceLen + 1);
+
   cued_task_switching_rdoc_experiment.push(fullscreen);
   cued_task_switching_rdoc_experiment.push(instructionNode);
   cued_task_switching_rdoc_experiment.push(practiceNode);

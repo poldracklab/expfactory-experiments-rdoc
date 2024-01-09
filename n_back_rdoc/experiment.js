@@ -29,15 +29,25 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
+function shuffleChecksArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
 
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
 
-const attentionChecks = [
+  return shuffledArray;
+}
+
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
+
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
+
+var attentionCheckData = [
   // key presses
   {
     Q: "<p class='block-text'>Press the Q key</p>",
@@ -111,24 +121,14 @@ const attentionChecks = [
     A: 90,
   },
 ];
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
-var attentionCheckData = shuffleChecksArray(attentionChecks);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
+
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
 var randomDraw = function (lst) {
   var index = Math.floor(Math.random() * lst.length);
@@ -270,13 +270,8 @@ var getStim = function () {
   );
 };
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 var appendData = function () {
   var currentTrial = jsPsych.data.get().last().trials[0];
@@ -361,19 +356,6 @@ var practiceLen = 5;
 var numTrialsPerBlock = 12;
 var numTestBlocks = expLen / numTrialsPerBlock; //  10 test blocks total
 var practiceThresh = 3;
-
-function shuffleChecksArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -474,6 +456,9 @@ var taskBoards = [
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
+var attentionCheckData = shuffleChecksArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift();
+
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -514,6 +499,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: function () {
     return pageInstruct;
@@ -1013,11 +999,6 @@ var testNode1 = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-    if (currentAttentionCheckData == undefined) {
-      attentionCheckData = shuffleChecksArray(attentionChecks);
-      currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-    }
-
     if (testCount == numTestBlocks) {
       feedbackText = `<div class=centerbox>
         <p class=block-text>Done with this task.</p>
@@ -1104,11 +1085,6 @@ var testNode2 = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-    if (currentAttentionCheckData == undefined) {
-      attentionCheckData = shuffleChecksArray(attentionChecks);
-      currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-    }
-
     if (testCount == numTestBlocks) {
       feedbackText =
         "<div class=centerbox><p class = block-text>Done with this test. Press <i>enter</i> to continue.</p></div>";
@@ -1194,6 +1170,7 @@ var n_back_rdoc_init = () => {
   );
 
   jsPsych.pluginAPI.preloadImages(images);
+
   n_back_rdoc_experiment.push(fullscreen);
   n_back_rdoc_experiment.push(instructionNode);
   // practice node 1 - delay 1

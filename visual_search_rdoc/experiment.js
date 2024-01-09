@@ -29,6 +29,19 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
 var getCurrAttentionCheckQuestion = function () {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
 };
@@ -111,21 +124,6 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-
-attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
 var trialTargetPresent;
 var condition;
@@ -181,13 +179,8 @@ function getStim() {
   return stim.html;
 }
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 function generateHTML(
   containerWidth,
@@ -308,24 +301,15 @@ function generateDistractorElement(left, top, width, height, stimCondition) {
   }
 }
 
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
-var getCurrCondition = function () {
-  return condition;
-};
+const getCurrCondition = () => condition;
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
+
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
 
 /* ************************************ */
 /* Define experimental variables */
@@ -446,6 +430,9 @@ var blockStimConditions = [];
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+attentionCheckData = shuffleArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift();
+
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -552,6 +539,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   show_clickable_nav: true,
   post_trial_gap: 0,

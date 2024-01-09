@@ -3,7 +3,6 @@
 /* ************************************ */
 
 // ITIs
-
 var meanITI = 0.5;
 function sampleFromDecayingExponential() {
   // Decay parameter of the exponential distribution λ = 1 / μ
@@ -30,45 +29,40 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
-};
-var getCurrAttentionCheckAnswer = function () {
-  return currentAttentionCheckData.A;
-};
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
-
-var getCondition = function () {
-  return currCondition;
-};
-var getExpStage = function () {
-  return expStage;
-};
-
-var getCue = function () {
-  return currCue;
-};
-var getStim = function () {
-  return currStim;
-};
-
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
   }
-};
+
+  return shuffledArray;
+}
+
+const getCurrAttentionCheckQuestion = () =>
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
+
+const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
+
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
+
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
+
+const getCondition = () => currCondition;
+
+const getExpStage = () => expStage;
+
+const getCue = () => currCue;
+
+const getStim = () => currStim;
+
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 function extractTextFromStimulus(obj) {
   // Create a temporary DOM element to parse the HTML string
@@ -120,13 +114,11 @@ var setStims = function () {
   }
 };
 
-var getChar = function () {
-  return (
-    "<div class = centerbox><div class = AX_text>" +
-    chars[Math.floor(Math.random() * chars.length)] +
-    "</div></div>"
-  );
-};
+const createHTML = char =>
+  `<div class="centerbox"><div class="AX_text">${char}</div></div>`;
+
+const getChar = () =>
+  createHTML(chars[Math.floor(Math.random() * chars.length)]);
 
 function getKeyMappingForTask(group_index) {
   if (group_index % 2 === 0) {
@@ -275,7 +267,6 @@ var numTestBlocks = 3;
 var numTrialsPerBlock = trialProportions.length * 5; // 50
 var practiceLen = trialProportions.length / 2; // 5
 var currCondition = "";
-
 var expStage = "practice";
 
 /* ************************************ */
@@ -405,19 +396,6 @@ var ITIBlock = {
   },
 };
 
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
-
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-
 /* ******************************* */
 /* INSTRUCTION STUFF */
 /* ******************************* */
@@ -442,6 +420,7 @@ var instructionsBlock = {
     exp_id: expID,
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   show_clickable_nav: true,
   post_trial_gap: 0,
@@ -612,8 +591,9 @@ var attentionCheckData = [
     A: 90,
   },
 ];
+
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+var currentAttentionCheckData = attentionCheckData.shift();
 
 // Set up attention check node
 var attentionCheckBlock = {

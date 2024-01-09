@@ -30,6 +30,19 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function shuffleArray(array) {
+  // Create a copy of the original array
+  const shuffledArray = [...array];
+
+  // Perform Fisher-Yates shuffle
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+
+  return shuffledArray;
+}
+
 function renameDataProperties() {
   // Fetch the data from the experiment
   var data = jsPsych.data.get().trials;
@@ -145,25 +158,8 @@ var attentionCheckData = [
     A: 90,
   },
 ];
-function shuffleArray(array) {
-  // Create a copy of the original array
-  const shuffledArray = [...array];
 
-  // Perform Fisher-Yates shuffle
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-
-  return shuffledArray;
-}
-// TODO: change this to only use n number of Qs and As where n is numTestBlocks?
-attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
-
-var getExpStage = function () {
-  return expStage;
-};
+const getExpStage = () => expStage;
 
 function appendData() {
   var data = jsPsych.data.get().last(1).values()[0];
@@ -174,37 +170,23 @@ function appendData() {
   jsPsych.data.get().addToLast({ correct_trial: correctTrial });
 }
 
-var getInstructFeedback = function () {
-  return `<div class = centerbox><p class = center-block-text>
-    ${feedbackInstructText}
-    </p></div>`;
-};
-var getFeedback = function () {
-  return `<div class = bigbox><div class = picture_box><p class = block-text>
-    ${feedbackText}
-    </font></p></div></div>`;
-};
+const getInstructFeedback = () =>
+  `<div class="centerbox"><p class="center-block-text">${feedbackInstructText}</p></div>`;
 
-var getStim = function () {
+const getFeedback = () =>
+  `<div class="bigbox"><div class="picture_box"><p class="block-text">${feedbackText}</p></div></div>`;
+
+const getStim = () => {
   currStim = blockStims.pop();
   return currStim.stimulus;
 };
 
-var getStimData = function () {
-  return currStim.data;
-};
+const getStimData = () => currStim.data;
 
-var getKeyAnswer = function () {
-  return currStim.key_answer;
-};
+const getKeyAnswer = () => currStim.key_answer;
 
-var getCurrBlockNum = function () {
-  if (getExpStage() == "practice") {
-    return practiceCount;
-  } else {
-    return testCount;
-  }
-};
+const getCurrBlockNum = () =>
+  getExpStage() === "practice" ? practiceCount : testCount;
 
 /* ************************************ */
 /* Define experimental variables */
@@ -464,6 +446,9 @@ var pageInstruct = [
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+attentionCheckData = shuffleArray(attentionCheckData);
+var currentAttentionCheckData = attentionCheckData.shift();
+
 // Set up attention check node
 var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
@@ -515,6 +500,7 @@ var instructionsBlock = {
   data: {
     trial_id: "instructions",
     trial_duration: null,
+    stimulus: pageInstruct,
   },
   pages: pageInstruct,
   allow_keys: false,
