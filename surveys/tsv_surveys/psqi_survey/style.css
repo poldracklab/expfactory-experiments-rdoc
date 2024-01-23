@@ -20,7 +20,7 @@ p {
   display: inline-block;
   width: 12em;
   padding-top: 1.5em;
-  transform: translate(-53%,0%);
+  transform: translate(-53%, 0%);
   text-align: center;
 }
 
@@ -30,7 +30,8 @@ p {
   margin-left: 48px;
 }
 
-.mdl-cell--8-col, .mdl-cell--8-col-desktop.mdl-cell--8-col-desktop {
+.mdl-cell--8-col,
+.mdl-cell--8-col-desktop.mdl-cell--8-col-desktop {
   width: 1115px;
 }
 
@@ -48,10 +49,9 @@ p {
 }*/
 
 .mdl-radio.is-checked .mdl-radio__outer-circle {
-  background-color:transparent;
+  background-color: transparent;
 }
 
-.mdl-radio__outer-circle{
-  background-color:white;
+.mdl-radio__outer-circle {
+  background-color: white;
 }
-
