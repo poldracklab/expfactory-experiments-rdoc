@@ -622,11 +622,11 @@ for (i = 0; i < practiceLen; i++) {
     stimulus: function () {
       var last = jsPsych.data.get().last(1).values()[0];
       if (last.response == null) {
-        return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
+        return "<div class=center-box><div class=center-text><font size =20>Respond Faster!</font></div></div>";
       } else if (last.correct_trial == 1) {
-        return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
+        return "<div class=center-box><div class=center-text><font size =20>Correct!</font></div></div>";
       } else {
-        return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
+        return "<div class=center-box><div class=center-text><font size =20>Incorrect</font></div></div>";
       }
     },
     data: {
