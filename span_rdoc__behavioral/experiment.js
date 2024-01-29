@@ -6647,7 +6647,7 @@ function shuffleChecksArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -6657,47 +6657,47 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -6839,7 +6839,6 @@ function makeCheinSymmGrids() {
         break;
       }
     }
-
     cheinSymmGrids.push({ grid, symmetric });
   }
 }
@@ -6870,10 +6869,34 @@ var getRandomSpatial = function () {
   return generateDistractorGrid(stim);
 };
 
+function getProcessingStimProperties(htmlString) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  const divs = doc.querySelectorAll(".container > div");
+  const classList = Array.from(divs).map(div => div.className);
+
+  const parsedClassList = classList.map(item => {
+    if (item === "distractor-box active-box") {
+      return "black";
+    } else if (item === "distractor-box") {
+      return "gray";
+    } else {
+      return item;
+    }
+  });
+
+  return parsedClassList;
+}
+
 var submittedAnswers = [];
-var timestamps = [];
+var timestampsSubmissions = [];
+var timestampsMovingThroughGrid = [];
+var trackingCellMovingThroughGrid = [];
+var startingCellInGrid;
+
 var generateGrid = function () {
   const randomIndex = Math.floor(Math.random() * 16);
+  startingCellInGrid = randomIndex;
   // Variable to store the initial call time
   let initialCallTime = Date.now();
 
@@ -6896,8 +6919,11 @@ var generateGrid = function () {
 
   // Declare a variable to store the setTimeout ID
   let timeoutId;
-
   function handleKeyDown(event) {
+    let currentTime = Date.now();
+    let timeDifference = currentTime - initialCallTime;
+    timestampsMovingThroughGrid.push(timeDifference); // Store timestamp
+
     const key = event.key;
     const container = document.querySelector(".container");
     const boxes = container.querySelectorAll(".box");
@@ -6919,6 +6945,8 @@ var generateGrid = function () {
       newActiveIndex = activeIndex + 4;
     }
 
+    trackingCellMovingThroughGrid.push(newActiveIndex);
+
     if (newActiveIndex !== activeIndex) {
       // Remove active-box class from all boxes
       boxes.forEach(function (box) {
@@ -6934,10 +6962,7 @@ var generateGrid = function () {
     if (key === " ") {
       let currentTime = Date.now();
       let timeDifference = currentTime - initialCallTime;
-      timestamps.push(timeDifference); // Store timestamp
-
-      // Reset the initialCallTime to the current time for next spacebar press
-      initialCallTime = currentTime;
+      timestampsSubmissions.push(timeDifference); // Store timestamp
 
       if (spacebarCount < 4) {
         boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
@@ -6974,7 +6999,6 @@ var generateGrid = function () {
 
     // Also reset the initial call time when the grid is reset
     initialCallTime = Date.now();
-    timestamps.length = 0; // Clear the timestamps array
   }
 
   return { html, resetGrid };
@@ -7129,7 +7153,13 @@ var practicePromptText = `<div class = prompt_box_simple>
 
 var promptText = `<div class=prompt_box_operation>
     <p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the black colored cells.</p>
-    <p class = center-block-text style = "font-size:16px; line-height:80%%;">Press <b>"${processingChoices[0].keyname}"</b> if 8x8 is <b>symmetric</b> and <b>"${processingChoices[1].keyname}"</b> if <b>asymmetric</b>.</p>
+    <p class = center-block-text style = "font-size:16px; line-height:80%%;">Press <b>"left arrow key"</b> if 8x8 is <b>${
+      processingChoices[0].keyname === "left arrow key"
+        ? "symmetric"
+        : "asymmetric"
+    }</b> and <b>"right arrow key"</b> if <b>${
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.</p>
   </div>`;
 
 /* ************************************ */
@@ -7175,7 +7205,13 @@ var opSpanInstructions = `
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
       During this sub-task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not. 
-      Press the <b>${processingChoices[0].keyname}</b> if the grid is symmetric and press the <b>${processingChoices[1].keyname}</b> if it is not.
+      Press the <b>left arrow key</b> if the grid is <b>${
+        processingChoices[0].keyname === "left arrow key"
+          ? "symmetric"
+          : "asymmetric"
+      }</b> and press the <b>right arrow key</b> if it is <b>${
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7246,7 +7282,6 @@ var reminderInstruct = `
   </div>
 `;
 
-// / This ensures that the subject does not read through the instructions too quickly. If they do it too quickly, then we will go over the loop again.
 var instructionsBlock = {
   type: jsPsychInstructions,
   pages: [
@@ -7271,7 +7306,6 @@ var instructionsBlock = {
 
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -7431,15 +7465,15 @@ var waitBlock = {
 
       if (spatialAns == 1) {
         if (data.response == processingChoices[0].keycode.toLowerCase()) {
-          data["correct_response"] = 1;
+          data["correct_trial"] = 1;
         } else {
-          data["correct_response"] = 0;
+          data["correct_trial"] = 0;
         }
       } else {
         if (data.response == processingChoices[0].keycode.toLowerCase()) {
-          data["correct_response"] = 0;
+          data["correct_trial"] = 0;
         } else {
-          data["correct_response"] = 1;
+          data["correct_trial"] = 1;
         }
       }
     } else {
@@ -7447,6 +7481,14 @@ var waitBlock = {
     }
 
     data["num_block"] = getExpStage() == "practice" ? practiceCount : testCount;
+
+    let processingStimProperties =
+      getCurrCondition() === "operation"
+        ? getProcessingStimProperties(data.stimulus)
+        : null;
+
+    data["order_and_color_of_processing_boxes"] = processingStimProperties;
+    console.log(data);
   },
   prompt: function () {
     if (getExpStage() == "practice" && getCurrCondition() == "operation") {
@@ -7494,11 +7536,11 @@ var practiceFeedbackBlock = {
     var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block
     if (last.correct_trial == null) {
-      return "<div class = fb_box><div class = 'center-text'><font size =20>Respond Faster!</font></div></div>";
+      return "<div class=center-box><div class='center-text'><font size =20>Respond Faster!</font></div></div>";
     } else if (last.correct_trial == 1) {
-      return "<div class = fb_box><div class = 'center-text'><font size =20>Correct!</font></div></div>";
+      return "<div class=center-box><div class='center-text'><font size =20>Correct!</font></div></div>";
     } else {
-      return "<div class = fb_box><div class = 'center-text'><font size =20>Incorrect</font></div></div>";
+      return "<div class=center-box><div class='center-text'><font size =20>Incorrect</font></div></div>";
     }
   },
   data: {
@@ -7581,15 +7623,23 @@ var testTrial = {
         .slice(-4)
         .map(trial => trial.spatial_location);
     }
+    data["starting_cell_in_grid"] = startingCellInGrid;
 
     data["spatial_sequence"] = lastInterStimTrialsCorrectAnswers;
     data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
-    data["rt_each_spatial_location_response_grid"] = timestamps.slice(0, 4);
-    data["rt_total_response_grid"] = timestamps
-      .slice(0, 4)
-      .reduce((accumulator, currentValue) => {
-        return accumulator + currentValue;
-      }, 0);
+    data["rt_each_spatial_location_response_grid"] =
+      timestampsSubmissions.slice(0, 4);
+
+    data["rt_moving_each_spatial_location_response_grid"] =
+      timestampsMovingThroughGrid;
+
+    data["moving_order_spatial_location"] = trackingCellMovingThroughGrid;
+
+    trackingCellMovingThroughGrid = [];
+    timestampsSubmissions = [];
+    timestampsMovingThroughGrid = [];
+
+    console.log(data);
     activeGrid.resetGrid();
   },
 };
@@ -7715,7 +7765,7 @@ var practiceNode = {
         } else {
           responseCount += 1;
           rt += responseProcessingData[i].rt;
-          if (responseProcessingData[i].correct_response == 1) {
+          if (responseProcessingData[i].correct_trial == 1) {
             processingCorrect += 1;
           }
         }
@@ -7884,7 +7934,7 @@ var testNode = {
         } else {
           responseCount += 1;
           rt += responseProcessingData[i].rt;
-          if (responseProcessingData[i].correct_response == 1) {
+          if (responseProcessingData[i].correct_trial == 1) {
             processingCorrect += 1;
           }
         }
@@ -7947,27 +7997,6 @@ var testNode = {
         if (avgProcessingMissed > processingMissedThresh) {
           feedbackText +=
             "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
-        }
-      }
-
-      if (getCurrCondition() == "simple") {
-        if (
-          accuracy >= accuracyThresh &&
-          missedResponses <= missedResponseThresh
-        ) {
-          feedbackText +=
-            "<p class = block-text>No feedback on this block.</p>";
-        }
-      } else {
-        if (
-          avgProcessingAcc >= processingAccThresh &&
-          avgProcessingRT <= processingRTThresh &&
-          avgProcessingMissed <= missedResponseThresh &&
-          accuracy >= accuracyThresh &&
-          missedResponses <= missedResponseThresh
-        ) {
-          feedbackText +=
-            "<p class = block-text>No feedback on this block.</p>";
         }
       }
 
