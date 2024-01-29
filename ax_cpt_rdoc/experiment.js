@@ -43,7 +43,7 @@ function shuffleArray(array) {
 }
 
 const getCurrAttentionCheckQuestion = () =>
-  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 
 const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
@@ -184,15 +184,23 @@ var feedbackText = `
 
 var promptTextList = `
   <ul style="text-align:left;">
-    <li>A -> X: ${possibleResponses[0][0]}</li>
-    <li>Anything else: ${possibleResponses[1][0]}</li>
+    <li>${
+      possibleResponses[0][0] === "index finger" ? "A -> X" : "Anything else"
+    }: comma key (,)</li>
+    <li>${
+      possibleResponses[0][0] === "index finger" ? "Anything else" : "A -> X"
+    }: period key (.)</li>
   </ul>
 `;
 
 var promptText = `
   <div class = prompt_box>
-    <p class = center-block-text style = "font-size:16px; line-height:80%;">A -> X: ${possibleResponses[0][0]}</p>
-    <p class = center-block-text style = "font-size:16px; line-height:80%;">Anything else: ${possibleResponses[1][0]}</p>
+    <p class = center-block-text style = "font-size:16px; line-height:80%;">${
+      possibleResponses[0][0] === "index finger" ? "A -> X" : "Anything else"
+    }: comma key (,)</p>
+    <p class = center-block-text style = "font-size:16px; line-height:80%;">${
+      possibleResponses[0][0] === "index finger" ? "Anything else" : "A -> X"
+    }: period key (.)</p>
   </div>
 `;
 
@@ -200,8 +208,8 @@ var pageInstruct = [
   `
   <div class = centerbox>
     <p class=block-text>Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
-    <p class = block-text>During this task, on each trial you will see a letter presented, a short break, and then a second letter. For instance, you may see "A," which would then disappear to be replaced by "F".</p>
-    <p class = block-text>Your task is to respond by pressing a button during the presentation of the <b>second</b> letter. If the first letter was an "A" <b>AND</b> the second letter is an "X", press your <b>${possibleResponses[0][0]}</b>. Otherwise, press your <b>${possibleResponses[1][0]}</b>.</p>
+    <p class = block-text>During this task, on each trial you will see a letter presented, a short break, and then a second letter. For instance, you may see an "A" followed by an "F".</p>
+    <p class = block-text>If the first letter was an "A" <b>AND</b> the second letter is an "X", press your <b>${possibleResponses[0][0]}</b>. Otherwise, press your <b>${possibleResponses[1][0]}</b>.</p>
   </div>
   `,
   `
@@ -429,7 +437,6 @@ var instructionsBlock = {
 var sumInstructTime = 0; // ms
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -460,19 +467,19 @@ var practiceFeedbackBlock = {
     var last = jsPsych.data.get().last(1).values()[0];
     if (last.response == null) {
       return (
-        "<div class = fb_box>" +
-        "<div class = center-text>" +
+        "<div class=center-box>" +
+        "<div class=center-text>" +
         "<font size =20>Respond Faster!</font></div></div>"
       );
     } else if (last.correct_trial == 1) {
       return (
-        "<div class = fb_box>" +
-        "<div class = center-text><font size =20>Correct!</font></div></div>"
+        "<div class=center-box>" +
+        "<div class=center-text><font size =20>Correct!</font></div></div>"
       );
     } else {
       return (
-        "<div class = fb_box>" +
-        "<div class = center-text><font size =20>Incorrect</font></div></div>"
+        "<div class=center-box>" +
+        "<div class=center-text><font size =20>Incorrect</font></div></div>"
       );
     }
   },
@@ -520,47 +527,47 @@ var feedbackBlock = {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -634,7 +641,6 @@ for (i = 0; i < practiceLen; i++) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getCue,
     is_html: true,
-    choices: ["NO_KEYS"],
     data: function () {
       return {
         trial_id: "practice_cue",
@@ -777,7 +783,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getCue,
     is_html: true,
-    choices: ["NO_KEYS"],
     data: function () {
       return {
         trial_id: "test_cue",
@@ -894,14 +899,6 @@ var testNode = {
         feedbackText += `
         <p class = block-text>You have not been responding to some trials. Please respond on every trial that requires a response.</p>
       `;
-      }
-
-      if (
-        accuracy >= accuracyThresh &&
-        missedResponses <= missedResponseThresh &&
-        avgRT <= rtThresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=
