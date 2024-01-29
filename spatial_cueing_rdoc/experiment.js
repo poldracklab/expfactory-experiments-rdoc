@@ -76,7 +76,7 @@ function getCTIs(blockLen) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -86,47 +86,47 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -247,7 +247,7 @@ var practiceLen = 12;
 var numTestBlocks = 3;
 var numTrialsPerBlock = 72; // should be multiple of 24
 
-const responseKeys = `<p class='block-text'>Press your <b>${possibleResponses[0][0]}</b> if the star (*) appears in the left box and your <b>${possibleResponses[1][0]}</b> if the star (*) appears in the right box.</p>`;
+const responseKeys = `<p class='block-text'>Press the <b>${possibleResponses[0][2]}</b> if the star (*) appears in the left box and the <b>${possibleResponses[1][2]}</b> if the star (*) appears in the right box.</p>`;
 var currStim = "";
 
 var fixation =
@@ -330,8 +330,8 @@ var invalidCueStim = stimuli.filter(obj => obj.data.condition === "invalid");
 
 var promptText = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">Star in left box: ${possibleResponses[0][0]}</p>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">Star in right box: ${possibleResponses[1][0]}</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">Star in left box: ${possibleResponses[0][2]}</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">Star in right box: ${possibleResponses[1][2]}</p>
   </div>
 `;
 
@@ -421,7 +421,6 @@ var instructionsBlock = {
 var sumInstructTime = 0; // ms
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -776,14 +775,14 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       return {
         trial_id: "test_cue",
         exp_stage: "test",
-        trial_duration: 500,
-        stimulus_duration: 500,
-        block_num: testCount,
+        trial_duration: cueTrialDuration,
+        stimulus_duration: cueStimulusDuration,
       };
     },
     post_trial_gap: 0,
-    stimulus_duration: 500,
-    trial_duration: 500,
+    stimulus_duration: cueStimulusDuration,
+    trial_duration: cueTrialDuration,
+    on_finish: data => (data["block_num"] = testCount),
   };
   var ctiBlock = {
     type: jsPsychHtmlKeyboardResponse,
@@ -892,14 +891,6 @@ var testNode = {
         feedbackText += `
         <p class="block-text">You have not been responding to some trials. Please respond on every trial that requires a response.</p>
       `;
-      }
-
-      if (
-        accuracy >= accuracyThresh &&
-        missedResponses <= missedResponseThresh &&
-        avgRT <= rtThresh
-      ) {
-        feedbackText += "<p class=block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=
