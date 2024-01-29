@@ -147,39 +147,58 @@ var createTrialTypes = function (task_switches) {
   var stims = [];
 
   // randomly select location of first quadrant
-  var whichQuadStart = jsPsych.randomization.repeat([1, 2, 3, 4], 1).pop();
   const quadMapping = {
     1: quadMappings.top,
     2: quadMappings.top,
     3: quadMappings.bottom,
     4: quadMappings.bottom,
   };
-  const numbers = [1, 2, 3, 4, 6, 7, 8, 9];
-  var number = numbers[Math.floor(Math.random() * 8)];
+  var whichQuadStart = jsPsych.randomization.repeat([1, 2, 3, 4], 1).pop();
   var spatial_cue = quadMapping[whichQuadStart];
-  var magnitude = number > 5 ? "high" : "low";
-  var parity = number % 2 === 0 ? "even" : "odd";
 
-  if (spatial_cue == "parity") {
-    if (number % 2 == 0) {
-      var correct_response = responseMappings.oddEven.even;
+  const shapes = [
+    "green_circle",
+    "green_square",
+    "yellow_circle",
+    "yellow_square",
+  ];
+  var shape = shapes[Math.floor(Math.random() * 4)];
+
+  var color;
+  var form;
+
+  if (shape.includes("green")) {
+    color = "green";
+  } else if (shape.includes("yellow")) {
+    color = "yellow";
+  }
+
+  if (shape.includes("circle")) {
+    form = "circle";
+  } else if (shape.includes("square")) {
+    form = "square";
+  }
+
+  if (spatial_cue === "form") {
+    if (form === "circle") {
+      var correct_response = responseMappings.form.circle;
     } else {
-      var correct_response = responseMappings.oddEven.odd;
+      var correct_response = responseMappings.form.square;
     }
   } else {
-    if (number > 5) {
-      var correct_response = responseMappings.higherLower.higher;
+    if (color === "green") {
+      var correct_response = responseMappings.color.green;
     } else {
-      var correct_response = responseMappings.higherLower.lower;
+      var correct_response = responseMappings.color.yellow;
     }
   }
 
   var first_stim = {
     whichQuadrant: whichQuadStart,
     spatial_cue: spatial_cue,
-    number: number,
-    magnitude: magnitude,
-    parity: parity,
+    shape: shape,
+    form: form,
+    color: color,
     correct_response: correct_response,
   };
   stims.push(first_stim);
@@ -188,9 +207,22 @@ var createTrialTypes = function (task_switches) {
 
   for (i = 0; i < task_switches.length; i++) {
     var current_condition = task_switches[i];
-    var number = numbers[Math.floor(Math.random() * 8)];
-    var magnitude = number > 5 ? "high" : "low";
-    var parity = number % 2 === 0 ? "even" : "odd";
+    var shape = shapes[Math.floor(Math.random() * 4)];
+    var color;
+    var form;
+
+    if (shape.includes("green")) {
+      color = "green";
+    } else if (shape.includes("yellow")) {
+      color = "yellow";
+    }
+
+    if (shape.includes("circle")) {
+      form = "circle";
+    } else if (shape.includes("square")) {
+      form = "square";
+    }
+
     var current_quad;
 
     if (current_condition == "task_stay_cue_stay") {
@@ -215,26 +247,26 @@ var createTrialTypes = function (task_switches) {
     }
     var spatial_cue = quadMapping[current_quad];
 
-    if (spatial_cue == "parity") {
-      if (number % 2 == 0) {
-        var correct_response = responseMappings.oddEven.even;
+    if (spatial_cue === "form") {
+      if (form === "circle") {
+        var correct_response = responseMappings.form.circle;
       } else {
-        var correct_response = responseMappings.oddEven.odd;
+        var correct_response = responseMappings.form.square;
       }
     } else {
-      if (number > 5) {
-        var correct_response = responseMappings.higherLower.higher;
+      if (color === "green") {
+        var correct_response = responseMappings.color.green;
       } else {
-        var correct_response = responseMappings.higherLower.lower;
+        var correct_response = responseMappings.color.yellow;
       }
     }
 
     var current_stim = {
       whichQuadrant: current_quad,
       spatial_cue: spatial_cue,
-      number: number,
-      magnitude: magnitude,
-      parity: parity,
+      shape: shape,
+      color: color,
+      form: form,
       correct_response: correct_response,
     };
     stims.push(current_stim);
@@ -250,12 +282,11 @@ var getFixation = () =>
 
 var getCue = function () {
   stim = stims.shift();
-  predictable_dimension = stim.predictable_dimension;
-  number = stim.number;
+  shape = stim.shape;
   correct_response = stim.correct_response;
   whichQuadrant = stim.whichQuadrant;
-  magnitude = stim.magnitude;
-  parity = stim.parity;
+  color = stim.color;
+  form = stim.form;
 
   return stop_boards[whichQuadrant - 1][0] + stop_boards[whichQuadrant - 1][1];
 };
@@ -264,7 +295,7 @@ var getStim = function () {
   return (
     task_boards[whichQuadrant - 1][0] +
     preFileType +
-    number +
+    shape +
     fileTypePNG +
     task_boards[whichQuadrant - 1][1]
   );
@@ -297,11 +328,11 @@ var appendData = function () {
         ? quadMappings.top
         : quadMappings.bottom,
     condition: task_switch,
-    number: number,
     correct_response: correct_response,
     whichQuadrant: whichQuadrant,
-    magnitude: magnitude,
-    parity: parity,
+    shape: shape,
+    form: form,
+    color: color,
     current_trial: current_trial,
     current_block: current_block,
     block_num: getCurrBlockNum(),
@@ -331,34 +362,34 @@ function getResponseMappings(group_index) {
   var quadMappings;
 
   if (group_index % 2 == 0) {
-    quadMappings = { top: "magnitude", bottom: "parity" };
+    quadMappings = { top: "form", bottom: "color" };
   } else {
-    quadMappings = { top: "parity", bottom: "magnitude" };
+    quadMappings = { top: "color", bottom: "form" };
   }
 
   switch (group_index % 4) {
     case 0: // Condition 1
       responseMapping = {
-        higherLower: { higher: ",", lower: "." },
-        oddEven: { odd: ",", even: "." },
+        form: { circle: ",", square: "." },
+        color: { green: ",", yellow: "." },
       };
       break;
     case 1: // Condition 2
       responseMapping = {
-        higherLower: { higher: ".", lower: "," },
-        oddEven: { odd: ",", even: "." },
+        form: { circle: ".", square: "," },
+        color: { green: ",", yellow: "." },
       };
       break;
     case 2: // Condition 3
       responseMapping = {
-        higherLower: { higher: ",", lower: "." },
-        oddEven: { odd: ".", even: "," },
+        form: { circle: ",", square: "." },
+        color: { green: ".", yellow: "," },
       };
       break;
     case 3: // Condition 4
       responseMapping = {
-        higherLower: { higher: ".", lower: "," },
-        oddEven: { odd: ".", even: "," },
+        form: { circle: ".", square: "," },
+        color: { green: ".", yellow: "," },
       };
       break;
   }
@@ -407,15 +438,6 @@ var practice_accuracy_thresh = 0.75;
 var rt_thresh = 750;
 var missed_response_thresh = 0.1;
 var practice_thresh = 3;
-
-var predictable_dimensions_list = [
-  (stim = {
-    dim: "magnitude",
-    values: ["high", "low"],
-    exp: " (higher or lower than 5)",
-  }),
-  (stim = { dim: "parity", values: ["even", "odd"], exp: " (odd or even)" }),
-];
 
 var fileTypePNG = ".png'></img>";
 var preFileType =
@@ -479,50 +501,52 @@ var stop_boards = [
 
 var prompt_text_list = `
   <ul style="text-align:left;">
-    <li>Top 2 quadrants: judge number on <b>${quadMappings.top}</b></li>
+    <li>Top 2 quadrants: judge the shape on its <b>${quadMappings.top}</b></li>
     <li><b>${
-      quadMappings.top === "magnitude"
-        ? responseMappings.higherLower.higher === ","
-          ? "high"
-          : "low"
-        : quadMappings.top === "parity"
-        ? responseMappings.oddEven.even === ","
-          ? "even"
-          : "odd"
+      quadMappings.top === "form"
+        ? responseMappings.form.circle === ","
+          ? "circle"
+          : "square"
+        : quadMappings.top === "color"
+        ? responseMappings.color.green === ","
+          ? "green"
+          : "yellow"
         : ""
     }</b>: comma key (,)</li>
     <li><b>${
-      quadMappings.top === "magnitude"
-        ? responseMappings.higherLower.higher === "."
-          ? "high"
-          : "low"
-        : quadMappings.top === "parity"
-        ? responseMappings.oddEven.even === "."
-          ? "even"
-          : "odd"
+      quadMappings.top === "form"
+        ? responseMappings.form.circle === "."
+          ? "circle"
+          : "square"
+        : quadMappings.top === "color"
+        ? responseMappings.color.green === "."
+          ? "green"
+          : "yellow"
         : ""
     }</b>: period key (.)</li>
-    <li>Bottom 2 quadrants: judge number on <b>${quadMappings.bottom}</b></li>
+    <li>Bottom 2 quadrants: judge the shape on its <b>${
+      quadMappings.bottom
+    }</b></li>
     <li><b>${
-      quadMappings.bottom === "magnitude"
-        ? responseMappings.higherLower.higher === ","
-          ? "high"
-          : "low"
-        : quadMappings.bottom === "parity"
-        ? responseMappings.oddEven.even === ","
-          ? "even"
-          : "odd"
+      quadMappings.bottom === "form"
+        ? responseMappings.form.circle === ","
+          ? "circle"
+          : "square"
+        : quadMappings.bottom === "color"
+        ? responseMappings.color.green === ","
+          ? "green"
+          : "yellow"
         : ""
     }</b>: comma key (,)</li>
     <li><b>${
-      quadMappings.bottom === "magnitude"
-        ? responseMappings.higherLower.higher === "."
-          ? "high"
-          : "low"
-        : quadMappings.bottom === "parity"
-        ? responseMappings.oddEven.even === "."
-          ? "even"
-          : "odd"
+      quadMappings.bottom === "form"
+        ? responseMappings.form.circle === "."
+          ? "circle"
+          : "square"
+        : quadMappings.bottom === "color"
+        ? responseMappings.color.green === "."
+          ? "green"
+          : "yellow"
         : ""
     }</b>: period key (.)</li>
   </ul>`;
@@ -530,55 +554,57 @@ var prompt_text_list = `
 var prompt_text = `
   <div class="prompt_box">
     <div class='prompt_content' style='margin-bottom: 80px;'>
-      <p>Top 2 quadrants, judge number on <b>${quadMappings.top}</b>:</p>
+      <p>Top 2 quadrants, judge the shape on its <b>${quadMappings.top}</b>:</p>
       <ul>
         <li><b>${
-          quadMappings.top === "magnitude"
-            ? responseMappings.higherLower.higher === ","
-              ? "high"
-              : "low"
-            : quadMappings.top === "parity"
-            ? responseMappings.oddEven.even === ","
-              ? "even"
-              : "odd"
+          quadMappings.top === "form"
+            ? responseMappings.form.circle === ","
+              ? "circle"
+              : "square"
+            : quadMappings.top === "color"
+            ? responseMappings.color.green === ","
+              ? "green"
+              : "yellow"
             : ""
         }</b>: comma key (,)</li>
         <li><b>${
-          quadMappings.top === "magnitude"
-            ? responseMappings.higherLower.higher === "."
-              ? "high"
-              : "low"
-            : quadMappings.top === "parity"
-            ? responseMappings.oddEven.even === "."
-              ? "even"
-              : "odd"
+          quadMappings.top === "form"
+            ? responseMappings.form.circle === "."
+              ? "circle"
+              : "square"
+            : quadMappings.top === "color"
+            ? responseMappings.color.green === "."
+              ? "green"
+              : "yellow"
             : ""
         }</b>: period key (.)</li>
       </ul>
     </div>
     <div class='prompt_content' style='margin-top: 80px;'>
-      <p>Bottom 2 quadrants, judge number on <b>${quadMappings.bottom}</b>:</p>
+      <p>Bottom 2 quadrants, judge the shape on its <b>${
+        quadMappings.bottom
+      }</b>:</p>
        <ul>
         <li><b>${
-          quadMappings.bottom === "magnitude"
-            ? responseMappings.higherLower.higher === ","
-              ? "high"
-              : "low"
-            : quadMappings.bottom === "parity"
-            ? responseMappings.oddEven.even === ","
-              ? "even"
-              : "odd"
+          quadMappings.bottom === "form"
+            ? responseMappings.form.circle === ","
+              ? "circle"
+              : "square"
+            : quadMappings.bottom === "color"
+            ? responseMappings.color.green === ","
+              ? "green"
+              : "yellow"
             : ""
         }</b>: comma key (,)</li>
         <li><b>${
-          quadMappings.bottom === "magnitude"
-            ? responseMappings.higherLower.higher === "."
-              ? "high"
-              : "low"
-            : quadMappings.bottom === "parity"
-            ? responseMappings.oddEven.even === "."
-              ? "even"
-              : "odd"
+          quadMappings.bottom === "form"
+            ? responseMappings.form.circle === "."
+              ? "circle"
+              : "square"
+            : quadMappings.bottom === "color"
+            ? responseMappings.color.green === "."
+              ? "green"
+              : "yellow"
             : ""
         }</b>: period key (.)</li>
       </ul>
@@ -588,58 +614,66 @@ var prompt_text = `
 var pageInstruct = [
   `<div class = centerbox>
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
-    <p class = block-text>During this task, on each trial you will see a single number in one of the four quadrants of the screen.
-    Based upon which quadrant the number is presented, you will complete a different task for that number.
+    <p class = block-text>During this task, on each trial you will see a single shape in one of the four quadrants of the screen.
+    Based upon which quadrant the shape is presented, you will complete a different task for that shape.
     </p>
-    <p class = block-text>In the top two quadrants, please judge the number based on <b>${
+    <p class = block-text>In the top two quadrants, please judge the shape based on its <b>${
       quadMappings.top
-    }</b>. Press your <b>index finger</b> if 
+    }</b>. Press your <b>index finger</b> ${
+    quadMappings.top === "form" ? "if its a" : "if its"
+  }
     <b>${
-      quadMappings.top === "magnitude"
-        ? responseMappings.higherLower.higher === ","
-          ? "high"
-          : "low"
-        : quadMappings.top === "parity"
-        ? responseMappings.oddEven.even === ","
-          ? "even"
-          : "odd"
+      quadMappings.top === "form"
+        ? responseMappings.form.circle === ","
+          ? "circle"
+          : "square"
+        : quadMappings.top === "color"
+        ? responseMappings.color.green === ","
+          ? "green"
+          : "yellow"
         : ""
-    }</b> and your <b>middle finger</b> if 
+    }</b> and your <b>middle finger</b> ${
+    quadMappings.top === "form" ? "if its a" : "if its"
+  }
     <b>${
-      quadMappings.top === "magnitude"
-        ? responseMappings.higherLower.higher === "."
-          ? "high"
-          : "low"
-        : quadMappings.top === "parity"
-        ? responseMappings.oddEven.even === "."
-          ? "even"
-          : "odd"
+      quadMappings.top === "form"
+        ? responseMappings.form.circle === "."
+          ? "circle"
+          : "square"
+        : quadMappings.top === "color"
+        ? responseMappings.color.green === "."
+          ? "green"
+          : "yellow"
         : ""
     }</b>. 
     </p>
-     <p class = block-text>In the bottom two quadrants, please judge the number based on <b>${
+     <p class = block-text>In the bottom two quadrants, please judge the shape based on its <b>${
        quadMappings.bottom
-     }</b>. Press your <b>index finger</b> if 
+     }</b>. Press your <b>index finger</b> ${
+    quadMappings.bottom === "form" ? "if its a" : "if its"
+  }
     <b>${
-      quadMappings.bottom === "magnitude"
-        ? responseMappings.higherLower.higher === ","
-          ? "high"
-          : "low"
-        : quadMappings.bottom === "parity"
-        ? responseMappings.oddEven.even === ","
-          ? "even"
-          : "odd"
+      quadMappings.bottom === "form"
+        ? responseMappings.form.circle === ","
+          ? "circle"
+          : "square"
+        : quadMappings.bottom === "color"
+        ? responseMappings.color.green === ","
+          ? "green"
+          : "yellow"
         : ""
-    }</b> and your <b>middle finger</b> if 
+    }</b> and your <b>middle finger</b> ${
+    quadMappings.bottom === "form" ? "if its a" : "if its"
+  }
     <b>${
-      quadMappings.bottom === "magnitude"
-        ? responseMappings.higherLower.higher === "."
-          ? "high"
-          : "low"
-        : quadMappings.bottom === "parity"
-        ? responseMappings.oddEven.even === "."
-          ? "even"
-          : "odd"
+      quadMappings.bottom === "form"
+        ? responseMappings.form.circle === "."
+          ? "circle"
+          : "square"
+        : quadMappings.bottom === "color"
+        ? responseMappings.color.green === "."
+          ? "green"
+          : "yellow"
         : ""
     }</b>. 
     </p>
@@ -652,10 +686,15 @@ var pageInstruct = [
 
 // IMAGES TO PRELOAD
 var pathSource = "/static/experiments/spatial_task_switching_rdoc/images/";
-var numbersPreload = ["1", "2", "3", "4", "6", "7", "8", "9"];
+var shapesPreload = [
+  "green_circle",
+  "green_square",
+  "yellow_circle",
+  "yellow_square",
+];
 var images = [];
-for (i = 0; i < numbersPreload.length; i++) {
-  images.push(pathSource + numbersPreload[i] + ".png");
+for (i = 0; i < shapesPreload.length; i++) {
+  images.push(pathSource + shapesPreload[i] + ".png");
 }
 
 /* ************************************ */
