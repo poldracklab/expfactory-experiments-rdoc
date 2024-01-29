@@ -45,54 +45,54 @@ function shuffleArray(array) {
 const getExpStage = () => expStage;
 
 const getCurrAttentionCheckQuestion = () =>
-  `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 
 const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -275,11 +275,13 @@ var numTrialsPerBlock = 60; // must be divisible by shapes.length * stopSignalsC
 var numTestBlocks = 3;
 
 var practiceThresh = 3; // max number of times to repeat practice
-var accuracyThresh = 0.85;
+var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.75;
+
 var missedResponseThresh = 0.1;
 var rtThresh = 750;
 
-var SSD = 350;
+var SSD = 250;
 var maxSSD = 1000;
 var minSSD = 0;
 
@@ -288,8 +290,8 @@ var correct_response = null;
 var stimData = null;
 var condition = null;
 
-var maxStopCorrect = 0.7;
-var minStopCorrect = 0.3;
+var maxStopCorrect = 0.75;
+var minStopCorrect = 0.25;
 var maxStopCorrectPractice = 1;
 var minStopCorrectPractice = 0;
 
@@ -309,16 +311,24 @@ for (i = 0; i < shapes.length; i++) {
 
 var promptTextList = `
   <ul style="text-align:left;">
-    <li>${shapes[0]}: ${possibleResponses[0][0]}</li>
-    <li>${shapes[1]}: ${possibleResponses[1][0]}</li>
+    <li>${
+      possibleResponses[0][0] == "index finger" ? shapes[0] : shapes[1]
+    }: comma key (,)</li>
+    <li>${
+      possibleResponses[1][0] == "middle finger" ? shapes[1] : shapes[0]
+    }: period key (.)</li>
     <li>Do not respond if a star appears.</li>
   </ul>
 `;
 
 var promptText = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">${shapes[0]}: ${possibleResponses[0][0]}</p>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">${shapes[1]}: ${possibleResponses[1][0]}</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">${
+      possibleResponses[0][0] == "index finger" ? shapes[0] : shapes[1]
+    }: comma key (,)</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">${
+      possibleResponses[1][0] == "middle finger" ? shapes[1] : shapes[0]
+    }: period key (.)</p>
     <p class="center-block-text" style="font-size:16px; line-height:80%;">Do not respond if a star appears.</p>
   </div>
 `;
@@ -331,8 +341,12 @@ var pageInstruct = [
   <div class="centerbox">
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial you will see shapes appear on the screen one at a time.</p>
-    <p class="block-text">If the shape is a <b>${shapes[0]}</b>, press your <b>${possibleResponses[0][0]}</b>.</p>
-    <p class="block-text">If the shape is a <b>${shapes[1]}</b>, press your <b>${possibleResponses[1][0]}</b>.</p>
+    <p class="block-text">If the shape is a <b>${
+      possibleResponses[0][0] == "index finger" ? shapes[0] : shapes[1]
+    }</b>, press your <b>index finger</b>.</p>
+    <p class="block-text">If the shape is a <b>${
+      possibleResponses[1][0] == "middle finger" ? shapes[1] : shapes[0]
+    }</b>, press your <b>middle finger</b>.</p>
     <p class="block-text">You should respond as quickly and accurately as possible to each shape.</p>
   </div>
   `,
@@ -582,29 +596,29 @@ for (i = 0; i < practiceLen; i++) {
       if (last.condition == "stop") {
         if (last.response === null) {
           return (
-            "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
+            "<div class=center-box><div class=center-text><font size = 20>Correct!</font></div></div>" +
             promptText
           );
         } else {
           return (
-            "<div class = fb_box><div class = center-text><font size = 20>There was a star</font></div></div>" +
+            "<div class=center-box><div class=center-text><font size = 20>There was a star</font></div></div>" +
             promptText
           );
         }
       } else {
         if (last.response == null) {
           return (
-            "<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>" +
+            "<div class=center-box><div class=center-text><font size = 20>Respond Faster!</font></div></div>" +
             promptText
           );
         } else if (last.response === last.correct_response) {
           return (
-            "<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>" +
+            "<div class=center-box><div class=center-text><font size = 20>Correct!</font></div></div>" +
             promptText
           );
         } else {
           return (
-            "<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>" +
+            "<div class=center-box><div class=center-text><font size = 20>Incorrect</font></div></div>" +
             promptText
           );
         }
@@ -673,9 +687,7 @@ var practiceNode = {
 
     if (
       practiceCount == practiceThresh ||
-      (aveShapeRespondCorrect > accuracyThresh &&
-        stopSignalRespond < maxStopCorrectPractice &&
-        stopSignalRespond > minStopCorrectPractice)
+      aveShapeRespondCorrect > practiceAccuracyThresh
     ) {
       feedbackText = `
       <div class="centerbox">
@@ -691,7 +703,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (aveShapeRespondCorrect < accuracyThresh) {
+      if (aveShapeRespondCorrect <= practiceAccuracyThresh) {
         feedbackText += `
         <p class="block-text">Your accuracy is low. Remember:</p>
         ${promptTextList}`;
@@ -834,24 +846,15 @@ var testNode = {
           <p class="block-text">We have detected a number of trials that required a response, where no response was made. Please ensure that you are responding quickly and accurately to the shapes.</p>`;
       }
 
-      if (stopSignalRespond > maxStopCorrect) {
+      if (stopSignalRespond >= maxStopCorrect) {
         feedbackText += `
         <p class="block-text">You have not been stopping your response when stars are present.</p>
         <p class="block-text">Please try your best to stop your response if you see a star.</p>`;
       }
 
-      if (stopSignalRespond < minStopCorrect) {
+      if (stopSignalRespond <= minStopCorrect) {
         feedbackText += `
         <p class="block-text">Please do not slow down and wait for the star to appear. Respond as quickly and accurately as possible when a star does not appear.</p>`;
-      }
-
-      if (
-        aveShapeRespondCorrect >= accuracyThresh &&
-        avgRT <= rtThresh &&
-        stopSignalRespond <= maxStopCorrect &&
-        stopSignalRespond >= minStopCorrect
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=

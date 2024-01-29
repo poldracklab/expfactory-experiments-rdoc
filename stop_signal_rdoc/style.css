@@ -88,14 +88,21 @@ body {
 }
 
 img.center {
-  height: auto;
-  width: auto\9;
-  /* ie8 */
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
   margin: auto;
-  max-height: 65%;
+  /* max-height: 65%; */
+}
+
+#jspsych-stop-signal-SS img.center {
+  height: 450px;
+  width: 490px;
+}
+
+#jspsych-stop-signal-stimulus img.center {
+  height: 160px;
+  width: 160px;
 }
