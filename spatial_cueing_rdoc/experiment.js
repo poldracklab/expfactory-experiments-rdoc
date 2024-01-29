@@ -60,21 +60,6 @@ function sampleWithoutReplacement(arr, n) {
   return result;
 }
 
-function getCTIs(blockLen) {
-  let result = [];
-  let CTIArr = [...CTIVals]; // Create a copy of CTIVals
-
-  while (result.length < blockLen) {
-    if (CTIArr.length === 0) {
-      CTIArr = [...CTIVals]; // Reset CTIArr by creating a new copy of CTIVals
-    }
-    let index = Math.floor(Math.random() * CTIArr.length);
-    result.push(CTIArr[index]);
-    CTIArr.splice(index, 1); // Remove the sampled element
-  }
-  return result;
-}
-
 var getCurrAttentionCheckQuestion = function () {
   return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
@@ -229,9 +214,7 @@ const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
 const cueStimulusDuration = 100;
 const cueTrialDuration = 100;
-// initialize
-var ctiDuration;
-var CTIVals = [100, 550, 1000];
+const ctiDuration = 400;
 
 // generic task variables
 var runAttentionChecks = true;
@@ -609,19 +592,14 @@ for (let i = 0; i < practiceLen; i++) {
       exp_stage: "practice",
     },
     post_trial_gap: 0,
-    stimulus_duration: function () {
-      return ctiDuration;
-    },
-    trial_duration: function () {
-      return ctiDuration;
-    },
+    stimulus_duration: ctiDuration,
+    trial_duration: ctiDuration,
     prompt: promptText,
     on_finish: function (data) {
       data["block_num"] = practiceCount;
       data["trial_duration"] = ctiDuration;
       data["stimulus_duration"] = ctiDuration;
-      data["CTI"] = ctiDuration;
-      ctiDuration = CTIs.shift();
+      data["CTI_duration"] = ctiDuration;
     },
   };
   var testTrial = {
@@ -699,9 +677,6 @@ var practiceNode = {
         stimuli,
         numTrialsPerBlock / stimuli.length
       );
-      CTIs = [];
-      CTIs = getCTIs(numTrialsPerBlock);
-      ctiDuration = CTIs.shift();
 
       expStage = "test";
       return false;
@@ -739,9 +714,6 @@ var practiceNode = {
         ...sampleWithoutReplacement(invalidCueStim, 1)
       );
       blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
-      CTIs = [];
-      CTIs = getCTIs(practiceLen);
-      ctiDuration = CTIs.shift();
       return true;
     }
   },
@@ -791,18 +763,13 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       exp_stage: "test",
     },
     post_trial_gap: 0,
-    stimulus_duration: function () {
-      return ctiDuration;
-    },
-    trial_duration: function () {
-      return ctiDuration;
-    },
+    stimulus_duration: ctiDuration,
+    trial_duration: ctiDuration,
     on_finish: function (data) {
       data["block_num"] = testCount;
       data["trial_duration"] = ctiDuration;
       data["stimulus_duration"] = ctiDuration;
-      data["CTI"] = ctiDuration;
-      ctiDuration = CTIs.shift();
+      data["CTI_duration"] = ctiDuration;
     },
   };
   var testTrial = {
@@ -898,8 +865,6 @@ var testNode = {
         stimuli,
         numTrialsPerBlock / stimuli.length
       );
-      CTIs = [];
-      CTIs = getCTIs(numTrialsPerBlock);
       ctiDuration = CTIs.shift();
 
       return true;
@@ -939,8 +904,6 @@ var spatial_cueing_rdoc_init = () => {
     ...sampleWithoutReplacement(invalidCueStim, 1)
   );
   blockStims = jsPsych.randomization.repeat(practiceStimuli, 1);
-  CTIs = getCTIs(practiceLen);
-  ctiDuration = CTIs.shift();
 
   spatial_cueing_rdoc_experiment.push(fullscreen);
   spatial_cueing_rdoc_experiment.push(instructionNode);
