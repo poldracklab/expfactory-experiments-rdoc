@@ -77,7 +77,7 @@ function getRandomElements(arr, n) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -87,47 +87,47 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -201,19 +201,19 @@ function getKeyMappingForTask(group_index) {
     possibleResponses = [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
-      ["ring finger", "/", "forward slash (/)"],
+      ["ring finger", "/", "forward slash key (/)"],
     ];
   } else if (Math.floor(group_index) % 3 === 1) {
     // Assuming even group_index uses ",", odd group_index uses "."
     possibleResponses = [
       ["middle finger", ".", "period key (.)"],
       ["index finger", ",", "comma key (,)"],
-      ["ring finger", "/", "forward slash (/)"],
+      ["ring finger", "/", "forward slash key (/)"],
     ];
   } else if (Math.floor(group_index) % 3 === 2) {
     possibleResponses = [
       ["middle finger", ".", "period key (.)"],
-      ["ring finger", "/", "forward slash (/)"],
+      ["ring finger", "/", "forward slash key (/)"],
       ["index finger", ",", "comma key (,)"],
     ];
   }
@@ -316,6 +316,15 @@ var congruentStim = [
   },
 ];
 
+const getColorByKey = key => {
+  let keyColorMap = {};
+  keyColorMap[possibleResponses[0][1]] = { name: "red", color: "#FF7070" };
+  keyColorMap[possibleResponses[1][1]] = { name: "blue", color: "#7070FF" };
+  keyColorMap[possibleResponses[2][1]] = { name: "green", color: "#70FF70" };
+
+  return keyColorMap[key];
+};
+
 var colors = ["#FF7070", "#7070FF", "#70FF70"];
 var words = ["red", "blue", "green"];
 
@@ -409,21 +418,42 @@ var numTestBlocks = 3;
 
 var responseKeys = `
   <ul class="list-text">
-    <li><span class="large" style="color:#FF7070">${possibleResponses[0][0]}</span></li>
-    <li><span class="large" style="color:#7070FF">${possibleResponses[1][0]}</span></li>
-    <li><span class="large" style="color:#70FF70">${possibleResponses[2][0]}</span></li>
+    <li>
+    <span class="large" style="color:${
+      getColorByKey(",").color
+    };">WORD</span>: comma key (,)
+  </span>
+  </li>
+   <li>
+    <span class="large" style="color:${
+      getColorByKey(".").color
+    };">WORD</span>: period key (.)
+  </span>
+  </li>
+    <li>
+    <span class="large" style="color:${
+      getColorByKey("/").color
+    };">WORD</span>: forward slash key (/)
+  </span>
+  </li>
   </ul>`;
 
 var promptText = `
   <div class="prompt_box">
     <p class="center-block-text" style="font-size:16px; line-height:80%;">
-      <span class="large" style="color:#FF7070">WORD</span>: ${possibleResponses[0][0]}
+      <span class="large" style="color:${
+        getColorByKey(",").color
+      }">WORD</span>: comma key (,) 
     </p>
     <p class="center-block-text" style="font-size:16px; line-height:80%;">
-      <span class="large" style="color:#7070FF">WORD</span>: ${possibleResponses[1][0]}
+      <span class="large" style="color:${
+        getColorByKey(".").color
+      }">WORD</span>: period key (.)
     </p>
     <p class="center-block-text" style="font-size:16px; line-height:80%;">
-      <span class="large" style="color:#70FF70">WORD</span>: ${possibleResponses[2][0]}
+      <span class="large" style="color:${
+        getColorByKey("/").color
+      }">WORD</span>: forward slash key (/) 
     </p>
   </div>`;
 
@@ -432,10 +462,16 @@ var pageInstruct = [
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b>, your <b>middle finger</b> on the <b>period key (.)</b>, and your <b>ring finger</b> on the <b>forward slash key (/)</b></p>
     <p class='block-text'>During this task, on each trial you will be presented with a single word on the screen. This word will be <b>'RED'</b>, <b>'BLUE'</b>, or <b>'GREEN'</b>.</p>
     <p class='block-text'>Each word will appear in colored ink. The color of the word may not match the word itself. For example, you might see the word 'RED' in green ink, like this: <span style='color:#70FF70'>RED</span>.</p>
-    <p class='block-text'>Your task is to identify the <b>color ink in which the word is displayed</b>, not the word itself. So, if you see the word <b>'RED'</b> in green ink, you should press the key corresponding to <b>green</b>.</p>
-    <p class='block-text'>Press your <b>${possibleResponses[0][0]}</b> if the color is <span style='color:${colors[0]}'>red</span>.</p>
-    <p class='block-text'>Press your <b>${possibleResponses[1][0]}</b> if the color is <span style='color:${colors[1]}'>blue</span>.</p>
-    <p class='block-text'>Press your <b>${possibleResponses[2][0]}</b> if the color is <span style='color:${colors[2]}'>green</span>.</p>
+    <p class='block-text'>Your task is to identify the <b>color of the ink in which the word is displayed</b>, not the word itself. So, if you see the word <b>'RED'</b> in green ink, you should press the key corresponding to <b>green</b>.</p>
+    <p class='block-text'>Press your <b>index finger</b> if the color is <span style='color:${
+      getColorByKey(",").color
+    }'>${getColorByKey(",").name}</span>.</p>
+    <p class='block-text'>Press your <b>middle finger</b> if the color is <span style='color:${
+      getColorByKey(".").color
+    }'>${getColorByKey(".").name}</span>.</p>
+    <p class='block-text'>Press your <b>ring finger</b> if the color is <span style='color:${
+      getColorByKey("/").color
+    }'>${getColorByKey("/").name}</span>.</p>
   </div>`,
   `<div class='centerbox'>
     <p class='block-text'>We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
@@ -511,7 +547,6 @@ var instructionsBlock = {
 var sumInstructTime = 0; // ms
 var instructionsNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -594,12 +629,12 @@ var practiceFeedbackBlock = {
   stimulus: function () {
     var last = jsPsych.data.get().last(1).trials[0];
     if (last.response == null) {
-      return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
+      return "<div class=center-box><div class=center-text><font size =20>Respond Faster!</font></div></div>";
     }
     if (last.correct_trial == 1) {
-      return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
+      return "<div class=center-box><div class=center-text><font size =20>Correct!</font></div></div>";
     } else {
-      return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
+      return "<div class=center-box><div class=center-text><font size =20>Incorrect</font></div></div>";
     }
   },
   data: {
@@ -940,14 +975,6 @@ var testNode = {
       if (missedResponses > missedResponseThresh) {
         feedbackText += `
           <p class="block-text">You have not been responding to some trials. Please respond on every trial that requires a response.</p>`;
-      }
-
-      if (
-        accuracy >= accuracyThresh &&
-        missedResponses <= missedResponseThresh &&
-        avgRT <= rtThresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=
