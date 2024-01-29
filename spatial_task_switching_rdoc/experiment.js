@@ -42,7 +42,7 @@ function shuffleArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -52,47 +52,47 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -476,46 +476,55 @@ var stop_boards = [
     ["</div></div></div>"],
   ],
 ];
+
 var prompt_text_list = `
   <ul style="text-align:left;">
-    <li>Top 2 quadrants: judge number on <b>${quadMappings.top}</b></li> 
-    <li><b>${quadMappings.top == "parity" ? "even" : "high"}</b>: ${
-  quadMappings.top == "parity"
-    ? responseMappings.oddEven.even == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.higher == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
-    <li><b>${quadMappings.top == "parity" ? "odd" : "low"}</b>: ${
-  quadMappings.top == "parity"
-    ? responseMappings.oddEven.odd == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.lower == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
+    <li>Top 2 quadrants: judge number on <b>${quadMappings.top}</b></li>
+    <li><b>${
+      quadMappings.top === "magnitude"
+        ? responseMappings.higherLower.higher === ","
+          ? "high"
+          : "low"
+        : quadMappings.top === "parity"
+        ? responseMappings.oddEven.even === ","
+          ? "even"
+          : "odd"
+        : ""
+    }</b>: comma key (,)</li>
+    <li><b>${
+      quadMappings.top === "magnitude"
+        ? responseMappings.higherLower.higher === "."
+          ? "high"
+          : "low"
+        : quadMappings.top === "parity"
+        ? responseMappings.oddEven.even === "."
+          ? "even"
+          : "odd"
+        : ""
+    }</b>: period key (.)</li>
     <li>Bottom 2 quadrants: judge number on <b>${quadMappings.bottom}</b></li>
-    <li><b>${quadMappings.bottom == "parity" ? "even" : "high"}</b>: ${
-  quadMappings.bottom == "parity"
-    ? responseMappings.oddEven.even == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.higher == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
-    <li><b>${quadMappings.bottom == "parity" ? "odd" : "low"}</b>: ${
-  quadMappings.bottom == "parity"
-    ? responseMappings.oddEven.odd == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.lower == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
+    <li><b>${
+      quadMappings.bottom === "magnitude"
+        ? responseMappings.higherLower.higher === ","
+          ? "high"
+          : "low"
+        : quadMappings.bottom === "parity"
+        ? responseMappings.oddEven.even === ","
+          ? "even"
+          : "odd"
+        : ""
+    }</b>: comma key (,)</li>
+    <li><b>${
+      quadMappings.bottom === "magnitude"
+        ? responseMappings.higherLower.higher === "."
+          ? "high"
+          : "low"
+        : quadMappings.bottom === "parity"
+        ? responseMappings.oddEven.even === "."
+          ? "even"
+          : "odd"
+        : ""
+    }</b>: period key (.)</li>
   </ul>`;
 
 var prompt_text = `
@@ -523,47 +532,55 @@ var prompt_text = `
     <div class='prompt_content' style='margin-bottom: 80px;'>
       <p>Top 2 quadrants, judge number on <b>${quadMappings.top}</b>:</p>
       <ul>
-        <li><b>${quadMappings.top == "parity" ? "even" : "high"}</b>: ${
-  quadMappings.top == "parity"
-    ? responseMappings.oddEven.even == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.higher == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
-        <li><b>${quadMappings.top == "parity" ? "odd" : "low"}</b>: ${
-  quadMappings.top == "parity"
-    ? responseMappings.oddEven.odd == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.lower == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
+        <li><b>${
+          quadMappings.top === "magnitude"
+            ? responseMappings.higherLower.higher === ","
+              ? "high"
+              : "low"
+            : quadMappings.top === "parity"
+            ? responseMappings.oddEven.even === ","
+              ? "even"
+              : "odd"
+            : ""
+        }</b>: comma key (,)</li>
+        <li><b>${
+          quadMappings.top === "magnitude"
+            ? responseMappings.higherLower.higher === "."
+              ? "high"
+              : "low"
+            : quadMappings.top === "parity"
+            ? responseMappings.oddEven.even === "."
+              ? "even"
+              : "odd"
+            : ""
+        }</b>: period key (.)</li>
       </ul>
     </div>
     <div class='prompt_content' style='margin-top: 80px;'>
       <p>Bottom 2 quadrants, judge number on <b>${quadMappings.bottom}</b>:</p>
-      <ul>
-        <li><b>${quadMappings.bottom == "parity" ? "even" : "high"}</b>: ${
-  quadMappings.bottom == "parity"
-    ? responseMappings.oddEven.even == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.higher == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
-        <li><b>${quadMappings.bottom == "parity" ? "odd" : "low"}</b>: ${
-  quadMappings.bottom == "parity"
-    ? responseMappings.oddEven.odd == ","
-      ? "index finger"
-      : "middle finger"
-    : responseMappings.higherLower.lower == ","
-    ? "index finger"
-    : "middle finger"
-}</li>
+       <ul>
+        <li><b>${
+          quadMappings.bottom === "magnitude"
+            ? responseMappings.higherLower.higher === ","
+              ? "high"
+              : "low"
+            : quadMappings.bottom === "parity"
+            ? responseMappings.oddEven.even === ","
+              ? "even"
+              : "odd"
+            : ""
+        }</b>: comma key (,)</li>
+        <li><b>${
+          quadMappings.bottom === "magnitude"
+            ? responseMappings.higherLower.higher === "."
+              ? "high"
+              : "low"
+            : quadMappings.bottom === "parity"
+            ? responseMappings.oddEven.even === "."
+              ? "even"
+              : "odd"
+            : ""
+        }</b>: period key (.)</li>
       </ul>
     </div>
   </div>`;
@@ -576,21 +593,55 @@ var pageInstruct = [
     </p>
     <p class = block-text>In the top two quadrants, please judge the number based on <b>${
       quadMappings.top
-    }</b>. Press your <b>${
-    responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
-  }</b> if 
-    <b>${quadMappings.top == "parity" ? "even" : "high"}</b> and your <b>${
-    responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
-  }</b> if <b>${quadMappings.top == "parity" ? "odd" : "low"}</b>. 
+    }</b>. Press your <b>index finger</b> if 
+    <b>${
+      quadMappings.top === "magnitude"
+        ? responseMappings.higherLower.higher === ","
+          ? "high"
+          : "low"
+        : quadMappings.top === "parity"
+        ? responseMappings.oddEven.even === ","
+          ? "even"
+          : "odd"
+        : ""
+    }</b> and your <b>middle finger</b> if 
+    <b>${
+      quadMappings.top === "magnitude"
+        ? responseMappings.higherLower.higher === "."
+          ? "high"
+          : "low"
+        : quadMappings.top === "parity"
+        ? responseMappings.oddEven.even === "."
+          ? "even"
+          : "odd"
+        : ""
+    }</b>. 
     </p>
      <p class = block-text>In the bottom two quadrants, please judge the number based on <b>${
        quadMappings.bottom
-     }</b>. Press your <b>${
-    responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
-  }</b> if 
-    <b>${quadMappings.bottom == "parity" ? "even" : "high"}</b> and your <b>${
-    responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
-  }</b> if <b>${quadMappings.bottom == "parity" ? "odd" : "low"}</b>. 
+     }</b>. Press your <b>index finger</b> if 
+    <b>${
+      quadMappings.bottom === "magnitude"
+        ? responseMappings.higherLower.higher === ","
+          ? "high"
+          : "low"
+        : quadMappings.bottom === "parity"
+        ? responseMappings.oddEven.even === ","
+          ? "even"
+          : "odd"
+        : ""
+    }</b> and your <b>middle finger</b> if 
+    <b>${
+      quadMappings.bottom === "magnitude"
+        ? responseMappings.higherLower.higher === "."
+          ? "high"
+          : "low"
+        : quadMappings.bottom === "parity"
+        ? responseMappings.oddEven.even === "."
+          ? "even"
+          : "odd"
+        : ""
+    }</b>. 
     </p>
   </div>`,
   `<div class = centerbox>
@@ -678,7 +729,6 @@ var feedback_instruct_block = {
   trial_duration: 180000,
 };
 
-// / This ensures that the subject does not read through the instructions too quickly. If they do it too quickly, then we will go over the loop again.
 var instructions_block = {
   type: jsPsychInstructions,
   data: {
@@ -692,7 +742,6 @@ var instructions_block = {
   post_trial_gap: 0,
 };
 
-/* This function defines stopping criteria */
 var instruction_node = {
   timeline: [feedback_instruct_block, instructions_block],
   loop_function: function () {
@@ -1070,14 +1119,6 @@ var testNode = {
         feedbackText += `
           <p class="block-text">You have not been responding to some trials. Please respond on every trial that requires a response.</p>
         `;
-      }
-
-      if (
-        accuracy >= accuracy_thresh &&
-        missed_responses <= missed_response_thresh &&
-        ave_rt <= rt_thresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=
