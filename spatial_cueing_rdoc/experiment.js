@@ -446,26 +446,24 @@ var instructionNode = {
 var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    // var last = jsPsych.data.get().last(1).values()[0];
     var last = jsPsych.data.get().last(1).trials[0];
-    // ^ changed since we added a fixation block after response block
     if (last.response == null) {
       return (
-        "<div class = fb_box><div class = 'center-text'><font size =20>Respond Faster!</font></div></div>" +
+        "<div class=fb_box><div class='center-text'><font size =20>Respond Faster!</font></div></div>" +
         images.left.box +
         images.right.box +
         fixation
       );
     } else if (last.correct_trial == 1) {
       return (
-        "<div class = fb_box><div class = 'center-text'><font size =20>Correct!</font></div></div>" +
+        "<div class=fb_box><div class='center-text'><font size =20>Correct!</font></div></div>" +
         images.left.box +
         images.right.box +
         fixation
       );
     } else {
       return (
-        "<div class = fb_box><div class = 'center-text'><font size =20>Incorrect</font></div></div>" +
+        "<div class=fb_box><div class='center-text'><font size =20>Incorrect</font></div></div>" +
         images.left.box +
         images.right.box +
         fixation

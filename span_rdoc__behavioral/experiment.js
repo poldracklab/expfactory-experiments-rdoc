@@ -7533,7 +7533,6 @@ var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
     var last = jsPsych.data.get().last(1).trials[0];
-    // ^ changed since we added a fixation block after response block
     if (last.correct_trial == null) {
       return "<div class=center-box><div class='center-text'><font size =20>Respond Faster!</font></div></div>";
     } else if (last.correct_trial == 1) {

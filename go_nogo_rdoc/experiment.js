@@ -525,7 +525,6 @@ for (var i = 0; i < practiceLen; i++) {
   };
 
   var practiceFeedbackBlock = {
-    // adding this and shortening actual trial to 1000ms
     type: jsPsychHtmlKeyboardResponse,
     stimulus: function () {
       var last = jsPsych.data.get().last(1).values()[0];
