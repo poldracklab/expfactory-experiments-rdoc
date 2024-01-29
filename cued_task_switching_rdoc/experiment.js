@@ -46,7 +46,7 @@ function shuffleArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -92,7 +92,7 @@ var attentionCheckData = [
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
@@ -220,7 +220,7 @@ var genStims = function (n) {
   stims = [];
   for (var i = 0; i < n; i++) {
     var number = randomDraw("12346789");
-    var color = "white"; // randomDraw(['white'])
+    var color = "white";
     var stim = {
       number: parseInt(number),
       color: color,
@@ -316,27 +316,6 @@ var getResponse = function () {
 /* ************************************ */
 const fixationDuration = 500;
 
-var possibleResponses;
-
-// function getKeyMappingForTask(group_index) {
-//   if (Math.floor(group_index / 2) % 2 === 0) {
-//     possibleResponses = [
-//       ["index finger", ",", "comma key (,)"],
-//       ["middle finger", ".", "period key (.)"],
-//     ];
-//   } else {
-//     possibleResponses = [
-//       ["middle finger", ".", "period key (.)"],
-//       ["index finger", ",", "comma key (,)"],
-//     ];
-//   }
-// }
-
-// var group_index =
-//   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
-
-// getKeyMappingForTask(group_index);
-
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
@@ -429,41 +408,31 @@ var feedbackText =
 
 var promptTextList = `
   <ul style="text-align:left;font-size:24px; ">
-    <li>Cue "Parity" or "Even-Odd": ${
-      responseMappings.oddEven.even == ","
-        ? "<b>index finger</b>"
-        : "<b>middle finger</b>"
-    } if <b>even</b> and ${
-  responseMappings.oddEven.odd == ","
-    ? "<b>index finger</b>"
-    : "<b>middle finger</b>"
-} if <b>odd</b>.</li>
-    <li>Cue "Magnitude" or "High-Low": ${
-      responseMappings.higherLower.higher == ","
-        ? "<b>index finger</b>"
-        : "<b>middle finger</b>"
-    } if <b>>5</b> and ${
-  responseMappings.higherLower.lower == ","
-    ? "<b>index finger</b>"
-    : "<b>middle finger</b>"
-} if <b><5</b>.</li>
+    <li>Cue "Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
+      responseMappings.oddEven.even === "," ? "even" : "odd"
+    }</b> and <b>period key (.)</b> if <b>${
+  responseMappings.oddEven.even === "," ? "odd" : "even"
+}</b>.</li>
+    <li>Cue "Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
+      responseMappings.higherLower.higher === "," ? "high" : "low"
+    }</b> and <b>period key (.)</b> if <b>${
+  responseMappings.higherLower.higher === "," ? "low" : "high"
+}</b>.</li>
   </ul>
 `;
 
 var promptText = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Even-Odd": ${
-      responseMappings.oddEven.even == "," ? "index finger" : "middle finger"
-    } if even and ${
-  responseMappings.oddEven.odd == "," ? "index finger" : "middle finger"
-} if odd.</p>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": ${
-      responseMappings.higherLower.higher == ","
-        ? "index finger"
-        : "middle finger"
-    } if >5 and ${
-  responseMappings.higherLower.lower == "," ? "index finger" : "middle finger"
-} if <5.</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
+      responseMappings.oddEven.even === "," ? "even" : "odd"
+    }</b> and <b>period key (.)</b> if <b>${
+  responseMappings.oddEven.even === "," ? "odd" : "even"
+}</b></p>
+   <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
+     responseMappings.higherLower.higher === "," ? "high" : "low"
+   }</b> and <b>period key (.)</b> if <b>${
+  responseMappings.higherLower.higher === "," ? "low" : "high"
+}</b></p>
   </div>
 `;
 
@@ -485,7 +454,7 @@ var preFileType =
 var tasks = {
   parity: {
     task: "parity",
-    cues: ["Parity", "Even-Odd"],
+    cues: ["Parity", "Odd-Even"],
   },
   magnitude: {
     task: "magnitude",
@@ -513,7 +482,7 @@ var pageInstruct = [
   <div class="centerbox">
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, you will respond to a sequence of numbers.</p>
-    <p class="block-text">Your response will depend on the current task, which can change each trial. On some trials, you will have to indicate whether the number is <b>even or odd</b>, and on other trials, you will indicate whether the number is <b>higher or lower than 5</b>. Each trial will start with a cue telling you which task to do on that trial.</p>
+    <p class="block-text">Your response will depend on the current task, which can change each trial. On some trials, you will have to indicate whether the number is <b>odd or even</b>, and on other trials, you will indicate whether the number is <b>higher or lower than 5</b>. Each trial will start with a cue telling you which task to do on that trial.</p>
   </div>
   `,
   `
@@ -1004,14 +973,6 @@ var testNode = {
         feedbackText += `
           <p class="block-text">You have not been responding to some trials. Please respond on every trial that requires a response.</p>
         `;
-      }
-
-      if (
-        accuracy >= accuracyThresh &&
-        missedResponses <= missedResponseThresh &&
-        avgRT <= rtThresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=
