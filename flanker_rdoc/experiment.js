@@ -296,16 +296,24 @@ var numTestBlocks = 3;
 var promptTextList = `
   <ul style="text-align:left;">
     <li>Indicate the identity of the middle letter.</li>
-    <li>H: ${possibleResponses[0][0]}</li>
-    <li>F: ${possibleResponses[1][0]}</li>
+    <li>${
+      possibleResponses[0][0] === "index finger" ? "H" : "F"
+    }: comma key (,)</li>
+    <li>${
+      possibleResponses[0][0] === "index finger" ? "F" : "H"
+    }: period key (.)</li>
   </ul>
 `;
 
 var promptText = `
   <div class="prompt_box">
     <p class="center-block-text" style="font-size:16px; line-height:80%;">Indicate the identity of the middle letter.</p>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">H: ${possibleResponses[0][0]}</p>
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">F: ${possibleResponses[1][0]}</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">${
+      possibleResponses[0][0] === "index finger" ? "H" : "F"
+    }: comma key (,)</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">${
+      possibleResponses[0][0] === "index finger" ? "F" : "H"
+    }: period key (.)</p>
   </div>
 `;
 
@@ -314,9 +322,15 @@ var pageInstruct = `
     <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class="block-text">During this task, on each trial you will see a string of F's and H's. For instance, you might see 'FFFFF' or 'HHFHH'.</p>
     <p class="block-text">Your task is to respond by pressing the key corresponding to the <b>middle</b> letter.</p>
-    <p class="block-text">If the middle letter is an <b>H</b>, press your <b>${possibleResponses[0][0]}</b>.</p>
-    <p class="block-text">If the middle letter is an <b>F</b>, press your <b>${possibleResponses[1][0]}</b>.</p>
-    <p class="block-text">So, if you see <b>'FFHFF'</b>, you would press your <b>${possibleResponses[0][0]}</b>.</p>
+    <p class="block-text">If the middle letter is an <b>${
+      possibleResponses[0][0] === "index finger" ? "H" : "F"
+    }</b>, press your <b>index finger</b>.</p>
+    <p class="block-text">If the middle letter is an <b>${
+      possibleResponses[0][0] === "index finger" ? "F" : "H"
+    }</b>, press your <b>middle finger</b>.</p>
+    <p class="block-text">So, if you see <b>'FFHFF'</b>, you would press your <b>${
+      possibleResponses[0][0]
+    }</b>.</p>
     <p class="block-text">We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
     ${speedReminder}
   </div>
@@ -329,54 +343,54 @@ images.push(pathSource + "F.png");
 images.push(pathSource + "H.png");
 
 const getCurrAttentionCheckQuestion = () =>
-  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute.</div>`;
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 
 const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -463,7 +477,6 @@ var instructionsBlock = {
 
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -609,11 +622,11 @@ for (i = 0; i < practiceLen; i++) {
     stimulus: function () {
       var last = jsPsych.data.get().last(1).values()[0];
       if (last.response == null) {
-        return "<div class = fb_box><div class = center-text><font size =20>Respond Faster!</font></div></div>";
+        return "<div class=center-box><div class=center-text><font size =20>Respond Faster!</font></div></div>";
       } else if (last.correct_trial == 1) {
-        return "<div class = fb_box><div class = center-text><font size =20>Correct!</font></div></div>";
+        return "<div class=center-box><div class=center-text><font size =20>Correct!</font></div></div>";
       } else {
-        return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
+        return "<div class=center-box><div class=center-text><font size =20>Incorrect</font></div></div>";
       }
     },
     data: {
@@ -735,7 +748,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     stimulus: getStim,
     choices: choices,
     data: function () {
-      // wasn't returning before, missed function call before too
       return Object.assign({}, getStimData(), {
         trial_id: "test_trial",
         exp_stage: "test",
@@ -816,14 +828,6 @@ var testNode = {
         feedbackText += `
        <p class="block-text">You have been responding too slowly. Try to respond as quickly and accurately as possible.</p>
       `;
-      }
-
-      if (
-        accuracy >= accuracyThresh &&
-        missedResponses <= missedResponseThresh &&
-        aveRT <= rtThresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=

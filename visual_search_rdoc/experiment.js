@@ -29,6 +29,66 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function createPracticeStimArrays(blockLen) {
+  let blockStimConditions = [];
+  let blockStimNums = [];
+  let blockStimTargets = [];
+
+  for (let i = 0; i < blockLen; i++) {
+    if (i < practiceLen / 2) {
+      blockStimConditions.push("feature");
+      if (i % 2 === 0) {
+        blockStimNums.push(8);
+        blockStimTargets.push(1);
+      } else {
+        blockStimNums.push(24);
+        blockStimTargets.push(0);
+      }
+    } else {
+      blockStimConditions.push("conjunction");
+      if (i % 2 === 0) {
+        blockStimNums.push(8);
+        blockStimTargets.push(0);
+      } else {
+        blockStimNums.push(24);
+        blockStimTargets.push(1);
+      }
+    }
+  }
+
+  return { blockStimConditions, blockStimNums, blockStimTargets };
+}
+
+function createStimArrays(blockLen) {
+  let blockStimConditions = [];
+  let blockStimNums = [];
+  let blockStimTargets = [];
+
+  const halfLen = blockLen / 2;
+  const quarterLen = blockLen / 4;
+
+  for (let i = 0; i < blockLen; i++) {
+    // Alternate between "feature" and "conjunction"
+    blockStimConditions.push(i < halfLen ? "feature" : "conjunction");
+
+    // For each condition, half "8" and half "24"
+    if (i % quarterLen < quarterLen / 2) {
+      blockStimNums.push(8);
+    } else {
+      blockStimNums.push(24);
+    }
+
+    // For each condition, half "1" and half "0"
+    if (i % (quarterLen / 2) < quarterLen / 4) {
+      blockStimTargets.push(1);
+    } else {
+      blockStimTargets.push(0);
+    }
+  }
+
+  return { blockStimConditions, blockStimNums, blockStimTargets };
+}
+
 function shuffleArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -43,7 +103,7 @@ function shuffleArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -53,47 +113,47 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -135,10 +195,10 @@ function getStims(
   blockStimConditions,
   length
 ) {
-  const containerWidth = window.innerWidth * 0.7; // Adjusted width (90% of window width)
-  const containerHeight = window.innerHeight * 0.7; // Adjusted height (90% of window height)
+  const containerWidth = window.innerWidth * 0.7;
+  const containerHeight = window.innerHeight * 0.7;
   const boxWidth = 40;
-  const boxHeight = 80; // Adjust the height as desired
+  const boxHeight = 80;
   var stims = [];
 
   for (var i = 0; i < length; i++) {
@@ -146,7 +206,6 @@ function getStims(
     const stimCondition = blockStimConditions.shift();
     const stimNum = blockStimNums.shift();
     const targetIndex = Math.floor(Math.random() * stimNum);
-
     const html = generateHTML(
       containerWidth,
       containerHeight,
@@ -181,6 +240,27 @@ function getStim() {
 
 const getCurrBlockNum = () =>
   getExpStage() === "practice" ? practiceCount : testCount;
+
+function getStimProperties(htmlString) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  const divs = doc.querySelectorAll(".container > div");
+  const ids = Array.from(divs).map(div => div.id);
+
+  const parsedIDList = ids.map(item => {
+    if (item === "black-distractor-element") {
+      return "black vertical";
+    } else if (item === "white-distractor-element") {
+      return "white horizontal";
+    } else if (item === "target") {
+      return "white vertical";
+    }
+  });
+
+  return parsedIDList;
+}
+
+const getTargetLocation = arr => arr.indexOf("white vertical");
 
 function generateHTML(
   containerWidth,
@@ -375,8 +455,16 @@ const pageInstruct = [
     `,
   `
   <div class="centerbox">
-    <p class="block-text">Your task is to determine whether a target is present or absent on each trial.</p>
-    <p class="block-text">If you determine a target is <b>present</b>, press your <b>${possibleResponses[0][0]}</b>, and if you determine a target is <b>absent</b>, press your <b>${possibleResponses[1][0]}</b>.</p>
+    <p class="block-text">Your task is to determine whether a target is ${
+      possibleResponses[0][0] == "index finger" ? "present" : "absent"
+    } or ${
+    possibleResponses[0][0] == "index finger" ? "absent" : "present"
+  } on each trial.</p>
+    <p class="block-text">If you determine a target is <b>${
+      possibleResponses[0][0] == "index finger" ? "present" : "absent"
+    }</b>, press your <b>index finger</b>, and if you determine a target is <b>${
+    possibleResponses[0][0] == "index finger" ? "absent" : "present"
+  }</b>, press your <b>middle finger</b>.</p>
     <p class="block-text">We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
     ${speedReminder}
   </div>`,
@@ -409,14 +497,22 @@ var expStage = "practice";
 /*  ######## Important text values for display ######## */
 const promptText = `
 <div class="prompt_box">
-  <p class="center-block-text" style="font-size: 16px; line-height: 80%;">Target present: press your ${possibleResponses[0][0]}</p>
-  <p class="center-block-text" style="font-size: 16px; line-height: 80%;">Target absent: press your ${possibleResponses[1][0]}</p>
+  <p class="center-block-text" style="font-size: 16px; line-height: 80%;">Target ${
+    possibleResponses[0][0] == "index finger" ? "present" : "absent"
+  }: comma key (,)</p>
+  <p class="center-block-text" style="font-size: 16px; line-height: 80%;">Target ${
+    possibleResponses[0][0] == "index finger" ? "absent" : "present"
+  }: period key (.)</p>
 </div>`;
 
 const promptTextList = `
 <ul style="text-align: left; font-size: 24px;">
-  <li>Target present: press your ${possibleResponses[0][0]}</li>
-  <li>Target absent: press your ${possibleResponses[1][0]}</li>
+  <li>Target ${
+    possibleResponses[0][0] == "index finger" ? "present" : "absent"
+  }: comma key (,)</li>
+  <li>Target ${
+    possibleResponses[0][0] == "index finger" ? "absent" : "present"
+  }: period key (.)</li>
 </ul>`;
 
 // setting first value for feature/conjunction condition
@@ -465,7 +561,7 @@ var feedbackInstructBlock = {
   },
   stimulus: getInstructFeedback,
   post_trial_gap: 0,
-  trialDuration: 180000,
+  trial_duration: 180000,
 };
 
 var testTrial = {
@@ -528,10 +624,15 @@ var testTrial = {
     } else {
       data["correct_trial"] = null;
     }
+
+    let stimProperties = getStimProperties(data.stimulus);
+    data["order_and_color_of_rectangles"] = stimProperties;
+    data["target_rectangle_location"] = trialTargetPresent
+      ? getTargetLocation(stimProperties)
+      : null;
   },
 };
 
-// / This ensures that the subject does not read through the instructions too quickly. If they do it too quickly, then we will go over the loop again.
 var instructionsBlock = {
   type: jsPsychInstructions,
   pages: pageInstruct,
@@ -547,7 +648,6 @@ var instructionsBlock = {
 
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -595,7 +695,7 @@ var feedbackBlock = {
   choices: ["Enter"],
   stimulus: getFeedback,
   post_trial_gap: 1000,
-  trialDuration: 60000,
+  trial_duration: 60000,
   response_ends_trial: true,
 };
 
@@ -702,12 +802,12 @@ var practiceFeedbackBlock = {
     var last = jsPsych.data.get().last(1).trials[0];
     // ^ changed since we added a fixation block after response block\
     if (last.response == null) {
-      return "<div class = centerbox><p class = center-block-text>Respond Faster!</div></div>";
+      return "<div class=center-box><p class=center-text>Respond Faster!</div></div>";
     }
     if (last.correct_trial == 1) {
-      return "<div class = centerbox><p class = center-block-text>Correct!</div></div>";
+      return "<div class=center-box><p class=center-text>Correct!</div></div>";
     } else if (last.correct_trial == 0) {
-      return "<div class = centerbox><p class = center-block-text>Incorrect!</div></div>";
+      return "<div class=center-box><p class=center-text>Incorrect!</div></div>";
     }
   },
   data: {
@@ -718,8 +818,8 @@ var practiceFeedbackBlock = {
     block_num: practiceCount,
   },
   choices: ["NO_KEYS"],
-  stimulus_duration: 500, // 500
-  trial_duration: 500, // 500
+  stimulus_duration: 500,
+  trial_duration: 500,
   prompt: function () {
     if (getExpStage() == "practice") {
       return promptText;
@@ -777,28 +877,8 @@ var practiceNode = {
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>`;
 
-      blockStimNums = [];
-      blockStimTargets = [];
-      blockStimConditions = [];
-
-      for (let i = 0; i < numTrialsPerBlock; i++) {
-        if (i % 2 == 0) {
-          blockStimTargets.push(0);
-          blockStimNums.push(8);
-          blockStimConditions.push("feature");
-        } else {
-          blockStimTargets.push(1);
-          blockStimNums.push(24);
-          blockStimConditions.push("conjunction");
-        }
-      }
-
-      blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
-      blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
-      blockStimConditions = jsPsych.randomization.repeat(
-        blockStimConditions,
-        1
-      );
+      const { blockStimConditions, blockStimNums, blockStimTargets } =
+        createStimArrays(numTrialsPerBlock);
 
       blockStims = getStims(
         blockStimNums,
@@ -806,6 +886,8 @@ var practiceNode = {
         blockStimConditions,
         numTrialsPerBlock
       );
+
+      blockStims = jsPsych.randomization.repeat(blockStims, 1);
 
       expStage = "test";
       return false;
@@ -828,28 +910,8 @@ var practiceNode = {
         `<p class="block-text">We are now going to repeat the practice round.</p>` +
         `<p class="block-text">Press <i>enter</i> to begin.</p></div>`;
 
-      blockStimNums = [];
-      blockStimTargets = [];
-      blockStimConditions = [];
-
-      for (let i = 0; i < practiceLen; i++) {
-        if (i % 2 == 0) {
-          blockStimTargets.push(0);
-          blockStimNums.push(8);
-          blockStimConditions.push("feature");
-        } else {
-          blockStimTargets.push(1);
-          blockStimNums.push(24);
-          blockStimConditions.push("conjunction");
-        }
-      }
-
-      blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
-      blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
-      blockStimConditions = jsPsych.randomization.repeat(
-        blockStimConditions,
-        1
-      );
+      const { blockStimConditions, blockStimNums, blockStimTargets } =
+        createPracticeStimArrays(practiceLen);
 
       blockStims = getStims(
         blockStimNums,
@@ -858,6 +920,7 @@ var practiceNode = {
         practiceLen
       );
 
+      blockStims = jsPsych.randomization.repeat(blockStims, 1);
       return true;
     }
   },
@@ -925,39 +988,11 @@ var testNode = {
         feedbackText += `<p class="block-text">You have not been responding to some trials. Please respond on every trial that requires a response.</p>`;
       }
 
-      if (
-        accuracy >= accuracyThresh &&
-        avgRT <= rtThresh &&
-        missedResponses <= missedResponseThresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
-      }
-
       feedbackText +=
         "<p class=block-text>Press <i>enter</i> to continue.</p>" + "</div>";
 
-      blockStimNums = [];
-      blockStimTargets = [];
-      blockStimConditions = [];
-
-      for (let i = 0; i < numTrialsPerBlock; i++) {
-        if (i % 2 == 0) {
-          blockStimTargets.push(0);
-          blockStimNums.push(8);
-          blockStimConditions.push("feature");
-        } else {
-          blockStimTargets.push(1);
-          blockStimNums.push(24);
-          blockStimConditions.push("conjunction");
-        }
-      }
-
-      blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
-      blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
-      blockStimConditions = jsPsych.randomization.repeat(
-        blockStimConditions,
-        1
-      );
+      const { blockStimConditions, blockStimNums, blockStimTargets } =
+        createStimArrays(numTrialsPerBlock);
 
       blockStims = getStims(
         blockStimNums,
@@ -965,6 +1000,8 @@ var testNode = {
         blockStimConditions,
         numTrialsPerBlock
       );
+
+      blockStims = jsPsych.randomization.repeat(blockStims, 1);
 
       return true;
     }
@@ -987,7 +1024,7 @@ var endBlock = {
     exp_id: "visual_search_rdoc",
     trial_duration: 180000,
   },
-  trialDuration: 180000,
+  trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
@@ -995,20 +1032,8 @@ var endBlock = {
 
 var visual_search_rdoc_experiment = [];
 var visual_search_rdoc_init = () => {
-  for (let i = 0; i < practiceLen; i++) {
-    if (i % 2 == 0) {
-      blockStimTargets.push(0);
-      blockStimNums.push(8);
-      blockStimConditions.push("feature");
-    } else {
-      blockStimTargets.push(1);
-      blockStimNums.push(24);
-      blockStimConditions.push("conjunction");
-    }
-  }
-  blockStimNums = jsPsych.randomization.repeat(blockStimNums, 1);
-  blockStimTargets = jsPsych.randomization.repeat(blockStimTargets, 1);
-  blockStimConditions = jsPsych.randomization.repeat(blockStimConditions, 1);
+  const { blockStimConditions, blockStimNums, blockStimTargets } =
+    createPracticeStimArrays(practiceLen);
 
   blockStims = getStims(
     blockStimNums,
@@ -1016,6 +1041,8 @@ var visual_search_rdoc_init = () => {
     blockStimConditions,
     practiceLen
   );
+
+  blockStims = jsPsych.randomization.repeat(blockStims, 1);
 
   visual_search_rdoc_experiment.push(fullscreen);
   visual_search_rdoc_experiment.push(instructionNode);

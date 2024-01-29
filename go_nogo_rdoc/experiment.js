@@ -44,7 +44,7 @@ function shuffleArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -54,47 +54,47 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
-    Q: "<p class='block-text'>Press the L key</p>",
+    Q: "<p class='block-text'>Press the i key</p>",
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
@@ -135,9 +135,10 @@ var appendData = function (data) {
   if (currentTrial.response == correctResponse) {
     correctTrial = 1;
   }
-  jsPsych.data.get().addToLast({
-    correct_trial: correctTrial,
-  });
+
+  data.correct_trial = correctTrial;
+  data.shape = data.condition === "go" ? "filled square" : "outlined square";
+
   currentTrial += 1;
 };
 
@@ -203,7 +204,7 @@ var runAttentionChecks = true;
 // var attentionCheckThresh = 0.45;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
-var goResponse = ","; // comma key
+var goResponse = " "; // spacebar
 
 // task specific variables
 var numGoStim = 6; // per one no-go stim
@@ -288,21 +289,21 @@ var numTestBlocks = 3;
 
 var promptTextList = `
   <ul style="text-align:left;">
-    <li>${stims[0][0]} square: respond</li>
+    <li>${stims[0][0]} square: spacebar</li>
     <li>${stims[1][0]} square: do not respond</li>
   </ul>
 `;
 
 var promptText = `
   <div class="prompt_box">
-    <p class="center-block-text" style="font-size:16px; line-height:80%;">${stims[0][0]} square: index finger</p>
+    <p class="center-block-text" style="font-size:16px; line-height:80%;">${stims[0][0]} square: spacebar</p>
     <p class="center-block-text" style="font-size:16px; line-height:80%;">${stims[1][0]} square: do not respond</p>
   </div>
 `;
 
 var pageInstruct = `
   <div class="centerbox">
-    <p class="block-text">Place your <b>index finger</b> on the <b>comma key (,)</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>spacebar</b></p>
     <p class="block-text">In this experiment, on each trial a ${stims[0][0]} or ${stims[1][0]} square will appear on the screen.</p>
     <p class="block-text">If you see the <b>${stims[0][0]} square</b>, you should respond by pressing your <b>index finger</b> as quickly as possible.</p>
     <p class="block-text">If you see the <b>${stims[1][0]} square</b>, you should <b>not respond</b>.</p>
@@ -366,7 +367,6 @@ var instructionsBlock = {
 
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
-  /* This function defines stopping criteria */
   loop_function: function (data) {
     for (i = 0; i < data.trials.length; i++) {
       if (
@@ -525,7 +525,6 @@ for (var i = 0; i < practiceLen; i++) {
   };
 
   var practiceFeedbackBlock = {
-    // adding this and shortening actual trial to 1000ms
     type: jsPsychHtmlKeyboardResponse,
     stimulus: function () {
       var last = jsPsych.data.get().last(1).values()[0];
@@ -606,7 +605,7 @@ var practiceNode = {
       feedbackText = `
       <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
-        <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b></p>
+        <p class="block-text">Keep your <b>index finger</b> on the <b>spacebar</b></p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
      </div>
     `;
@@ -745,14 +744,6 @@ var testNode = {
         feedbackText += `
         <p class="block-text">You have not been responding to some trials. Please respond on every trial that requires a response.</p>
       `;
-      }
-
-      if (
-        accuracy >= accuracyThresh &&
-        missedResponses <= missedResponseThresh &&
-        avgRT <= rtThresh
-      ) {
-        feedbackText += "<p class = block-text>No feedback on this block.</p>";
       }
 
       feedbackText +=

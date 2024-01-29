@@ -27,7 +27,6 @@ body {
   text-align: center;
 }
 
-/*TODO: change color of prompt/fixaiton?*/
 .fixation {
   text-align: center;
   font-size: 60px;
@@ -80,16 +79,16 @@ body {
 }
 
 .prompt_content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .prompt_content p {
-    font-size: 16px;
-    text-align: center;
-    display: block;
-    margin: 0 auto; 
+  font-size: 16px;
+  text-align: center;
+  display: block;
+  margin: 0 auto;
 }
 
 .prompt_content ul {

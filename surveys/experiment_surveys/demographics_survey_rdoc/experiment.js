@@ -124,16 +124,16 @@ var questions = [
   {
     type: "text",
     prompt:
-      "If you menstruate, when was the date of your last period (Enter as mm/dd/yyyy)? If you do not menstruate, enter N/A",
-    name: "If you menstruate, when was the date of your last period (Enter as mm/dd/yyyy)? If you do not menstruate, enter N/A",
+      "If you menstruate, when was the date of your last period (Enter as mm/dd/yyyy)? If you do not menstruate, enter N/A.",
+    name: "If you menstruate, when was the date of your last period (Enter as mm/dd/yyyy)? If you do not menstruate, enter N/A.",
     required: false,
     placeholder: "",
   },
   {
     type: "text",
     prompt:
-      "If you menstruate, what is the length (in days) of your typical cycle? If you do not menstruate, enter N/A",
-    name: "If you menstruate, what is the length (in days) of your typical cycle? If you do not menstruate, enter N/A",
+      "If you menstruate, what is the length (in days) of your typical cycle? If you do not menstruate, enter N/A.",
+    name: "If you menstruate, what is the length (in days) of your typical cycle? If you do not menstruate, enter N/A.",
     required: false,
     placeholder: "",
   },
