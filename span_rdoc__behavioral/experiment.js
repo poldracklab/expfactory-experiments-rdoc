@@ -7488,7 +7488,6 @@ var waitBlock = {
         : null;
 
     data["order_and_color_of_processing_boxes"] = processingStimProperties;
-    console.log(data);
   },
   prompt: function () {
     if (getExpStage() == "practice" && getCurrCondition() == "operation") {
@@ -7639,7 +7638,6 @@ var testTrial = {
     timestampsSubmissions = [];
     timestampsMovingThroughGrid = [];
 
-    console.log(data);
     activeGrid.resetGrid();
   },
 };
