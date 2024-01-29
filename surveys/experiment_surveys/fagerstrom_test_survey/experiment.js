@@ -81,7 +81,6 @@ var hitKey = function (whichKey) {
 var pressSubmit = function (current_submit) {
   buttonPressed = current_submit;
   buttonPressedText = document.getElementById(current_submit).innerHTML;
-  console.log("buttonPressedText = " + buttonPressedText);
   keyTracker.push(buttonPressed);
   if (keyTracker.length === 1) {
     $("#" + buttonPressed).addClass("selected");

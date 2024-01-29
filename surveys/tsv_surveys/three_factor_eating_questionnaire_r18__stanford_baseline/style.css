@@ -20,7 +20,7 @@ p {
   display: inline-block;
   width: 10em;
   padding-top: 1.5em;
-  transform: translate(-53%,0%);
+  transform: translate(-53%, 0%);
   text-align: center;
 }
 
@@ -30,52 +30,49 @@ p {
   margin-left: 48px;
 }
 
-.mdl-cell--8-col, .mdl-cell--8-col-desktop.mdl-cell--8-col-desktop {
-	width: 1000px;
+.mdl-cell--8-col,
+.mdl-cell--8-col-desktop.mdl-cell--8-col-desktop {
+  width: 1000px;
 }
-
 
 /* Add gray line for Likert */
 .mdl-radio.is-checked .mdl-radio__outer-circle {
-  background-color:transparent;
+  background-color: transparent;
 }
 
-.mdl-radio__outer-circle{
-  background-color:white;
+.mdl-radio__outer-circle {
+  background-color: white;
 }
-
 
 form p:before {
-  content: '';
-  position:relative;
-  top:53px;
-  left:61px;
-  display:block;
-  background-color:#efefef;
-  height:4px;
-  width:435px;
+  content: "";
+  position: relative;
+  top: 53px;
+  left: 61px;
+  display: block;
+  background-color: #efefef;
+  height: 4px;
+  width: 435px;
 }
 
 form #eating_survey_2_options:before {
-  content: '';
-  position:relative;
-  top:78px;
-  left:61px;
-  display:block;
-  background-color:#efefef;
-  height:4px;
-  width:435px;
+  content: "";
+  position: relative;
+  top: 78px;
+  left: 61px;
+  display: block;
+  background-color: #efefef;
+  height: 4px;
+  width: 435px;
 }
 
 form #eating_survey_19_options:before {
-  content: '';
-  position:relative;
-  top:53px;
-  left:61px;
-  display:block;
-  background-color:transparent;
-  height:4px;
-  width:435px;
+  content: "";
+  position: relative;
+  top: 53px;
+  left: 61px;
+  display: block;
+  background-color: transparent;
+  height: 4px;
+  width: 435px;
 }
-
-
