@@ -509,7 +509,8 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: null,
+    trial_duration: 60000,
+    timing_post_trial: 200,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
@@ -732,11 +733,14 @@ for (var i = 0; i < practiceLen + 1; i++) {
         return "<div class = center-box><div class=center-text><font size =20 >Incorrect</font></div></div>";
       }
     },
-    data: {
-      exp_stage: "practice",
-      trial_id: "practice_feedback",
-      trial_duration: 500,
-      block_num: practiceCount,
+    data: function () {
+      return {
+        exp_stage: "practice",
+        trial_id: "practice_feedback",
+        trial_duration: 500,
+        stimulus_duration: 500,
+        block_num: practiceCount,
+      };
     },
     choices: ["NO_KEYS"],
     stimulus_duration: 500,
