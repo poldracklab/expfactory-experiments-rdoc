@@ -620,7 +620,7 @@ var pageInstruct = [
     <p class = block-text>In the top two quadrants, please judge the shape based on its <b>${
       quadMappings.top
     }</b>. Press your <b>index finger</b> ${
-    quadMappings.top === "form" ? "if its a" : "if its"
+    quadMappings.top === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.top === "form"
@@ -633,7 +633,7 @@ var pageInstruct = [
           : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b> and your <b>middle finger</b> ${
-    quadMappings.top === "form" ? "if its a" : "if its"
+    quadMappings.top === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.top === "form"
@@ -650,7 +650,7 @@ var pageInstruct = [
      <p class = block-text>In the bottom two quadrants, please judge the shape based on its <b>${
        quadMappings.bottom
      }</b>. Press your <b>index finger</b> ${
-    quadMappings.bottom === "form" ? "if its a" : "if its"
+    quadMappings.bottom === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.bottom === "form"
@@ -663,7 +663,7 @@ var pageInstruct = [
           : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b> and your <b>middle finger</b> ${
-    quadMappings.bottom === "form" ? "if its a" : "if its"
+    quadMappings.bottom === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.bottom === "form"
