@@ -1011,6 +1011,37 @@ var endBlock = {
   },
 };
 
+function createBalancedBlocks(allTestStim) {
+  // Separate the trials into congruent and incongruent
+  const congruentTrials = allTestStim.filter(
+    trial => trial.data.condition === "congruent"
+  );
+  const incongruentTrials = allTestStim.filter(
+    trial => trial.data.condition === "incongruent"
+  );
+
+  // Shuffle both arrays
+  const shuffledCongruent = shuffleArray(congruentTrials);
+  const shuffledIncongruent = shuffleArray(incongruentTrials);
+
+  const balancedBlocks = [];
+
+  // Create 3 blocks of 40 trials each
+  for (let i = 0; i < 3; i++) {
+    // Pick 20 trials from each category for each block
+    const block = shuffledCongruent
+      .slice(i * 20, (i + 1) * 20)
+      .concat(shuffledIncongruent.slice(i * 20, (i + 1) * 20));
+
+    // Shuffle the block to mix congruent and incongruent trials
+    const shuffledBlock = shuffleArray(block);
+
+    balancedBlocks.push(...shuffledBlock);
+  }
+
+  return balancedBlocks;
+}
+
 stroop_rdoc_experiment = [];
 var stroop_rdoc_init = () => {
   // Randomly select two congruent and two incongruent stimuli
@@ -1030,10 +1061,9 @@ var stroop_rdoc_init = () => {
     (numTrialsPerBlock * 3) / 2 / incongruentStim.length
   );
 
-  allTestStim = jsPsych.randomization.repeat(
-    testCongruentStim.concat(testIncongruentStim),
-    1
-  );
+  allTestStim = testCongruentStim.concat(testIncongruentStim);
+
+  allTestStim = createBalancedBlocks(allTestStim);
 
   stroop_rdoc_experiment.push(fullscreen);
   stroop_rdoc_experiment.push(instructionsNode);
