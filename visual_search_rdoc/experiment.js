@@ -534,7 +534,8 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: null,
+    trial_duration: 60000,
+    timing_post_trial: 200,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
@@ -798,9 +799,7 @@ var ITIBlock = {
 var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    // var last = jsPsych.data.get().last(1).values()[0];
     var last = jsPsych.data.get().last(1).trials[0];
-    // ^ changed since we added a fixation block after response block\
     if (last.response == null) {
       return "<div class=center-box><p class=center-text>Respond Faster!</div></div>";
     }
@@ -810,12 +809,14 @@ var practiceFeedbackBlock = {
       return "<div class=center-box><p class=center-text>Incorrect!</div></div>";
     }
   },
-  data: {
-    exp_stage: "practice",
-    trial_id: "practice_feedback",
-    trial_duration: 500,
-    stimulus_duration: 500,
-    block_num: practiceCount,
+  data: function () {
+    return {
+      exp_stage: "practice",
+      trial_id: "practice_feedback",
+      trial_duration: 500,
+      stimulus_duration: 500,
+      block_num: practiceCount,
+    };
   },
   choices: ["NO_KEYS"],
   stimulus_duration: 500,

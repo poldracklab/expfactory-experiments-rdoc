@@ -490,7 +490,8 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: null,
+    trial_duration: 60000,
+    timing_post_trial: 200,
     exp_stage: "test",
   },
   on_load: function () {
@@ -637,12 +638,14 @@ var practiceFeedbackBlock = {
       return "<div class=center-box><div class=center-text><font size =20>Incorrect</font></div></div>";
     }
   },
-  data: {
-    exp_stage: "practice",
-    trial_id: "practice_feedback",
-    trial_duration: 500,
-    stimulus_duration: 500,
-    block_num: practiceCount,
+  data: function () {
+    return {
+      exp_stage: "practice",
+      trial_id: "practice_feedback",
+      trial_duration: 500,
+      stimulus_duration: 500,
+      block_num: practiceCount,
+    };
   },
   on_load: function () {
     function preventSlash(event) {
@@ -659,7 +662,6 @@ var practiceFeedbackBlock = {
   stimulus_duration: 500,
   trial_duration: 500,
   prompt: promptText,
-  on_finish: data => (data["block_num"] = practiceCount),
 };
 
 // after each block

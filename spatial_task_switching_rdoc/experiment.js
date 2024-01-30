@@ -620,7 +620,7 @@ var pageInstruct = [
     <p class = block-text>In the top two quadrants, please judge the shape based on its <b>${
       quadMappings.top
     }</b>. Press your <b>index finger</b> ${
-    quadMappings.top === "form" ? "if its a" : "if its"
+    quadMappings.top === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.top === "form"
@@ -633,7 +633,7 @@ var pageInstruct = [
           : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b> and your <b>middle finger</b> ${
-    quadMappings.top === "form" ? "if its a" : "if its"
+    quadMappings.top === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.top === "form"
@@ -650,7 +650,7 @@ var pageInstruct = [
      <p class = block-text>In the bottom two quadrants, please judge the shape based on its <b>${
        quadMappings.bottom
      }</b>. Press your <b>index finger</b> ${
-    quadMappings.bottom === "form" ? "if its a" : "if its"
+    quadMappings.bottom === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.bottom === "form"
@@ -663,7 +663,7 @@ var pageInstruct = [
           : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b> and your <b>middle finger</b> ${
-    quadMappings.bottom === "form" ? "if its a" : "if its"
+    quadMappings.bottom === "form" ? "if it's a" : "if it's"
   }
     <b>${
       quadMappings.bottom === "form"
@@ -709,7 +709,8 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: null,
+    trial_duration: 60000,
+    timing_post_trial: 200,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
@@ -933,12 +934,14 @@ for (i = 0; i < practiceLen + 1; i++) {
         return "<div class = fb_box><div class = center-text><font size =20>Incorrect</font></div></div>";
       }
     },
-    data: {
-      exp_stage: "practice",
-      trial_id: "practice_feedback",
-      trial_duration: 500,
-      stimulus_duration: 500,
-      block_num: practiceCount,
+    data: function () {
+      return {
+        exp_stage: "practice",
+        trial_id: "practice_feedback",
+        trial_duration: 500,
+        stimulus_duration: 500,
+        block_num: practiceCount,
+      };
     },
     choices: ["NO_KEYS"],
     stimulus_duration: 500,

@@ -373,7 +373,8 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: null,
+    trial_duration: 60000,
+    timing_post_trial: 200,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
@@ -584,11 +585,14 @@ for (i = 0; i < practiceLen; i++) {
 
   var practiceFeedbackBlock = {
     type: jsPsychHtmlKeyboardResponse,
-    data: {
-      trial_id: "practice_feedback",
-      exp_stage: "practice",
-      trial_duration: 500,
-      stimulus_duration: 500,
+    data: function () {
+      return {
+        exp_stage: "practice",
+        trial_id: "practice_feedback",
+        trial_duration: 500,
+        stimulus_duration: 500,
+        block_num: practiceCount,
+      };
     },
     choices: ["NO_KEYS"],
     stimulus: function () {
@@ -629,7 +633,6 @@ for (i = 0; i < practiceLen; i++) {
     trial_duration: 500, // 500
     response_ends_trial: false,
     prompt: promptText,
-    on_finish: data => (data["block_num"] = practiceCount),
   };
 
   practiceStopTrials.push(
