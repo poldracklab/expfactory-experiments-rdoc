@@ -7565,7 +7565,7 @@ var testTrial = {
   choices: ["NO_KEYS"],
   data: function () {
     return {
-      trial_id: getExpStage() == "test" ? "test_response" : "practice_response",
+      trial_id: getExpStage() == "test" ? "test_trial" : "practice_trial",
       exp_stage: getExpStage(),
       choices: ["NO_KEYS"],
       trial_duration: responseBlockDuration,
@@ -7713,7 +7713,7 @@ var practiceNode = {
   timeline: [feedbackBlock].concat(practiceTrials),
   loop_function: function () {
     var responseGridData = jsPsych.data.get().filter({
-      trial_id: "practice_response",
+      trial_id: "practice_trial",
       condition: getCurrCondition(),
       block_num: getCurrBlockNum(),
     }).trials;
@@ -7880,7 +7880,7 @@ var testNode = {
   timeline: [feedbackBlock].concat(testTrials),
   loop_function: function () {
     var responseGridData = jsPsych.data.get().filter({
-      trial_id: "test_response",
+      trial_id: "test_trial",
       exp_stage: "test",
       condition: getCurrCondition(),
       block_num: getCurrBlockNum(),
