@@ -865,7 +865,6 @@ var testNode = {
         stimuli,
         numTrialsPerBlock / stimuli.length
       );
-      ctiDuration = CTIs.shift();
 
       return true;
     }

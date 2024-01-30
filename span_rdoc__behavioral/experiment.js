@@ -7813,7 +7813,7 @@ var practiceNode = {
 
       if (accuracy < accuracyThresh) {
         feedbackText +=
-          "<p class = block-text>Your accuracy on the 4x4 grid is low.</p>" +
+          "<p class = block-text>Your accuracy for the 4x4 grid is low.</p>" +
           "<p class = block-text>Try your best to recall the black colored cells.</p>";
       }
 
@@ -7971,7 +7971,7 @@ var testNode = {
       // feedback for either simple or operation span
       if (accuracy < accuracyThresh) {
         feedbackText +=
-          "<p class = block-text>Your accuracy on the 4x4 grid is low. Try your best to recall all the black colored cells.</p>";
+          "<p class = block-text>Your accuracy for the 4x4 grid is low. Try your best to recall all the black colored cells.</p>";
       }
 
       if (missedResponses > missedResponseThresh) {
