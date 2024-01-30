@@ -157,20 +157,20 @@ var createTrialTypes = function (task_switches) {
   var spatial_cue = quadMapping[whichQuadStart];
 
   const shapes = [
-    "green_circle",
-    "green_square",
-    "yellow_circle",
-    "yellow_square",
+    "blue_circle",
+    "blue_square",
+    "orange_circle",
+    "orange_square",
   ];
   var shape = shapes[Math.floor(Math.random() * 4)];
 
   var color;
   var form;
 
-  if (shape.includes("green")) {
-    color = "green";
-  } else if (shape.includes("yellow")) {
-    color = "yellow";
+  if (shape.includes("blue")) {
+    color = "blue";
+  } else if (shape.includes("orange")) {
+    color = "orange";
   }
 
   if (shape.includes("circle")) {
@@ -186,10 +186,10 @@ var createTrialTypes = function (task_switches) {
       var correct_response = responseMappings.form.square;
     }
   } else {
-    if (color === "green") {
-      var correct_response = responseMappings.color.green;
+    if (color === "blue") {
+      var correct_response = responseMappings.color.blue;
     } else {
-      var correct_response = responseMappings.color.yellow;
+      var correct_response = responseMappings.color.orange;
     }
   }
 
@@ -211,10 +211,10 @@ var createTrialTypes = function (task_switches) {
     var color;
     var form;
 
-    if (shape.includes("green")) {
-      color = "green";
-    } else if (shape.includes("yellow")) {
-      color = "yellow";
+    if (shape.includes("blue")) {
+      color = "blue";
+    } else if (shape.includes("orange")) {
+      color = "orange";
     }
 
     if (shape.includes("circle")) {
@@ -254,10 +254,10 @@ var createTrialTypes = function (task_switches) {
         var correct_response = responseMappings.form.square;
       }
     } else {
-      if (color === "green") {
-        var correct_response = responseMappings.color.green;
+      if (color === "blue") {
+        var correct_response = responseMappings.color.blue;
       } else {
-        var correct_response = responseMappings.color.yellow;
+        var correct_response = responseMappings.color.orange;
       }
     }
 
@@ -371,25 +371,25 @@ function getResponseMappings(group_index) {
     case 0: // Condition 1
       responseMapping = {
         form: { circle: ",", square: "." },
-        color: { green: ",", yellow: "." },
+        color: { blue: ",", orange: "." },
       };
       break;
     case 1: // Condition 2
       responseMapping = {
         form: { circle: ".", square: "," },
-        color: { green: ",", yellow: "." },
+        color: { blue: ",", orange: "." },
       };
       break;
     case 2: // Condition 3
       responseMapping = {
         form: { circle: ",", square: "." },
-        color: { green: ".", yellow: "," },
+        color: { blue: ".", orange: "," },
       };
       break;
     case 3: // Condition 4
       responseMapping = {
         form: { circle: ".", square: "," },
-        color: { green: ".", yellow: "," },
+        color: { blue: ".", orange: "," },
       };
       break;
   }
@@ -508,9 +508,9 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-        ? responseMappings.color.green === ","
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === ","
+          ? "blue"
+          : "orange"
         : ""
     }</b>: comma key (,)</li>
     <li><b>${
@@ -519,9 +519,9 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-        ? responseMappings.color.green === "."
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === "."
+          ? "blue"
+          : "orange"
         : ""
     }</b>: period key (.)</li>
     <li>Bottom 2 quadrants: judge the shape on its <b>${
@@ -533,9 +533,9 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-        ? responseMappings.color.green === ","
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === ","
+          ? "blue"
+          : "orange"
         : ""
     }</b>: comma key (,)</li>
     <li><b>${
@@ -544,9 +544,9 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-        ? responseMappings.color.green === "."
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === "."
+          ? "blue"
+          : "orange"
         : ""
     }</b>: period key (.)</li>
   </ul>`;
@@ -562,9 +562,9 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.top === "color"
-            ? responseMappings.color.green === ","
-              ? "green"
-              : "yellow"
+            ? responseMappings.color.blue === ","
+              ? "blue"
+              : "orange"
             : ""
         }</b>: comma key (,)</li>
         <li><b>${
@@ -573,9 +573,9 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.top === "color"
-            ? responseMappings.color.green === "."
-              ? "green"
-              : "yellow"
+            ? responseMappings.color.blue === "."
+              ? "blue"
+              : "orange"
             : ""
         }</b>: period key (.)</li>
       </ul>
@@ -591,9 +591,9 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.bottom === "color"
-            ? responseMappings.color.green === ","
-              ? "green"
-              : "yellow"
+            ? responseMappings.color.blue === ","
+              ? "blue"
+              : "orange"
             : ""
         }</b>: comma key (,)</li>
         <li><b>${
@@ -602,9 +602,9 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.bottom === "color"
-            ? responseMappings.color.green === "."
-              ? "green"
-              : "yellow"
+            ? responseMappings.color.blue === "."
+              ? "blue"
+              : "orange"
             : ""
         }</b>: period key (.)</li>
       </ul>
@@ -628,9 +628,9 @@ var pageInstruct = [
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-        ? responseMappings.color.green === ","
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === ","
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b> and your <b>middle finger</b> ${
     quadMappings.top === "form" ? "if its a" : "if its"
@@ -641,9 +641,9 @@ var pageInstruct = [
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-        ? responseMappings.color.green === "."
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === "."
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b>. 
     </p>
@@ -658,9 +658,9 @@ var pageInstruct = [
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-        ? responseMappings.color.green === ","
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === ","
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b> and your <b>middle finger</b> ${
     quadMappings.bottom === "form" ? "if its a" : "if its"
@@ -671,9 +671,9 @@ var pageInstruct = [
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-        ? responseMappings.color.green === "."
-          ? "green"
-          : "yellow"
+        ? responseMappings.color.blue === "."
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
         : ""
     }</b>. 
     </p>
@@ -687,10 +687,10 @@ var pageInstruct = [
 // IMAGES TO PRELOAD
 var pathSource = "/static/experiments/spatial_task_switching_rdoc/images/";
 var shapesPreload = [
-  "green_circle",
-  "green_square",
-  "yellow_circle",
-  "yellow_square",
+  "blue_circle",
+  "blue_square",
+  "orange_circle",
+  "orange_square",
 ];
 var images = [];
 for (i = 0; i < shapesPreload.length; i++) {
