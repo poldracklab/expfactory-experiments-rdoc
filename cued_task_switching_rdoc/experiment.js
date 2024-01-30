@@ -56,39 +56,39 @@ var getCurrAttentionCheckAnswer = function () {
 var attentionCheckData = [
   // key presses
   {
-    Q: "<p class='block-text'>Press the Q key</p>",
+    Q: "<p class='block-text'>Press the q key</p>",
     A: 81,
   },
   {
-    Q: "<p class='block-text'>Press the P key</p>",
+    Q: "<p class='block-text'>Press the p key</p>",
     A: 80,
   },
   {
-    Q: "<p class='block-text'>Press the R key</p>",
+    Q: "<p class='block-text'>Press the r key</p>",
     A: 82,
   },
   {
-    Q: "<p class='block-text'>Press the S key</p>",
+    Q: "<p class='block-text'>Press the s key</p>",
     A: 83,
   },
   {
-    Q: "<p class='block-text'>Press the T key</p>",
+    Q: "<p class='block-text'>Press the t key</p>",
     A: 84,
   },
   {
-    Q: "<p class='block-text'>Press the J key</p>",
+    Q: "<p class='block-text'>Press the j key</p>",
     A: 74,
   },
   {
-    Q: "<p class='block-text'>Press the K key</p>",
+    Q: "<p class='block-text'>Press the k key</p>",
     A: 75,
   },
   {
-    Q: "<p class='block-text'>Press the E key</p>",
+    Q: "<p class='block-text'>Press the e key</p>",
     A: 69,
   },
   {
-    Q: "<p class='block-text'>Press the M key</p>",
+    Q: "<p class='block-text'>Press the m key</p>",
     A: 77,
   },
   {
@@ -96,7 +96,7 @@ var attentionCheckData = [
     A: 76,
   },
   {
-    Q: "<p class='block-text'>Press the U key</p>",
+    Q: "<p class='block-text'>Press the u key</p>",
     A: 85,
   },
   // alphabet
