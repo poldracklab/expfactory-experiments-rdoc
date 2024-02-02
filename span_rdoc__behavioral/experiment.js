@@ -6746,11 +6746,13 @@ function shuffleArray(array) {
 }
 
 function generateSpatialTrialValues(n) {
+  const possibleValues = Array.from({ length: 16 }, (_, i) => i);
   const randomList = [];
 
   for (let i = 0; i < n; i++) {
-    const randomValue = Math.floor(Math.random() * 16);
-    randomList.push(randomValue);
+    const randomIndex = Math.floor(Math.random() * possibleValues.length);
+    randomList.push(possibleValues[randomIndex]);
+    possibleValues.splice(randomIndex, 1);
   }
 
   return randomList;
@@ -7129,7 +7131,6 @@ var numTrialsPerBlock = 8;
 var numTestBlocks = 3;
 
 var trialList;
-trialList = generateSpatialTrialValues(numStimuli);
 
 var spatialAns;
 
@@ -7413,7 +7414,13 @@ var waitBlock = {
       return getRandomSpatial();
     }
   },
-  choices: [processingChoices[0].keycode, processingChoices[1].keycode],
+  choices: function () {
+    if (getCurrCondition() == "simple") {
+      return "NO_KEYS";
+    } else {
+      return [processingChoices[0].keycode, processingChoices[1].keycode];
+    }
+  },
   stimulus_duration: processingStimulusDuration,
   trial_duration: processingTrialDuration,
   response_ends_trial: true,
