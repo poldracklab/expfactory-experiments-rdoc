@@ -115,7 +115,6 @@ img.center {
 /* Used for general instructions */
 .block-text {
   width: 100%;
-  height: 100vw;
   text-align: justify;
   margin: 0 auto;
   margin-bottom: 1em;
@@ -128,7 +127,6 @@ img.center {
 /* As above but centeblack instead of justified. Good for instructions with few lines */
 .center-block-text {
   width: 100%;
-  height: 100vw;
   text-align: center;
   margin: 0 auto;
   margin-bottom: 1em;
