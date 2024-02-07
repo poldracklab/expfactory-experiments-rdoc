@@ -11,7 +11,7 @@ body {
 
 .display_stage {
   position: fixed;
-  background: gray;
+  background: #707070;
   left: 5vw;
   top: 2vh;
   height: 94vh;
