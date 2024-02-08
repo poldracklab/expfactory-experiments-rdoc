@@ -15,9 +15,8 @@ body {
   top: 2vh;
   height: 94vh;
   width: 90vw;
-  border-radius: 15px;
-  border: 1vh solid #d0d0d0;
   z-index: 0;
+  box-shadow: none !important;
 }
 
 .display_stage > div {
