@@ -68,7 +68,7 @@ const getQuestion = () => {
       prompt: `<img src=${currStim.prompt}>`,
       textbox_columns: 5,
       required: true,
-      placeholder: "Enter a number",
+      placeholder: "Enter a number or N/A",
     },
   ];
 };
@@ -94,7 +94,9 @@ var speedReminder = `
 var instructions = [
   `
   <div class=centerbox>
-    <p class=block-text>During this task, on each trial you will see a letter presented against a colored background. Your task is to press the key corresponding to the letter.</p>
+    <p class=block-text>During this task, on each trial you will see a number displayed on different colored backgrounds.</p>
+    <p class=block-text>Below the number, you will see a text box. Please type the number you see on the screen into this box. If you do not see a number, type "N/A" into the box.</p>
+    <p class=block-text>It might be a bit tricky to see the number because of the background color, but try your best to figure out what it is.</p>
     <p class=block-text>Press <b>enter</b> to begin the task.</p>
   </div>
   `,
