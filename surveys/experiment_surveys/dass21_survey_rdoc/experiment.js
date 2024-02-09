@@ -111,8 +111,30 @@ var trial = {
     data.likert_scale_3_label =
       "Applied to me to a considerable degree or good part of the time";
     data.likert_scale_4_label = "Applied to me very much or most of the time";
+  },
+};
 
-    console.log(data);
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
+  on_finish: function (data) {
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -150,6 +172,7 @@ var dass21_survey_rdoc_init = () => {
   dass21_survey_rdoc_experiment.push(fullscreen);
   dass21_survey_rdoc_experiment.push(instructionsBlock);
   dass21_survey_rdoc_experiment.push(trial);
+  dass21_survey_rdoc_experiment.push(postTaskBlock);
   dass21_survey_rdoc_experiment.push(endBlock);
   dass21_survey_rdoc_experiment.push(exitFullscreen);
 };

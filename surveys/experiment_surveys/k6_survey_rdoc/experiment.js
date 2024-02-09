@@ -298,8 +298,30 @@ var trial = {
         "The next few questions are about how these feelings may have affected you in the past 30 days. You need not answer these questions if you answered “None of the time” to all of the six questions about your feelings."
       ];
     }
+  },
+};
 
-    console.log(data);
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
+  on_finish: function (data) {
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -337,6 +359,7 @@ var k6_survey_rdoc_init = () => {
   k6_survey_rdoc_experiment.push(fullscreen);
   k6_survey_rdoc_experiment.push(instructionsBlock);
   k6_survey_rdoc_experiment.push(trial);
+  k6_survey_rdoc_experiment.push(postTaskBlock);
   k6_survey_rdoc_experiment.push(endBlock);
   k6_survey_rdoc_experiment.push(exitFullscreen);
 };

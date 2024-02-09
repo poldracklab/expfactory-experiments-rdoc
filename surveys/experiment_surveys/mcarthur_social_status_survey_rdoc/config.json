@@ -1,6 +1,6 @@
 [
   {
-    "name": "Fagerstrom Test for Nicotine Dependence (FND)",
+    "name": "MacArthur Scale of Subjective Social Status",
     "template": "jspsych",
     "run": [
       "static/js/jspsych/jspsych.js",
@@ -17,12 +17,13 @@
       "style.css",
       "experiment.js"
     ],
-    "exp_id": "fagerstrom_test_survey",
+    "exp_id": "mcarthur_social_status_survey_rdoc",
     "cognitive_atlas_task_id": "",
     "contributors": [
-      "Jaime Ali Holguin Rios",
       "Patrick Bissett",
-      "Russell Poldrack"
+      "Jaime Ali Holguin Rios",
+      "Russell Poldrack",
+      "Logan Bennett"
     ],
     "time": 30,
     "reference": "http://psycnet.apa.org/journals/xlm/37/2/392/",

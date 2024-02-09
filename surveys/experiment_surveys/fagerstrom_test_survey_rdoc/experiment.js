@@ -9,7 +9,7 @@ function getDisplayElement() {
 
 function addID() {
   jsPsych.data.addDataToLastTrial({
-    exp_id: "fagerstrom_test_survey",
+    exp_id: "fagerstrom_test_survey_rdoc",
   });
 }
 var conditional_length_counter = 0;
@@ -155,8 +155,8 @@ var appendData = function () {
 /*    Define Experimental Variables     */
 /* ************************************ */
 var preFileType =
-  "<img class = center src='/static/experiments/fagerstrom_test_survey/images/";
-var pathSource = "/static/experiments/fagerstrom_test_survey/images/";
+  "<img class = center src='/static/experiments/fagerstrom_test_survey_rdoc/images/";
+var pathSource = "/static/experiments/fagerstrom_test_survey_rdoc/images/";
 
 var sub_made_fatal_response = 0; // 0 if not, 1 if so
 var sub_made_conditional_response = -1;
@@ -284,11 +284,11 @@ var buttonBoard2 =
 var post_task_block = {
   type: "survey-text",
   data: {
-    exp_id: "fagerstrom_test_survey",
-    trial_id: "post task questions",
+    exp_id: "fagerstrom_test_survey_rdoc",
+    trial_id: "post_task_feedback",
   },
   questions: [
-    '<p class = center-block-text style = "font-size: 20px">Comments:</p>',
+    '<p class = center-block-text style = "font-size: 20px">Do you have any comments, concerns, or issues pertaining to this survey?</p>',
   ],
   rows: [15],
   columns: [60],
@@ -297,7 +297,7 @@ var post_task_block = {
 var end_block = {
   type: "poldrack-text",
   data: {
-    exp_id: "fagerstrom_test_survey",
+    exp_id: "fagerstrom_test_survey_rdoc",
     trial_id: "end",
   },
   timing_response: 180000,
@@ -359,14 +359,14 @@ var update_state_block = {
 
 post_questionnaire_trials = [];
 for (var x = 0; x < survey_questions.length; x++) {
-  var post_exp_block = {
+  var testTrial = {
     type: "poldrack-single-stim",
     stimulus: getQuestions,
     is_html: true,
     choices: [81], //48,49,50,51,52
     data: {
-      exp_id: "fagerstrom_test_survey",
-      trial_id: "post_questionnaire_block",
+      exp_id: "fagerstrom_test_survey_rdoc",
+      trial_id: "test_trial",
     },
     timing_post_trial: 0,
     timing_stim: getTime,
@@ -375,7 +375,7 @@ for (var x = 0; x < survey_questions.length; x++) {
     on_finish: appendData,
   };
 
-  post_questionnaire_trials.push(post_exp_block);
+  post_questionnaire_trials.push(testTrial);
 }
 
 var post_questionnaire_node = {
@@ -389,16 +389,10 @@ var post_questionnaire_node = {
 /*          Set up Experiment           */
 /* ************************************ */
 
-var fagerstrom_test_survey_experiment = [];
-
-fagerstrom_test_survey_experiment.push(welcome_block);
-
-fagerstrom_test_survey_experiment.push(instructions_block);
-
-fagerstrom_test_survey_experiment.push(update_state_block);
-
-fagerstrom_test_survey_experiment.push(post_questionnaire_node);
-
-fagerstrom_test_survey_experiment.push(post_task_block);
-
-fagerstrom_test_survey_experiment.push(end_block);
+var fagerstrom_test_survey_rdoc_experiment = [];
+fagerstrom_test_survey_rdoc_experiment.push(welcome_block);
+fagerstrom_test_survey_rdoc_experiment.push(instructions_block);
+fagerstrom_test_survey_rdoc_experiment.push(update_state_block);
+fagerstrom_test_survey_rdoc_experiment.push(post_questionnaire_node);
+fagerstrom_test_survey_rdoc_experiment.push(post_task_block);
+fagerstrom_test_survey_rdoc_experiment.push(end_block);

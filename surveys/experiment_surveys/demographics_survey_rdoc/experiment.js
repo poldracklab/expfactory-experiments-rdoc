@@ -399,23 +399,29 @@ var trial = {
   type: jsPsychSurvey,
   pages: [questions],
   button_label_finish: "Submit",
-  on_finish: function (data) {
-    // if (
-    //   "Indicate how much the statement applied to you over the past week" in
-    //   data.response
-    // ) {
-    //   delete data.response[
-    //     "Indicate how much the statement applied to you over the past week"
-    //   ];
-    // }
-    // data.likert_scale_1_label = "Did not apply to me at all";
-    // data.likert_scale_2_label =
-    //   "Applied to me to some degree or some of the time";
-    // data.likert_scale_3_label =
-    //   "Applied to me to a considerable degree or good part of the time";
-    // data.likert_scale_4_label = "Applied to me very much or most of the time";
+};
 
-    console.log(data);
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
+  on_finish: function (data) {
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -453,6 +459,7 @@ var demographics_survey_rdoc_init = () => {
   demographics_survey_rdoc_experiment.push(fullscreen);
   demographics_survey_rdoc_experiment.push(instructionsBlock);
   demographics_survey_rdoc_experiment.push(trial);
+  demographics_survey_rdoc_experiment.push(postTaskBlock);
   demographics_survey_rdoc_experiment.push(endBlock);
   demographics_survey_rdoc_experiment.push(exitFullscreen);
 };

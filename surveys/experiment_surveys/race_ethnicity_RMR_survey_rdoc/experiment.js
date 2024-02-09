@@ -58,8 +58,29 @@ var trial = {
   type: jsPsychSurvey,
   pages: [questions],
   button_label_finish: "Submit",
+};
+
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
   on_finish: function (data) {
-    console.log(data);
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -97,6 +118,7 @@ var race_ethnicity_RMR_survey_rdoc_init = () => {
   race_ethnicity_RMR_survey_rdoc_experiment.push(fullscreen);
   race_ethnicity_RMR_survey_rdoc_experiment.push(instructionsBlock);
   race_ethnicity_RMR_survey_rdoc_experiment.push(trial);
+  race_ethnicity_RMR_survey_rdoc_experiment.push(postTaskBlock);
   race_ethnicity_RMR_survey_rdoc_experiment.push(endBlock);
   race_ethnicity_RMR_survey_rdoc_experiment.push(exitFullscreen);
 };

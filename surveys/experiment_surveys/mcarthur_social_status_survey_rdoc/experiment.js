@@ -8,7 +8,9 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({ exp_id: "mcarthur_social_status_survey" });
+  jsPsych.data.addDataToLastTrial({
+    exp_id: "mcarthur_social_status_survey_rdoc",
+  });
 }
 var conditional_length_counter = 0;
 var getQuestions = function () {
@@ -157,8 +159,9 @@ getInstructions = function (index) {
 /*    Define Experimental Variables     */
 /* ************************************ */
 var preFileType =
-  "<img class = center src='/static/experiments/mcarthur_social_status_survey/images/";
-var pathSource = "/static/experiments/mcarthur_social_status_survey/images/";
+  "<img class = center src='/static/experiments/mcarthur_social_status_survey_rdoc/images/";
+var pathSource =
+  "/static/experiments/mcarthur_social_status_survey_rdoc/images/";
 
 var sub_made_fatal_response = 0; // 0 if not, 1 if so
 var sub_made_conditional_response = -1;
@@ -174,9 +177,9 @@ var game_state = "start";
 //Questions to be presented
 var survey_questions = [
   "Think of this ladder as representing where people stand in the United States.</strong> At the <strong>top</strong> of the ladder are the people who are the best off – those who have the most money, the most education, and the most respected jobs. At the <strong>bottom</strong> are the people who are the worst off – those who have the least money, least education, the least respected jobs, or no job. The higher up you are on this ladder, the closer you are to the people at the very top; the lower you are, the closer you are to the people at the very bottom. Where would you place yourself on this ladder? Please choose the number on the rung where you think you stand at this time in your life relative to other people in the United States." +
-    '<div class = "ladder"><img src="/static/experiments/mcarthur_social_status_survey/images/ladder.png"></div>',
+    '<div class = "ladder"><img src="/static/experiments/mcarthur_social_status_survey_rdoc/images/ladder.png"></div>',
   "Think of this ladder as representing where people stand in their communities.</strong> People define community in different ways; please define it in whatever way is most meaningful to you. At the <strong>top</strong> of the ladder are people who have the highest standing in their community. At the <strong>bottom</strong> are the people who have the lowest standing in their community. Where would you place yourself on this ladder? Please choose the number on the rung where you think you stand at this time in your life relative to other people in your community." +
-    '<div class = "ladder"><img src="/static/experiments/mcarthur_social_status_survey/images/ladder.png"></div>',
+    '<div class = "ladder"><img src="/static/experiments/mcarthur_social_status_survey_rdoc/images/ladder.png"></div>',
 ];
 
 //response options for radio buttons
@@ -290,14 +293,14 @@ var update_state_block = {
 
 post_questionnaire_trials = [];
 for (var x = 0; x < survey_questions.length; x++) {
-  var post_exp_block = {
+  var testTrial = {
     type: "poldrack-single-stim",
     stimulus: getQuestions,
     is_html: true,
     choices: [81], //48,49,50,51,52
     data: {
-      exp_id: "mcarthur_social_status_survey",
-      trial_id: "post_questionnaire_block",
+      exp_id: "mcarthur_social_status_survey_rdoc",
+      trial_id: "test_trial",
     },
     timing_post_trial: 0,
     timing_stim: getTime,
@@ -306,7 +309,7 @@ for (var x = 0; x < survey_questions.length; x++) {
     on_finish: appendData,
   };
 
-  post_questionnaire_trials.push(post_exp_block);
+  post_questionnaire_trials.push(testTrial);
 }
 
 var post_questionnaire_node = {
@@ -316,17 +319,26 @@ var post_questionnaire_node = {
   },
 };
 
+var post_task_block = {
+  type: "survey-text",
+  data: {
+    exp_id: "mcarthur_social_status_survey_rdoc",
+    trial_id: "post_task_feedback",
+  },
+  questions: [
+    '<p class = center-block-text style = "font-size: 20px">Do you have any comments, concerns, or issues pertaining to this survey?</p>',
+  ],
+  rows: [15],
+  columns: [60],
+};
+
 /* ************************************ */
 /*          Set up Experiment           */
 /* ************************************ */
-
-var mcarthur_social_status_survey_experiment = [];
-
-mcarthur_social_status_survey_experiment.push(welcome_block);
-mcarthur_social_status_survey_experiment.push(opening_instructions_block);
-
-mcarthur_social_status_survey_experiment.push(update_state_block);
-
-mcarthur_social_status_survey_experiment.push(post_questionnaire_node);
-
-mcarthur_social_status_survey_experiment.push(end_block);
+var mcarthur_social_status_survey_rdoc_experiment = [];
+mcarthur_social_status_survey_rdoc_experiment.push(welcome_block);
+mcarthur_social_status_survey_rdoc_experiment.push(opening_instructions_block);
+mcarthur_social_status_survey_rdoc_experiment.push(update_state_block);
+mcarthur_social_status_survey_rdoc_experiment.push(post_questionnaire_node);
+mcarthur_social_status_survey_rdoc_experiment.push(post_task_block);
+mcarthur_social_status_survey_rdoc_experiment.push(end_block);
