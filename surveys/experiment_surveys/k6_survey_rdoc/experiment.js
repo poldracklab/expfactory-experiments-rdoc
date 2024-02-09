@@ -220,7 +220,7 @@ var questions = [
       placeholder: "",
     },
     {
-      type: "multi-choice",
+      type: "multi-select",
       prompt:
         "Do you have or have you ever been diagnosed with any of the following medical conditions (check all that apply)?",
       name: "Do you have or have you ever been diagnosed with any of the following medical conditions (check all that apply)?",

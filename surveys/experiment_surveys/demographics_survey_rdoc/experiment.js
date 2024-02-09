@@ -320,8 +320,8 @@ var questions = [
   {
     type: "text",
     prompt:
-      "What is your daily caffeine intake from other sources each day (in mg)? For reference, a standard 16oz energy drink has about 170mg and a standard milk chocolate bar has about 6mg of caffeine.",
-    name: "What is your daily caffeine intake from other sources each day (in mg)? For reference, a standard 16oz energy drink has about 170mg and a standard milk chocolate bar has about 6mg of caffeine.",
+      "What is your daily caffeine intake from other sources each day (in mg)? For reference, a standard 16oz energy drink has about 140 mg and a 1 oz serving of milk chocolate has about 6 mg of caffeine.",
+    name: "What is your daily caffeine intake from other sources each day (in mg)? For reference, a standard 16oz energy drink has about 140 mg and a 1 oz serving of milk chocolate has about 6 mg of caffeine.",
     required: true,
     placeholder: "",
   },

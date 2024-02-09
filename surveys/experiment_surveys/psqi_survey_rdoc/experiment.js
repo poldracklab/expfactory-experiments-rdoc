@@ -225,7 +225,12 @@ var questions = [
         'During the past month, how often have you taken medicine to help you sleep (prescribed or "over the counter")?',
       name: 'During the past month, how often have you taken medicine to help you sleep (prescribed or "over the counter")?',
       required: true,
-      options: ["Very good", "Fairly good", "Fairly bad", "Very bad"],
+      options: [
+        "Not during the past month",
+        "Less than once a week",
+        "Once or twice a week",
+        "Three or more times a week",
+      ],
     },
     {
       type: "multi-choice",
@@ -329,8 +334,8 @@ var questions = [
     },
     {
       type: "multi-choice",
-      prompt: "Please chose how often for the last question:",
-      name: "Please chose how often for the last question:",
+      prompt: "Please choose how often for the last question:",
+      name: "Please choose how often for the last question:",
       required: false,
       options: [
         "Not during the past month",
