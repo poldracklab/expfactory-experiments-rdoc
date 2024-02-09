@@ -314,6 +314,18 @@ var behaviors = [
 const createSurveyQuestions = behaviors => {
   var surveyQuestions = [];
 
+  surveyQuestions.push([
+    {
+      type: "html",
+      prompt: `<div class='survey_instructions'><p>For each behavior, fill in how many times you did it in your lifetime (A) & the total number of times you did it in the past month (B).</p>
+      <p>Enter one number for each time period, even if it is your best guess. Please do not put a range, but enter a single number (e.g., behaviors engaged in everyday for multiple years can be written in as 1000+, behaviors engaged in daily for a single year can be written in as 365, any other frequency should be estimated using your best guess).</p>
+      <p>If you have ever done the behavior, write how old you were the first time (C) and check the box if the behavior ever caused you any problems, regardless of the specific problem (D).</p> 
+      <p>For the last two questions (E & F), use the scale to rate how much you agree with each statement from 0 = Strongly Disagree to 4 = Strongly Agree. Please provide ratings for both statements (E & F) and treat them as separate questions.</p>
+      <p>If you have never done the shown behavior, then you can just put 0 for questions where applicable, and you skip the last two questions associated with the behavior.</p>
+       </div>`,
+    },
+  ]);
+
   for (let i = 0; i < behaviors.length; i++) {
     const whichBehavior = {
       type: "html",
@@ -346,7 +358,7 @@ const createSurveyQuestions = behaviors => {
       prompt:
         "(D) Did it ever cause you any problems, such as going to the hospital, legal trouble, problems at work, with family, or friends?",
       name: `any_problems_${behaviors[i]}`,
-      required: false,
+      required: true,
       options: ["Yes", "No", "N/A"],
     };
     const fifthQ = {
@@ -391,23 +403,13 @@ const createSurveyQuestions = behaviors => {
 };
 
 var surveyQuestions = createSurveyQuestions(behaviors);
+console.log(surveyQuestions);
 
 var instructions = [
   `<div class='instructions'>
       <p>Welcome to this survey.</p>
       <p>Press <b>enter</b> to begin.</p>
   </div>`,
-];
-
-var surveyInstructions = [
-  `<div class='survey_instructions'><p>For each behavior, fill in how many times you did it in your lifetime (A) & the total number of times you did it in the past month (B).</p>
-  <p>Enter one number for each time period, even if it is your best guess. Please do not put a range, but enter a single number (e.g., behaviors engaged in everyday for multiple years can be written in as 1000+, behaviors engaged in daily for a single year can be written in as 365, any other frequency should be estimated using your best guess).</p>
-  <p>If you have ever done the behavior, write how old you were the first time (C) and check the box if the behavior ever caused you any problems, regardless of the specific problem (D).</p> 
-  <p>For the last two questions (E & F), use the scale to rate how much you agree with each statement from 0 = Strongly Disagree to 4 = Strongly Agree. Please provide ratings for both statements (E & F) and treat them as separate questions.</p>
-  <p>If you have never done the shown behavior, then you can just put 0 for questions where applicable, and you skip the last two questions associated with the behavior.</p>
-  <p>Press <b>enter</b> to start the survey.</p>
-  </div>
-`,
 ];
 
 var instructionsBlock = {
@@ -418,18 +420,6 @@ var instructionsBlock = {
   },
   trial_duration: 180000,
   stimulus: instructions,
-  choices: ["Enter"],
-  post_trial_gap: 0,
-};
-
-var surveyInstructionsBlock = {
-  type: jsPsychHtmlKeyboardResponse,
-  data: {
-    trial_id: "survey_instructions",
-    trial_duration: 180000,
-  },
-  trial_duration: 180000,
-  stimulus: surveyInstructions,
   choices: ["Enter"],
   post_trial_gap: 0,
 };
@@ -497,7 +487,6 @@ risq_survey_rdoc_experiment = [];
 var risq_survey_rdoc_init = () => {
   risq_survey_rdoc_experiment.push(fullscreen);
   risq_survey_rdoc_experiment.push(instructionsBlock);
-  risq_survey_rdoc_experiment.push(surveyInstructionsBlock);
   risq_survey_rdoc_experiment.push(trial);
   risq_survey_rdoc_experiment.push(postTaskBlock);
   risq_survey_rdoc_experiment.push(endBlock);

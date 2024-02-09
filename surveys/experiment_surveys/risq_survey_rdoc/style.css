@@ -16,14 +16,12 @@ form {
   justify-content: center;
   max-width: 1000px;
 }
-
 .instructions p {
   font-size: 28px;
   line-height: 120%;
 }
 
 .survey_instructions {
-  max-width: 800px;
   text-align: justify;
   font-size: 24px;
 }
@@ -34,6 +32,22 @@ form {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 40px 0px;
+}
+
+.sv_q_text_root {
+  height: 40px !important;
+  border-radius: 2px;
+}
+
+.sv_q_text_root::placeholder {
+  font-size: 16px;
+}
+
+.sv_q_text_root:focus {
+  outline: none;
+  box-shadow: none;
+  border: 2px solid red !important;
 }
 
 span[data-bind="css: question.koCss().error.item"] {
