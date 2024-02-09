@@ -438,8 +438,29 @@ var trial = {
   type: jsPsychSurvey,
   pages: surveyQuestions,
   button_label_finish: "Submit",
+};
+
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
   on_finish: function (data) {
-    console.log(data);
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -478,6 +499,7 @@ var risq_survey_rdoc_init = () => {
   risq_survey_rdoc_experiment.push(instructionsBlock);
   risq_survey_rdoc_experiment.push(surveyInstructionsBlock);
   risq_survey_rdoc_experiment.push(trial);
+  risq_survey_rdoc_experiment.push(postTaskBlock);
   risq_survey_rdoc_experiment.push(endBlock);
   risq_survey_rdoc_experiment.push(exitFullscreen);
 };

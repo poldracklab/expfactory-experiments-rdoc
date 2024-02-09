@@ -107,7 +107,30 @@ var trial = {
     }
     data.likert_scale_min_label = "Not at all";
     data.likert_scale_max_label = "Very much";
-    console.log(data);
+  },
+};
+
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
+  on_finish: function (data) {
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -145,6 +168,8 @@ var brief_self_control_survey_rdoc_init = () => {
   brief_self_control_survey_rdoc_experiment.push(fullscreen);
   brief_self_control_survey_rdoc_experiment.push(instructionsBlock);
   brief_self_control_survey_rdoc_experiment.push(trial);
+
+  brief_self_control_survey_rdoc_experiment.push(postTaskBlock);
   brief_self_control_survey_rdoc_experiment.push(endBlock);
   brief_self_control_survey_rdoc_experiment.push(exitFullscreen);
 };

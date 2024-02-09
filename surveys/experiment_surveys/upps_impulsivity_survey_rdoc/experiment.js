@@ -209,8 +209,30 @@ var trial = {
     data.likert_scale_2_label = "Disagree some";
     data.likert_scale_3_label = "Agree some";
     data.likert_scale_4_label = "Agree strongly";
+  },
+};
 
-    console.log(data);
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
+  on_finish: function (data) {
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -248,6 +270,7 @@ var upps_impulsivity_survey_rdoc_init = () => {
   upps_impulsivity_survey_rdoc_experiment.push(fullscreen);
   upps_impulsivity_survey_rdoc_experiment.push(instructionsBlock);
   upps_impulsivity_survey_rdoc_experiment.push(trial);
+  upps_impulsivity_survey_rdoc_experiment.push(postTaskBlock);
   upps_impulsivity_survey_rdoc_experiment.push(endBlock);
   upps_impulsivity_survey_rdoc_experiment.push(exitFullscreen);
 };

@@ -214,8 +214,30 @@ var trial = {
     data.likert_scale_3_label = "Moderately";
     data.likert_scale_4_label = "Quite a bit";
     data.likert_scale_5_label = "Extremely";
+  },
+};
 
-    console.log(data);
+var postTaskQuestion =
+  "Do you have any comments, concerns, or issues pertaining to this survey?";
+
+var postTaskBlock = {
+  type: jsPsychSurveyText,
+  questions: [
+    {
+      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
+      name: postTaskQuestion,
+      required: false,
+      rows: 20,
+      columns: 80,
+    },
+  ],
+  response_ends_trial: true,
+  data: {
+    trial_id: "post_task_feedback",
+  },
+  on_finish: function (data) {
+    data.question = postTaskQuestion;
+    data.response = data.response[postTaskQuestion];
   },
 };
 
@@ -239,7 +261,7 @@ var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
     trial_id: "end",
-    exp_id: "dospert_rt_survey_rdoc",
+    exp_id: "panas_last_two_weeks_survey_rdoc",
     trial_duration: 180000,
   },
   trial_duration: 180000,
@@ -253,6 +275,7 @@ var panas_last_two_weeks_survey_rdoc_init = () => {
   panas_last_two_weeks_survey_rdoc_experiment.push(fullscreen);
   panas_last_two_weeks_survey_rdoc_experiment.push(instructionsBlock);
   panas_last_two_weeks_survey_rdoc_experiment.push(trial);
+  panas_last_two_weeks_survey_rdoc_experiment.push(postTaskBlock);
   panas_last_two_weeks_survey_rdoc_experiment.push(endBlock);
   panas_last_two_weeks_survey_rdoc_experiment.push(exitFullscreen);
 };
