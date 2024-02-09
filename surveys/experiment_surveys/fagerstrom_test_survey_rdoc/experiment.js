@@ -154,10 +154,6 @@ var appendData = function () {
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
-var preFileType =
-  "<img class = center src='/static/experiments/fagerstrom_test_survey_rdoc/images/";
-var pathSource = "/static/experiments/fagerstrom_test_survey_rdoc/images/";
-
 var sub_made_fatal_response = 0; // 0 if not, 1 if so
 var sub_made_conditional_response = -1;
 // -1 if a conditional question hasn't been come across - game start, 0 if sub should skip next question, 1 if sub should not skip next question

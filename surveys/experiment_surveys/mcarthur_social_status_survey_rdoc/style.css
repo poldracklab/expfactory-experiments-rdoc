@@ -20,9 +20,12 @@ body {
   box-shadow: none !important;
 }
 
-.display_stage > div,
-.display_stage > p {
-  color: black;
+#jspsych-survey-text-0 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 20%;
 }
 
 .selected {
@@ -94,11 +97,12 @@ img.center {
   margin-right: 0%;
   text-align: center;
   background-color: none;
+  margin-top: 50px;
 }
 
 .inner {
   display: inline-block;
-  padding: 20px;
+  padding: 10px;
   padding-top: 0%;
 }
 

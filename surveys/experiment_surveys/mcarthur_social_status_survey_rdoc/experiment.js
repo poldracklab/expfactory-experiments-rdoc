@@ -158,11 +158,6 @@ getInstructions = function (index) {
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
-var preFileType =
-  "<img class = center src='/static/experiments/mcarthur_social_status_survey_rdoc/images/";
-var pathSource =
-  "/static/experiments/mcarthur_social_status_survey_rdoc/images/";
-
 var sub_made_fatal_response = 0; // 0 if not, 1 if so
 var sub_made_conditional_response = -1;
 // -1 if a conditional question hasn't been come across - game start, 0 if sub should skip next question, 1 if sub should not skip next question
@@ -326,7 +321,7 @@ var post_task_block = {
     trial_id: "post_task_feedback",
   },
   questions: [
-    '<p class = center-block-text style = "font-size: 20px">Do you have any comments, concerns, or issues pertaining to this survey?</p>',
+    '<p class = center-block-text style = "font-size: 20px; color:white;">Do you have any comments, concerns, or issues pertaining to this survey?</p>',
   ],
   rows: [15],
   columns: [60],
