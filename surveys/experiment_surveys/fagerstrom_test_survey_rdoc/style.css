@@ -27,6 +27,13 @@ body {
   border: solid 2px green;
   color: green;
 }
+#jspsych-survey-text-0 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 20%;
+}
 
 .unselected {
   border: solid 2px white;
