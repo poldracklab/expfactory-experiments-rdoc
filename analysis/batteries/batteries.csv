@@ -1,49 +1,49 @@
 Set Number,Battery Number,Tasks,Estimated Time (min)
-Set 1,Battery 1,"spatial_cueing, stop_signal, stroop, go-nogo, flanker",46.058333338
-Set 1,Battery 2,"ax-cpt, nback, spatialTS, span",59.861666667
-Set 1,Battery 3,"visual_search, cuedTS, spatial_cueing, stop_signal, stroop",51.34166667400001
-Set 1,Battery 4,"go-nogo, flanker, ax-cpt, nback, spatialTS",52.100000001
-Set 1,Battery 5,"span, visual_search, cuedTS, spatial_cueing",59.52833334
-Set 1,Battery 6,"stop_signal, stroop, go-nogo, flanker, ax-cpt, nback",57.471666664999994
-Set 1,Battery 7,"spatialTS, span, visual_search, cuedTS",55.00333334
-Set 1,Battery 8,"spatial_cueing, stop_signal, survey",53.693333337
-Set 1,Battery 9,"stroop, go-nogo, flanker, ax-cpt, nback, spatialTS",58.546666668
-Set 1,Battery 10,"span, visual_search, cuedTS, spatial_cueing",59.52833334
-Set 1,Battery 11,"stop_signal, stroop, go-nogo, flanker, ax-cpt, nback",57.471666664999994
-Set 1,Battery 12,"spatialTS, span, visual_search, cuedTS",55.00333334
-Set 2,Battery 1,"visual_search, stroop, nback, go-nogo, span",59.950000001
-Set 2,Battery 2,"flanker, stop_signal, spatial_cueing, cuedTS, ax-cpt",57.050000004
-Set 2,Battery 3,"spatialTS, visual_search, stroop, nback, go-nogo",46.391666671
-Set 2,Battery 4,"span, flanker, stop_signal, spatial_cueing",53.820000004
-Set 2,Battery 5,"cuedTS, ax-cpt, spatialTS, visual_search, stroop",54.558333337
-Set 2,Battery 6,"nback, go-nogo, span, flanker, stop_signal",57.916666668000005
-Set 2,Battery 7,"spatial_cueing, cuedTS, ax-cpt, spatialTS",51.678333339999995
-Set 2,Battery 8,"visual_search, stroop, nback, go-nogo, span",59.950000001
-Set 2,Battery 9,"flanker, stop_signal, spatial_cueing, cuedTS, ax-cpt",57.050000004
-Set 2,Battery 10,"spatialTS, survey, visual_search, stroop",57.648333337
-Set 2,Battery 11,"nback, go-nogo, span, flanker, stop_signal",57.916666668000005
-Set 2,Battery 12,"spatial_cueing, cuedTS, ax-cpt, spatialTS",51.678333339999995
-Set 3,Battery 1,"visual_search, stroop, span, ax-cpt",57.994999997
-Set 3,Battery 2,"spatial_cueing, stop_signal, go-nogo, flanker, nback, cuedTS",59.005000007999996
-Set 3,Battery 3,"spatialTS, visual_search, stroop, span",51.328333337000004
-Set 3,Battery 4,"ax-cpt, spatial_cueing, stop_signal, go-nogo, flanker",56.400000001
-Set 3,Battery 5,"nback, survey, cuedTS, spatialTS",59.515000007
-Set 3,Battery 6,"visual_search, stroop, span, ax-cpt",57.994999997
-Set 3,Battery 7,"spatial_cueing, stop_signal, go-nogo, flanker, nback, cuedTS",59.005000007999996
-Set 3,Battery 8,"spatialTS, visual_search, stroop, span",51.328333337000004
-Set 3,Battery 9,"ax-cpt, spatial_cueing, stop_signal, go-nogo, flanker",56.400000001
-Set 3,Battery 10,"nback, cuedTS, spatialTS, visual_search, stroop",47.041666674000005
-Set 3,Battery 11,"span, ax-cpt, spatial_cueing",55.115
-Set 3,Battery 12,"stop_signal, go-nogo, flanker, nback, cuedTS, spatialTS",54.48000000799999
-Set 4,Battery 1,"survey, ax-cpt, stop_signal",55.834999997
-Set 4,Battery 2,"go-nogo, span, cuedTS, nback, flanker",58.991666671
-Set 4,Battery 3,"spatial_cueing, visual_search, spatialTS, stroop, ax-cpt",59.083333337
-Set 4,Battery 4,"stop_signal, go-nogo, span, cuedTS",52.32000000399999
-Set 4,Battery 5,"nback, flanker, spatial_cueing, visual_search, spatialTS, stroop",58.013333341000006
-Set 4,Battery 6,"ax-cpt, stop_signal, go-nogo, span",58.986666664
-Set 4,Battery 7,"cuedTS, nback, flanker, spatial_cueing, visual_search",51.566666674
-Set 4,Battery 8,"spatialTS, stroop, ax-cpt, stop_signal, go-nogo",51.875000001
-Set 4,Battery 9,"span, cuedTS, nback, flanker",49.520000004
-Set 4,Battery 10,"spatial_cueing, visual_search, spatialTS, stroop, ax-cpt",59.083333337
-Set 4,Battery 11,"stop_signal, go-nogo, span, cuedTS",52.32000000399999
-Set 4,Battery 12,"nback, flanker, spatial_cueing, visual_search, spatialTS, stroop",58.013333341000006
+Set 1,Battery 1,"nback, ax-cpt, flanker, spatial_cueing, visual_search",56.433333334
+Set 1,Battery 2,"cuedTS, go-nogo, survey",59.593333337
+Set 1,Battery 3,"spatialTS, span, stop_signal, stroop, nback",58.566666671
+Set 1,Battery 4,"ax-cpt, flanker, spatial_cueing, visual_search, cuedTS",57.283333337
+Set 1,Battery 5,"go-nogo, spatialTS, span, stop_signal, stroop",58.766666670999996
+Set 1,Battery 6,"nback, ax-cpt, flanker, spatial_cueing, visual_search",56.433333334
+Set 1,Battery 7,"cuedTS, go-nogo, spatialTS, span",53.39500000699999
+Set 1,Battery 8,"stop_signal, stroop, nback, ax-cpt, flanker",47.999999998
+Set 1,Battery 9,"spatial_cueing, visual_search, cuedTS, go-nogo, spatialTS",53.641666677
+Set 1,Battery 10,"span, stop_signal, stroop, nback",48.445000001000004
+Set 1,Battery 11,"ax-cpt, flanker, spatial_cueing, visual_search, cuedTS",57.283333337
+Set 1,Battery 12,"go-nogo, spatialTS, span, stop_signal, stroop",58.766666670999996
+Set 2,Battery 1,"stroop, go-nogo, ax-cpt, stop_signal, flanker, spatialTS",58.32166666799999
+Set 2,Battery 2,"visual_search, spatial_cueing, span, nback",56.878333336999994
+Set 2,Battery 3,"cuedTS, stroop, go-nogo, ax-cpt, stop_signal, flanker",58.321666668000006
+Set 2,Battery 4,"spatialTS, visual_search, spatial_cueing, span",57.72833334
+Set 2,Battery 5,"nback, cuedTS, stroop, go-nogo, ax-cpt",52.100000001
+Set 2,Battery 6,"stop_signal, flanker, spatialTS, visual_search, spatial_cueing",49.541666674
+Set 2,Battery 7,"span, nback, cuedTS, stroop, go-nogo",58.991666671
+Set 2,Battery 8,"ax-cpt, stop_signal, flanker, spatialTS, visual_search",53.483333333999994
+Set 2,Battery 9,"spatial_cueing, span, nback, cuedTS",55.920000007
+Set 2,Battery 10,"stroop, go-nogo, survey",55.918333333999996
+Set 2,Battery 11,"ax-cpt, stop_signal, flanker, spatialTS, visual_search",53.483333333999994
+Set 2,Battery 12,"spatial_cueing, span, nback, cuedTS",55.920000007
+Set 3,Battery 1,"cuedTS, span, stroop, spatialTS, flanker",56.816666674000004
+Set 3,Battery 2,"visual_search, spatial_cueing, ax-cpt, stop_signal, nback",59.033333334
+Set 3,Battery 3,"go-nogo, cuedTS, span, stroop",49.720000004
+Set 3,Battery 4,"survey, spatialTS, flanker",56.568333337
+Set 3,Battery 5,"visual_search, spatial_cueing, ax-cpt, stop_signal, nback",59.033333334
+Set 3,Battery 6,"go-nogo, cuedTS, span, stroop, spatialTS",59.841666673999995
+Set 3,Battery 7,"flanker, visual_search, spatial_cueing, ax-cpt, stop_signal",56.208333334
+Set 3,Battery 8,"nback, go-nogo, cuedTS, span, stroop",58.991666671000004
+Set 3,Battery 9,"spatialTS, flanker, visual_search, spatial_cueing, ax-cpt",57.283333336999995
+Set 3,Battery 10,"stop_signal, nback, go-nogo, cuedTS",37.911666671000006
+Set 3,Battery 11,"span, stroop, spatialTS, flanker, visual_search",57.775000004
+Set 3,Battery 12,"spatial_cueing, ax-cpt, stop_signal, nback, go-nogo",57.425000001
+Set 4,Battery 1,"spatialTS, span, nback, stop_signal, stroop",58.56666667100001
+Set 4,Battery 2,"visual_search, spatial_cueing, go-nogo, cuedTS, flanker",49.966666673999995
+Set 4,Battery 3,"ax-cpt, spatialTS, span, nback",59.861666667
+Set 4,Battery 4,"stop_signal, stroop, visual_search, spatial_cueing, go-nogo, cuedTS",59.01333334099999
+Set 4,Battery 5,"flanker, ax-cpt, spatialTS, span",57.036666667
+Set 4,Battery 6,"nback, stop_signal, stroop, visual_search, spatial_cueing, go-nogo",58.163333338
+Set 4,Battery 7,"cuedTS, flanker, ax-cpt, spatialTS",43.478333336999995
+Set 4,Battery 8,"span, nback, stop_signal, stroop, visual_search",59.525000000999995
+Set 4,Battery 9,"spatial_cueing, go-nogo, cuedTS, flanker, ax-cpt",55.675000004
+Set 4,Battery 10,"spatialTS, span, nback, stop_signal",52.120000004000005
+Set 4,Battery 11,"survey, stroop, visual_search",57.526666667
+Set 4,Battery 12,"spatial_cueing, go-nogo, cuedTS, flanker, ax-cpt",55.675000004

@@ -279,7 +279,7 @@ var behaviors = [
   "Impulsively bought stuff you did not need & won't use",
   "Had unprotected sex with someone you just met or didn't know well",
   "Gotten in a physical fight",
-  "Though about killing yourself",
+  "Thought about killing yourself",
   "Had sex for money or drugs",
   "Drank alcohol untill you blacked or passed out",
   "Used hallucinogens, LSD, or mushrooms",
@@ -322,36 +322,39 @@ const createSurveyQuestions = behaviors => {
 
     const firstQ = {
       type: "text",
-      prompt: "How many times total have you done this in your life?",
+      prompt: "(A) How many times total have you done this in your life?",
       name: `total_lifetime_${behaviors[i]}`,
       required: true,
+      placeholder: `Enter "0" if never`,
     };
     const secondQ = {
       type: "text",
-      prompt: "How many times have you done this in the past month?",
+      prompt: "(B) How many times have you done this in the past month?",
       name: `total_last_month_${behaviors[i]}`,
       required: true,
+      placeholder: `Enter "0" if never`,
     };
     const thirdQ = {
       type: "text",
-      prompt: "How old were you the first time?",
+      prompt: "(C) How old were you the first time?",
       name: `age_first_time_${behaviors[i]}`,
       required: true,
+      placeholder: `Enter "0" if never`,
     };
     const fourthQ = {
       type: "multi-choice",
       prompt:
-        "Did it ever cause you any problems, such as going to the hospital, legal trouble, problems at work, with family, or friends?",
+        "(D) Did it ever cause you any problems, such as going to the hospital, legal trouble, problems at work, with family, or friends?",
       name: `any_problems_${behaviors[i]}`,
-      required: true,
+      required: false,
       options: ["Yes", "No", "N/A"],
     };
     const fifthQ = {
       type: "multi-choice",
       prompt:
-        "I do this behavior to stop feeling upset, distressed, or overwhelmed.",
+        "(E) I do this behavior to stop feeling upset, distressed, or overwhelmed.",
       name: `upset_distressed_or_overwhelmed_${behaviors[i]}`,
-      required: true,
+      required: false,
       options: [
         "Strongly Disagree",
         "Somewhat Disagree",
@@ -363,9 +366,9 @@ const createSurveyQuestions = behaviors => {
     const sixthQ = {
       type: "multi-choice",
       prompt:
-        "I do this behavior to feel excitement, to get a thrill, or to feel pleasure.",
+        "(F) I do this behavior to feel excitement, to get a thrill, or to feel pleasure.",
       name: `excitement_thrill_or_pleasure_${behaviors[i]}`,
-      required: true,
+      required: false,
       options: [
         "Strongly Disagree",
         "Somewhat Disagree",
@@ -400,7 +403,8 @@ var surveyInstructions = [
   `<div class='survey_instructions'><p>For each behavior, fill in how many times you did it in your lifetime (A) & the total number of times you did it in the past month (B).</p>
   <p>Enter one number for each time period, even if it is your best guess. Please do not put a range, but enter a single number (e.g., behaviors engaged in everyday for multiple years can be written in as 1000+, behaviors engaged in daily for a single year can be written in as 365, any other frequency should be estimated using your best guess).</p>
   <p>If you have ever done the behavior, write how old you were the first time (C) and check the box if the behavior ever caused you any problems, regardless of the specific problem (D).</p> 
-  <p>For the last two questions (E & F), use the scale to rate how much you agree with each statement from 0 = Strongly Disagree to 4 = Strongly Agree. Please provide ratings for both statements (E & F) and treat them as separate questions. If you have never done the shown behavior, then you can just put 0 or N/A for questions where applicable. You can put down Strongly Disagree for the last two questions associated with the behavior.</p>
+  <p>For the last two questions (E & F), use the scale to rate how much you agree with each statement from 0 = Strongly Disagree to 4 = Strongly Agree. Please provide ratings for both statements (E & F) and treat them as separate questions.</p>
+  <p>If you have never done the shown behavior, then you can just put 0 for questions where applicable, and you skip the last two questions associated with the behavior.</p>
   <p>Press <b>enter</b> to start the survey.</p>
   </div>
 `,
