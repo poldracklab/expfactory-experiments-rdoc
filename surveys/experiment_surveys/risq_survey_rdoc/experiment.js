@@ -295,7 +295,6 @@ var behaviors = [
   "Paid for sex",
   "Sold drugs",
   "Robbed someone",
-  "Tried to kill yourself",
   "Used marijuana",
   "Had difficulty stopping eating",
   "Been in 2 or more sexual relationships at the same time",
@@ -305,7 +304,6 @@ var behaviors = [
   "Gambled illegally (not part of a legal business, using a bookie)",
   "Abused prescription medication",
   "Ate a lot of food when not hungry",
-  "Had a plan to kill yourself",
   "Ran red lights or ignored stop signs",
   "Stole money",
 ];
