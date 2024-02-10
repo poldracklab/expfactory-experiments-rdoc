@@ -279,7 +279,6 @@ var behaviors = [
   "Impulsively bought stuff you did not need & won't use",
   "Had unprotected sex with someone you just met or didn't know well",
   "Gotten in a physical fight",
-  "Thought about killing yourself",
   "Had sex for money or drugs",
   "Drank alcohol untill you blacked or passed out",
   "Used hallucinogens, LSD, or mushrooms",
