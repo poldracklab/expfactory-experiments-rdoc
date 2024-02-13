@@ -993,6 +993,9 @@ var testNode = {
       return true;
     }
   },
+  on_timeline_finish: function () {
+    window.dataSync();
+  },
 };
 
 var postTaskQuestion =
