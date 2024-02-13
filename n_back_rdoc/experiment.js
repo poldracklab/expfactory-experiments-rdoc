@@ -1114,6 +1114,9 @@ var testNode1 = {
       return false;
     }
   },
+  on_timeline_finish: function () {
+    window.dataSync();
+  },
 };
 
 var testNode2 = {
@@ -1189,6 +1192,9 @@ var testNode2 = {
       stims = createTrialTypes(numTrialsPerBlock, delay, "test");
       return false;
     }
+  },
+  on_timeline_finish: function () {
+    window.dataSync();
   },
 };
 
