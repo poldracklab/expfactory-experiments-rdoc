@@ -1,5 +1,4 @@
 // Using images from here: https://www.colorlitelens.com/ishihara-test.html (ishihara test)
-
 var pathSource = "/static/experiments/color_discrimination_rdoc/images/";
 var fileTypePNG = ".png'></img>";
 var preFileType =
@@ -37,6 +36,13 @@ function generateStims() {
     return match ? parseInt(match[1], 10) : null;
   }
 
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+  }
+
   for (let i = 0; i < colorblindImages.length; i++) {
     let src = `${pathSource}${colorblindImages[i]}.png`;
     let correct_response = extractNumber(src);
@@ -48,6 +54,8 @@ function generateStims() {
     stims.push(stim);
     images.push(src);
   }
+
+  shuffleArray(stims);
 
   return stims;
 }
@@ -124,6 +132,22 @@ var testTrial = {
   type: jsPsychSurveyText,
   questions: getQuestion,
   response_ends_trial: false,
+  on_load: function (trial) {
+    const inputField = document.getElementById("input-0");
+
+    if (inputField) {
+      inputField.setAttribute("type", "number");
+      inputField.setAttribute("placeholder", "Enter a number");
+      inputField.setAttribute("min", "0"); // Set minimum value to 0
+
+      // Listen for input events and prevent the value from going below 0
+      inputField.addEventListener("input", function () {
+        if (parseInt(this.value, 10) < 0) {
+          this.value = "0";
+        }
+      });
+    }
+  },
   data: {
     trial_id: "test_trial",
   },
