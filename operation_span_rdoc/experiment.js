@@ -7197,10 +7197,9 @@ var feedbackInstructBlock = {
 
 var opSpanInstructions = `
   <div class="centerbox">
-     <p class="block-text"><b>Sub-task #1</b></p>
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
-      During this sub-task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not. 
+      During this task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not. 
       Press the <b>left arrow key</b> if the grid is <b>${
         processingChoices[0].keyname === "left arrow key"
           ? "symmetric"
