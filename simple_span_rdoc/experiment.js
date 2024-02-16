@@ -1060,7 +1060,7 @@ var testNode = {
     }
   },
   on_timeline_finish: function () {
-    // window.dataSync();
+    window.dataSync();
   },
 };
 
