@@ -496,6 +496,7 @@ var attentionCheckBlock = {
     trial_duration: 60000,
     timing_post_trial: 200,
     exp_stage: "test",
+    condition: getCurrCondition(),
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
@@ -595,6 +596,7 @@ var feedbackBlock = {
         exp_stage: getExpStage(),
         trial_duration: 60000,
         block_num: practiceCount,
+        condition: getCurrCondition(),
       };
     } else {
       return {
@@ -602,6 +604,7 @@ var feedbackBlock = {
         exp_stage: getExpStage(),
         trial_duration: 60000,
         block_num: testCount,
+        condition: getCurrCondition(),
       };
     }
   },
@@ -699,12 +702,7 @@ var waitBlock = {
   },
   on_finish: function (data) {
     data["correct_spatial_judgement_key"] = null;
-
     data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
-
-    let processingStimProperties = null;
-
-    data["order_and_color_of_processing_boxes"] = processingStimProperties;
   },
   prompt: function () {
     if (getExpStage() == "practice") {
@@ -873,6 +871,7 @@ var ITIBlock = {
         },
         block_num: practiceCount,
         exp_stage: "practice",
+        condition: getCurrCondition(),
       };
     } else {
       return {
@@ -884,6 +883,7 @@ var ITIBlock = {
         },
         block_num: testCount,
         exp_stage: "test",
+        condition: getCurrCondition(),
       };
     }
   },
