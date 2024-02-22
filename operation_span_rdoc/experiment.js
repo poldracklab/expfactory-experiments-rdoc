@@ -7168,6 +7168,7 @@ var attentionCheckBlock = {
     trial_duration: 60000,
     timing_post_trial: 200,
     exp_stage: "test",
+    condition: getCurrCondition(),
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
@@ -7579,6 +7580,7 @@ var ITIBlock = {
         },
         block_num: practiceCount,
         exp_stage: "practice",
+        condition: getCurrCondition(),
       };
     } else {
       return {
@@ -7590,6 +7592,7 @@ var ITIBlock = {
         },
         block_num: testCount,
         exp_stage: "test",
+        condition: getCurrCondition(),
       };
     }
   },
