@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Spatial Task Switching RDoC Screener",
+    "template": "jspsych",
+    "run": [
+      "static/js/math.min.js",
+      "static/jspsych7/jspsych.js",
+      "static/jspsych7/plugin-instructions.js",
+      "static/jspsych7/plugin-html-keyboard-response.js",
+      "static/jspsych7/plugin-survey-text.js",
+      "static/jspsych7/plugin-fullscreen.js",
+      "static/jspsych7/plugin-call-function.js",
+      "static/jspsych7/poldrack-plugins/plugin-attention-check.js",
+      "static/jspsych7/jspsych.css",
+      "static/css/default_style.css",
+      "style.css",
+      "experiment.js"
+    ],
+    "exp_id": "spatial_task_switching_rdoc__screener",
+    "cognitive_atlas_task_id": "trm_4f241ee9c4e37",
+    "contributors": [
+      "Patrick Bissett",
+      "Jamie Li",
+      "McKenzie Hagen",
+      "Chris Iyer",
+      "Russell Poldrack"
+    ],
+    "time": 20,
+    "reference": "http://psycnet.apa.org/psycarticles/2013-29647-001",
+    "publish": "True",
+    "experiment_variables": [
+      {
+        "name": "credit_var",
+        "type": "credit",
+        "datatype": "boolean",
+        "description": "True if avg_rt > 200"
+      }
+    ],
+    "deployment_variables": {
+      "jspsych_init": {
+        "fullscreen": true,
+        "display_element": "getDisplayElement",
+        "on_trial_finish": "addID('spatial_task_switching_rdoc__screener')"
+      }
+    }
+  }
+]
