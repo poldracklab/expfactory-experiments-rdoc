@@ -6632,6 +6632,22 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function calculatePartialAccuracy(trials) {
+  if (trials.length === 0) return 0; // Handle case where trials array is empty
+
+  const totalAccuracy = trials.reduce((acc, trial) => {
+    const { response, spatial_sequence } = trial;
+    const correctCount = spatial_sequence.filter(item =>
+      response.includes(item)
+    ).length;
+    const accuracy = correctCount / spatial_sequence.length;
+    return acc + accuracy;
+  }, 0);
+
+  const partialAccuracy = totalAccuracy / trials.length;
+  return partialAccuracy;
+}
+
 function shuffleArray(array) {
   // Create a copy of the original array to avoid modifying it directly
   const shuffledArray = array.slice();
@@ -6995,6 +7011,8 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
 var accuracyThresh = 0.6;
+var partialAccuracyThresh = 0.75;
+var practiceAccuracyThresh = 0.6;
 
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
@@ -7051,10 +7069,8 @@ var promptText = `<div class=prompt_box_operation>
         ? "symmetric"
         : "asymmetric"
     }</b> and <b>"right arrow key"</b> if <b>${
-      processingChoices[0].keyname === "left arrow key"
-        ? "asymmetric"
-        : "symmetric"
-    }</b>.</p>
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.</p>
   </div>`;
 
 /* ************************************ */
@@ -7082,10 +7098,8 @@ var opSpanInstructions = `
           ? "symmetric"
           : "asymmetric"
       }</b> and press the <b>right arrow key</b> if it is <b>${
-        processingChoices[0].keyname === "left arrow key"
-          ? "asymmetric"
-          : "symmetric"
-      }</b>.
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7438,7 +7452,6 @@ function generatePracticeTrials() {
 }
 
 practiceTrials = generatePracticeTrials();
-
 // loop based on criteria
 var practiceCount = 0;
 var practiceNode = {
@@ -7451,6 +7464,8 @@ var practiceNode = {
     }).trials;
 
     practiceCount += 1;
+    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+
     var correct = 0;
     var totalTrials = responseGridData.length;
     var missedCount = 0;
@@ -7466,7 +7481,6 @@ var practiceNode = {
         }
       }
     }
-
     var accuracy = correct / responseCount;
     var missedResponses = missedCount / totalTrials;
 
@@ -7504,7 +7518,7 @@ var practiceNode = {
       canProceedToTest = true;
     } else {
       if (
-        accuracy >= accuracyThresh &&
+        partialAccuracy >= partialAccuracyThresh &&
         avgProcessingAcc > processingAccThresh &&
         avgProcessingRT < processingRTThresh &&
         avgProcessingMissed < processingMissedThresh
@@ -7529,7 +7543,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (partialAccuracy < partialAccuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 4x4 grid is low.</p>" +
           "<p class = block-text>Try your best to recall the black colored cells.</p>";
@@ -7607,6 +7621,134 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
+  on_finish: data => {
+    const FLAG_PARTIAL_ACCURACY_THRESHOLD = 0.25;
+    const FLAG_PROCESSING_ACCURACY_THRESHOLD = 0.6;
+    const FLAG_PROCESSING_RT_THRESHOLD = 1250;
+    const FLAG_OMISSIONS_THRESHOLD = 0.2;
+
+    const PRACTICE_PARTIAL_ACCURACY_THRESHOLD = practiceAccuracyThresh;
+    const PRACTICE_PROCESSING_ACCURACY_THRESHOLD = processingRTThresh;
+    const PRACTICE_PROCESSING_RT_THRESHOLD = processingRTThresh;
+    const PRACTICE_OMISSIONS_THRESHOLD = missedResponseThresh;
+
+    if (practiceCount < practiceThresh) {
+      data.include_subject = 1;
+      return;
+    }
+
+    const practiceProcessingTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: "practice_inter-stimulus" }).trials;
+
+    const finalBlockProcessingTrials = jsPsych.data.get().filter({
+      trial_id: "practice_inter-stimulus",
+      block_num: practiceThresh - 1,
+    }).trials;
+
+    const practiceResponseTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: "practice_trial" }).trials;
+
+    const finalBlockResponseTrials = jsPsych.data.get().filter({
+      trial_id: "practice_trial",
+      block_num: practiceThresh - 1,
+    }).trials;
+
+    const evaluateResponseTrials = trials => {
+      const correctTrialsCount = trials.filter(
+        obj => obj.correct_trial === 1
+      ).length;
+
+      const missedTrialsCount = trials.filter(
+        obj => obj.response.length === 0
+      ).length;
+
+      const partialAccuracy =
+        trials.reduce((acc, trial) => {
+          const { response, spatial_sequence } = trial;
+          const correctCount = spatial_sequence.filter(item =>
+            response.includes(item)
+          ).length;
+          const accuracy = correctCount / spatial_sequence.length;
+          return acc + accuracy;
+        }, 0) / trials.length;
+
+      return {
+        accuracy: correctTrialsCount / trials.length,
+        partialAccuracy,
+        omissions: missedTrialsCount / trials.length,
+      };
+    };
+
+    const evaluateProcessingTrials = trials => {
+      const correctTrialsCount = trials.filter(
+        obj => obj.correct_trial === 1
+      ).length;
+      const responseTimes = trials
+        .filter(obj => obj.rt !== null)
+        .map(obj => obj.rt);
+      const meanResponseTime =
+        responseTimes.reduce((acc, rt) => acc + rt, 0) / responseTimes.length;
+
+      return {
+        accuracy: correctTrialsCount / trials.length,
+        meanResponseTime,
+      };
+    };
+
+    const overallResponsePerformance = evaluateResponseTrials(
+      practiceResponseTrials
+    );
+    const overallProcessingPerformance = evaluateProcessingTrials(
+      practiceProcessingTrials
+    );
+
+    const finalBlockResponsePerformance = evaluateResponseTrials(
+      finalBlockResponseTrials
+    );
+    const finalBlockProcessingPerformance = evaluateProcessingTrials(
+      finalBlockProcessingTrials
+    );
+
+    const isSubjectIncludedFlag = (
+      responsePerformance,
+      processingPerformance
+    ) => {
+      return (
+        responsePerformance.accuracy >= FLAG_PARTIAL_ACCURACY_THRESHOLD &&
+        responsePerformance.omissions <= FLAG_OMISSIONS_THRESHOLD &&
+        processingPerformance.meanResponseTime <=
+          FLAG_PROCESSING_RT_THRESHOLD &&
+        processingPerformance.accuracy >= FLAG_PROCESSING_ACCURACY_THRESHOLD
+      );
+    };
+
+    const isSubjectIncludedPractice = (
+      responsePerformance,
+      processingPerformance
+    ) => {
+      return (
+        responsePerformance.accuracy >= PRACTICE_PARTIAL_ACCURACY_THRESHOLD &&
+        responsePerformance.omissions <= PRACTICE_OMISSIONS_THRESHOLD &&
+        processingPerformance.meanResponseTime <=
+          PRACTICE_PROCESSING_RT_THRESHOLD &&
+        processingPerformance.accuracy >= PRACTICE_PROCESSING_ACCURACY_THRESHOLD
+      );
+    };
+
+    data.include_subject =
+      isSubjectIncludedFlag(
+        overallResponsePerformance,
+        overallProcessingPerformance
+      ) ||
+      isSubjectIncludedPractice(
+        finalBlockResponsePerformance,
+        finalBlockProcessingPerformance
+      )
+        ? 1
+        : 0;
+  },
 };
 
 operation_span_rdoc__screener_experiment = [];

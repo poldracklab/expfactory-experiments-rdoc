@@ -35,6 +35,34 @@ var trial = {
   ],
   choices: ["Enter"],
   post_trial_gap: 0,
+  on_finish: data => {
+    data["proceed_to_main_study"] = data.response.post_practice_question;
+  },
+};
+
+var followUpTrial = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `<div style='max-width:1000px;text-align: left;'>
+  <p>Thank you for your honesty. You chose <b>not to proceed</b> to the main study.</p>
+    <p>We understand that this study requires a significant commitment, and it's important to us that our participants feel confident in their ability to complete all sessions.</p>
+    <p>We appreciate the time you've invested in the practice sessions.</p>
+    <p>Please be assured that you will still receive compensation for the screener and any practice sessions you've completed.</p> 
+    <p>Choosing not to proceed allows us to ensure that all participants in the main study can fully commit to the required schedule, which is crucial for the integrity of our research findings. We hope that you found the experience insightful and that you might consider participating in future studies that better fit your schedule or interests.</p>
+    <p>Thank you again for your participation and understanding.</p></div>`,
+  choices: ["Enter"],
+  trial_duration: 60000,
+};
+
+var conditionalTrial = {
+  timeline: [followUpTrial],
+  conditional_function: function () {
+    var response = jsPsych.data.get().last(1).values()[0].proceed_to_main_study;
+    if (response === "No") {
+      return true;
+    } else {
+      return false;
+    }
+  },
 };
 
 var postTaskQuestion =
@@ -95,6 +123,7 @@ var retain_interest_survey_rdoc_init = () => {
   retain_interest_survey_rdoc_experiment.push(fullscreen);
   retain_interest_survey_rdoc_experiment.push(instructionsBlock);
   retain_interest_survey_rdoc_experiment.push(trial);
+  retain_interest_survey_rdoc_experiment.push(conditionalTrial);
   retain_interest_survey_rdoc_experiment.push(postTaskBlock);
   retain_interest_survey_rdoc_experiment.push(endBlock);
   retain_interest_survey_rdoc_experiment.push(exitFullscreen);

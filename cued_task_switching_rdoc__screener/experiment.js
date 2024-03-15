@@ -302,13 +302,13 @@ var promptTextList = `
     <li>Cue "Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
       responseMappings.oddEven.even === "," ? "even" : "odd"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.oddEven.even === "," ? "odd" : "even"
-    }</b>.</li>
+  responseMappings.oddEven.even === "," ? "odd" : "even"
+}</b>.</li>
     <li>Cue "Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
       responseMappings.higherLower.higher === "," ? "high" : "low"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.higherLower.higher === "," ? "low" : "high"
-    }</b>.</li>
+  responseMappings.higherLower.higher === "," ? "low" : "high"
+}</b>.</li>
   </ul>
 `;
 
@@ -317,13 +317,13 @@ var promptText = `
     <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
       responseMappings.oddEven.even === "," ? "even" : "odd"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.oddEven.even === "," ? "odd" : "even"
-    }</b></p>
+  responseMappings.oddEven.even === "," ? "odd" : "even"
+}</b></p>
    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
      responseMappings.higherLower.higher === "," ? "high" : "low"
    }</b> and <b>period key (.)</b> if <b>${
-     responseMappings.higherLower.higher === "," ? "low" : "high"
-   }</b></p>
+  responseMappings.higherLower.higher === "," ? "low" : "high"
+}</b></p>
   </div>
 `;
 
@@ -743,6 +743,72 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
+  on_finish: data => {
+    const FLAG_ACCURACY_THRESHOLD = 0.6;
+    const FLAG_RT_THRESHOLD = 1000;
+    const FLAG_OMISSIONS_THRESHOLD = 0.2;
+
+    const PRACTICE_ACCURACY_THRESHOLD = practiceAccuracyThresh;
+    const PRACTICE_RT_THRESHOLD = rtThresh;
+    const PRACTICE_OMISSIONS_THRESHOLD = missedResponseThresh;
+
+    if (practiceCount < practiceThresh) {
+      data.include_subject = 1;
+      return;
+    }
+
+    const practiceTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: "practice_trial" }).trials;
+
+    const finalBlockTrials = jsPsych.data.get().filter({
+      trial_id: "practice_trial",
+      block_num: practiceThresh - 1,
+    }).trials;
+
+    const evaluateTrials = trials => {
+      const correctTrialsCount = trials.filter(
+        obj => obj.correct_trial === 1
+      ).length;
+      const missedTrialsCount = trials.filter(obj => obj.rt === null).length;
+      const responseTimes = trials
+        .filter(obj => obj.rt !== null)
+        .map(obj => obj.rt);
+      const meanResponseTime =
+        responseTimes.reduce((acc, rt) => acc + rt, 0) / responseTimes.length;
+
+      return {
+        accuracy: correctTrialsCount / trials.length,
+        omissions: missedTrialsCount / trials.length,
+        meanResponseTime,
+      };
+    };
+
+    const overallPerformance = evaluateTrials(practiceTrials);
+    const finalBlockPerformance = evaluateTrials(finalBlockTrials);
+
+    const isSubjectIncludedFlag = performance => {
+      return (
+        performance.accuracy >= FLAG_ACCURACY_THRESHOLD &&
+        performance.meanResponseTime <= FLAG_RT_THRESHOLD &&
+        performance.omissions <= FLAG_OMISSIONS_THRESHOLD
+      );
+    };
+
+    const isSubjectIncludedPractice = performance => {
+      return (
+        performance.accuracy >= PRACTICE_ACCURACY_THRESHOLD &&
+        performance.meanResponseTime <= PRACTICE_RT_THRESHOLD &&
+        performance.omissions <= PRACTICE_OMISSIONS_THRESHOLD
+      );
+    };
+
+    data.include_subject =
+      isSubjectIncludedFlag(overallPerformance) ||
+      isSubjectIncludedPractice(finalBlockPerformance)
+        ? 1
+        : 0;
+  },
 };
 
 var cued_task_switching_rdoc__screener_experiment = [];
