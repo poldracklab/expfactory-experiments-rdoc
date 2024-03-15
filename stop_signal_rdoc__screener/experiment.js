@@ -205,8 +205,6 @@ var correct_response = null;
 var stimData = null;
 var condition = null;
 
-var maxStopCorrect = 0.75;
-var minStopCorrect = 0.25;
 var maxStopCorrectPractice = 1;
 var minStopCorrectPractice = 0;
 
@@ -639,6 +637,112 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
+  on_finish: data => {
+    const FLAG_ACCURACY_THRESHOLD = 0.6;
+    const FLAG_RT_THRESHOLD = 1000;
+    const FLAG_OMISSIONS_THRESHOLD = 0.2;
+    const MIN_STOP_ACCURACY_THRESHOLD = 0.25;
+    const MAX_STOP_ACCURACY_THRESHOLD = 0.75;
+
+    const PRACTICE_ACCURACY_THRESHOLD = practiceAccuracyThresh;
+    const PRACTICE_RT_THRESHOLD = rtThresh;
+    const PRACTICE_OMISSIONS_THRESHOLD = missedResponseThresh;
+
+    if (practiceCount < practiceThresh) {
+      data.include_subject = 1;
+      return;
+    }
+
+    const goTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: "practice_trial", condition: "go" }).trials;
+
+    const stopTrials = jsPsych.data
+      .get()
+      .filter({ trial_id: "practice_trial", condition: "stop" }).trials;
+
+    const finalBlockGoTrials = jsPsych.data.get().filter({
+      trial_id: "practice_trial",
+      condition: "go",
+      block_num: practiceThresh - 1,
+    }).trials;
+
+    const finalBlockStopTrials = jsPsych.data.get().filter({
+      trial_id: "practice_trial",
+      condition: "stop",
+      block_num: practiceThresh - 1,
+    }).trials;
+
+    const evaluateGoTrials = trials => {
+      const correctTrialsCount = trials.filter(
+        obj => obj.correct_trial === 1
+      ).length;
+
+      const missedTrialsCount = trials.filter(obj => obj.rt === null).length;
+      const responseTimes = trials
+        .filter(obj => obj.rt !== null)
+        .map(obj => obj.rt);
+      const meanResponseTime =
+        responseTimes.reduce((acc, rt) => acc + rt, 0) / responseTimes.length;
+
+      return {
+        accuracy: correctTrialsCount / trials.length,
+        omissions: missedTrialsCount / trials.length,
+        meanResponseTime,
+      };
+    };
+
+    const evaluateStopTrials = trials => {
+      const correctTrialsCount = trials.filter(
+        obj => obj.correct_trial === 1
+      ).length;
+      return {
+        accuracy: correctTrialsCount / trials.length,
+      };
+    };
+
+    const overallGoPerformance = evaluateGoTrials(goTrials);
+    const overallStopPerformance = evaluateStopTrials(stopTrials);
+
+    const finalBlockGoPerformance = evaluateGoTrials(finalBlockGoTrials);
+    const finalBlockStopPerformance = evaluateStopTrials(finalBlockStopTrials);
+
+    const isSubjectIncludedFlagGo = performance => {
+      return (
+        performance.accuracy >= FLAG_ACCURACY_THRESHOLD &&
+        performance.meanResponseTime <= FLAG_RT_THRESHOLD &&
+        performance.omissions <= FLAG_OMISSIONS_THRESHOLD
+      );
+    };
+
+    const isSubjectIncludedPracticeGo = performance => {
+      return (
+        performance.accuracy >= PRACTICE_ACCURACY_THRESHOLD &&
+        performance.meanResponseTime <= PRACTICE_RT_THRESHOLD &&
+        performance.omissions <= PRACTICE_OMISSIONS_THRESHOLD
+      );
+    };
+
+    const isSubjectIncludedStop = performance => {
+      return (
+        performance.accuracy > MIN_STOP_ACCURACY_THRESHOLD &&
+        performance.accuracy < MAX_STOP_ACCURACY_THRESHOLD
+      );
+    };
+
+    data.include_subject =
+      (isSubjectIncludedFlagGo(overallGoPerformance) &&
+        isSubjectIncludedStop(overallStopPerformance)) ||
+      isSubjectIncludedPracticeGo(finalBlockGoPerformance)
+        ? 1
+        : 0;
+
+    console.log(overallGoPerformance);
+    console.log(overallStopPerformance);
+    console.log(finalBlockGoPerformance);
+    console.log(finalBlockStopPerformance);
+    console.log(data);
+  },
 };
 
 var stop_signal_rdoc__screener_experiment = [];
