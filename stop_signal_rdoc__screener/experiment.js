@@ -736,12 +736,6 @@ var endBlock = {
       isSubjectIncludedPracticeGo(finalBlockGoPerformance)
         ? 1
         : 0;
-
-    console.log(overallGoPerformance);
-    console.log(overallStopPerformance);
-    console.log(finalBlockGoPerformance);
-    console.log(finalBlockStopPerformance);
-    console.log(data);
   },
 };
 

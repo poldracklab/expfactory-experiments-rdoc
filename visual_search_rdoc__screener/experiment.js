@@ -850,10 +850,6 @@ var endBlock = {
       isSubjectIncludedPractice(finalBlockPerformance)
         ? 1
         : 0;
-
-    console.log(finalBlockPerformance);
-    console.log(overallPerformance);
-    console.log(data);
   },
 };
 

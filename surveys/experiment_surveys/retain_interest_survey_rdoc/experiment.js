@@ -37,7 +37,6 @@ var trial = {
   post_trial_gap: 0,
   on_finish: data => {
     data["proceed_to_main_study"] = data.response.post_practice_question;
-    console.log(data);
   },
 };
 

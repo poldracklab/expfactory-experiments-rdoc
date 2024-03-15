@@ -7697,15 +7697,6 @@ var endBlock = {
       };
     };
 
-    console.log("#######");
-    console.log(practiceResponseTrials);
-    console.log(finalBlockResponseTrials);
-    console.log("#######");
-
-    console.log(practiceProcessingTrials);
-    console.log(finalBlockProcessingTrials);
-    console.log("#######");
-
     const overallResponsePerformance = evaluateResponseTrials(
       practiceResponseTrials
     );
@@ -7719,16 +7710,6 @@ var endBlock = {
     const finalBlockProcessingPerformance = evaluateProcessingTrials(
       finalBlockProcessingTrials
     );
-
-    console.log(overallResponsePerformance);
-    console.log(overallProcessingPerformance);
-
-    console.log("#######");
-
-    console.log(finalBlockResponsePerformance);
-    console.log(finalBlockProcessingPerformance);
-
-    console.log("#######");
 
     const isSubjectIncludedFlag = (
       responsePerformance,
@@ -7767,8 +7748,6 @@ var endBlock = {
       )
         ? 1
         : 0;
-
-    console.log(data);
   },
 };
 

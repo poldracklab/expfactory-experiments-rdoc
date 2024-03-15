@@ -400,7 +400,6 @@ const createSurveyQuestions = behaviors => {
 };
 
 var surveyQuestions = createSurveyQuestions(behaviors);
-console.log(surveyQuestions);
 
 var instructions = [
   `<div class='instructions'>
