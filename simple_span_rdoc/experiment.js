@@ -29,6 +29,22 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
+function calculatePartialAccuracy(trials) {
+  if (trials.length === 0) return 0; // Handle case where trials array is empty
+
+  const totalAccuracy = trials.reduce((acc, trial) => {
+    const { response, spatial_sequence } = trial;
+    const correctCount = spatial_sequence.filter(item =>
+      response.includes(item)
+    ).length;
+    const accuracy = correctCount / spatial_sequence.length;
+    return acc + accuracy;
+  }, 0);
+
+  const partialAccuracy = totalAccuracy / trials.length;
+  return partialAccuracy;
+}
+
 function shuffleChecksArray(array) {
   // Create a copy of the original array
   const shuffledArray = [...array];
@@ -434,7 +450,7 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
 var accuracyThresh = 0.6;
-
+var partialAccuracyThresh = 0.75;
 var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 
@@ -925,6 +941,8 @@ var practiceNode = {
     }).trials;
 
     practiceCount += 1;
+    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+
     var correct = 0;
     var totalTrials = responseGridData.length;
     var missedCount = 0;
@@ -944,7 +962,10 @@ var practiceNode = {
     var accuracy = correct / responseCount;
     var missedResponses = missedCount / totalTrials;
 
-    if (practiceCount === practiceThresh || accuracy >= accuracyThresh) {
+    if (
+      practiceCount === practiceThresh ||
+      partialAccuracy >= partialAccuracyThresh
+    ) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
         '<p class="block-text">Keep your fingers on the arrow keys.</p>';
@@ -958,7 +979,7 @@ var practiceNode = {
       feedbackText =
         "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
 
-      if (accuracy < accuracyThresh) {
+      if (partialAccuracy < partialAccuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 4x4 grid is low.</p>" +
           "<p class = block-text>Try your best to recall the black colored cells.</p>";
