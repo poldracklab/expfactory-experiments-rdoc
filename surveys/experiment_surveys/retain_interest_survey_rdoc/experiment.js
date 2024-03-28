@@ -37,6 +37,11 @@ var trial = {
   post_trial_gap: 0,
   on_finish: data => {
     data["proceed_to_main_study"] = data.response.post_practice_question;
+    if (data.response.post_practice_question == "Yes") {
+      data["include_subject"] = 1;
+    } else {
+      data["include_subject"] = 0;
+    }
   },
 };
 
@@ -48,7 +53,9 @@ var followUpTrial = {
     <p>We appreciate the time you've invested in the practice sessions.</p>
     <p>Please be assured that you will still receive compensation for the screener and any practice sessions you've completed.</p> 
     <p>Choosing not to proceed allows us to ensure that all participants in the main study can fully commit to the required schedule, which is crucial for the integrity of our research findings. We hope that you found the experience insightful and that you might consider participating in future studies that better fit your schedule or interests.</p>
-    <p>Thank you again for your participation and understanding.</p></div>`,
+    <p>Thank you again for your participation and understanding.</p>
+    <p>Press <i>enter</i> to continue.</p>
+    </div>`,
   choices: ["Enter"],
   trial_duration: 60000,
 };
