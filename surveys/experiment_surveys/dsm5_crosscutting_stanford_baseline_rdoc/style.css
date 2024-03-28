@@ -7,6 +7,7 @@ form {
   display: flex;
   align-content: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 .instructions {
@@ -28,7 +29,6 @@ form {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100vw;
 }
 
 span[data-bind="css: question.koCss().error.item"] {
@@ -45,8 +45,8 @@ span[data-bind="css: question.koCss().error.item"] {
   flex-direction: column;
   justify-content: space-between;
   margin: 0px auto;
-  width: 50vw;
   padding: 80px 0px;
+  width: 100%;
 }
 
 .sv_row {
