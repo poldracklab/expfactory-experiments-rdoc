@@ -1,86 +1,66 @@
-# Stroop Description
-Stroop
+# Stroop Task
 
-## Stroop trial timing
-- test trial
-fixation : 500ms
-probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+---
 
---- 
-```code 
-2500ms trial duration 
-* 3 blocks
-* 40 trials per block 
-/ 1000 
-/ 60
-= 5min
-```
+## Trial Structure
 
-- practice trial
-fixation : 500ms
-probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
-feedback : 500ms  
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+| Event    | Duration (ms)                                           |
+| -------- | ------------------------------------------------------- |
+| Fixation | 500                                                     |
+| Probe    | 1500 (1000ms stimulus presentation, 500ms blank screen) |
+| ITI      | 500 (mean), 0 (min), 5000 (max)                         |
 
---- 
-```code 
-3000ms trial duration 
-* 1 block
-* 4 trials per block 
-/ 1000 
-/ 60
-= .2min
-```
+## Blocks
 
-## Stroop Conditions and Proportions
-Congruent : 50%
-Incongruent : 50%
+| Block Type | Number of Blocks | Trials per Block |
+| ---------- | ---------------- | ---------------- |
+| Test       | 3                | 40               |
 
-3 test blocks
-32 test trials for each test block
-= 96 test trials total 
+## Conditions and Proportions
 
-3 practice blocks (maxiumum)
-12 trials for practice
-= 12 practice trials minimum
-= 36 practice trials maximum
+| Condition   | Percentage |
+| ----------- | ---------- |
+| Congruent   | 50%        |
+| Incongruent | 50%        |
 
-Accuracy Threshold = 0.7
+---
 
-## Stroop Instructions
+## Stroop Task Instructions
 
-### Enable fullscreen
-The experiment will switch to full screen mode when you press the button below
+### Enable Fullscreen
+
+> The experiment will switch to full screen mode when you press the button below.
 
 ### Welcome Screen
-Welcome! This experiment will take around 10 minutes.
 
-To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.
+> Welcome! This experiment will take around 7 minutes. To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task. Press enter to begin.
 
-Press enter to begin.
+---
 
-### Task-Specific Instructions - Page 1
+### Task Instructions
 
-<!-- Do I need to simplify these instructions at all? Seem kind of long. -->
-Place your index finger on the comma key (,), your middle finger on the period key (.), and your ring finger on the slash key (/).
+#### Page 1: Setup
 
-During this task, on each trial you will be presented with a single word on the screen. The word will always be one of these three: 'RED', 'BLUE', or 'GREEN'.
+> Place your index finger on the comma key (,), your middle finger on the period key (.), and your ring finger on the forward slash key (/)
 
-Each word will appear in a certain color. Note the color of the word may not match the word itself. For example, you might see the word 'RED' colored in green, like this: RED.
+> During this task, on each trial you will be presented with a single word on the screen. This word will be 'RED', 'BLUE', or 'GREEN'.
 
-Your task is to identify the color in which the word is displayed, not the word itself. So, if you see the word 'RED' displayed in green, you should press the key corresponding to green.
+> Each word will appear in colored ink. The color of the word may not match the word itself. For example, you might see the word 'RED' in green ink, like this: RED.
 
-Press your index finger if the color is red.
+> Your task is to identify the color of the ink in which the word is displayed, not the word itself. So, if you see the word 'RED' in green ink, you should press the key corresponding to green.
 
-Press your middle finger if the color is blue.
+> Press your index finger if the color is blue.
 
-Press your ring finger if the color is green.
+> Press your middle finger if the color is red.
 
-### Task-Specific Instructions - Page 2
-We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for test, so make sure you understand the instructions before moving on.
+> Press your ring finger if the color is green.
 
-Try to respond as quickly and accurately as possible.
+#### Page 2: Practice Round
 
-### Task-Specific Instructions - Page 3
-Press enter to begin practice.
+> We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
+>
+> Try to respond as quickly and accurately as possible.
+
+#### Page 3: Start Practice
+
+> Press enter to begin practice.
