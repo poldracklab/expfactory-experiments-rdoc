@@ -96,7 +96,7 @@ while True:
         all_sets.append(batteries)
     flag, task_avg_positions = all_tasks_within_desired_range(all_sets)
     if flag:
-        print(task_avg_positions)
+        print(f'Average task positions:\n {task_avg_positions}')
         break  # Exit loop if the sets meet the criteria
 
 for set in all_sets:
@@ -158,7 +158,7 @@ def create_dir_if_not_exists(directory):
 create_dir_if_not_exists(processed_data_dir)
 
 # Path to the CSV file
-csv_file_path = os.path.join(data_dir, 'batteries.csv')
+csv_file_path = os.path.join(processed_data_dir, 'batteries.csv')
 
 # Check if the file exists 
 if os.path.exists(csv_file_path):
