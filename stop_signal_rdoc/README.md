@@ -1,95 +1,72 @@
-# Stop-Signal Description
-Stop-Signal 
+# Stop-Signal Task
 
-## Stop-signal trial timing
-- test trial
-fixation : 500ms
-probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+---
 
---- 
-```code 
-2500ms trial duration 
-* 3 blocks
-* 60 trials per block 
-/ 1000 
-/ 60
-= 7.5min
-```
+## Trial Structure
 
-- practice trial
-fixation : 500ms
-probe : 1500ms (1000ms stimulus presentation, 500ms blank screen)
-feedback : 500ms  
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+| Event    | Duration (ms)                                           |
+| -------- | ------------------------------------------------------- |
+| Fixation | 500                                                     |
+| Probe    | 1500 (1000ms stimulus presentation, 500ms blank screen) |
+| ITI      | 500 (mean), 0 (min), 5000 (max)                         |
 
---- 
-```code 
-3000ms trial duration 
-* 1 block
-* 6 trials per block 
-/ 1000 
-/ 60
-= .3min
-```
+## Blocks
 
-## Stop-signal Conditions and Proportions
-Go/NoGo
+| Block Type | Number of Blocks | Trials per Block |
+| ---------- | ---------------- | ---------------- |
+| Test       | 3                | 60               |
 
-3 test blocks
-60 test trials for each test block
-= 180 test trials total 
+## Conditions and Probabilities
 
-3 practice blocks (maxiumum)
-18 trials for practice
-= 18 practice trials minimum
-= 54 practice trials maximum
+| Condition | Probability |
+| --------- | ----------- |
+| Go        | 66.66%      |
+| Stop      | 33.33%      |
 
-Accuracy Threshold: .75
+---
 
-Note: practice moves to test if practice block accuracy is > .75 or if current practice block is their third attempt. 
+## Stop-Signal Task Instructions
 
-## Stop-Signal Accuracy
-Accuracy Threshold = 0.75
+### Enable Fullscreen
 
-## Stop-Signal Instructions
-
-### Enable fullscreen
-The experiment will switch to full screen mode when you press the button below
+> The experiment will switch to full screen mode when you press the button below.
 
 ### Welcome Screen
-Welcome! This experiment will take around 15 minutes.
 
-To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.
+> Welcome! This experiment will take around 10 minutes. To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task. Press enter to begin.
 
-Press enter to begin.
+---
 
-### Task-Specific Instructions - Page 1
+### Task Instructions
 
-Place your index finger on the comma key (,) and your middle finger on the period key (.)
+#### Page 1: Setup
 
-During this task, on each trial you will see shapes appear on the screen one at a time.
+> Place your index finger on the comma key (,) and your middle finger on the period key (.).
+>
+> During this task, on each trial, you will see shapes appear on the screen one at a time.
+>
+> If the shape is a circle, press your index finger.
+>
+> If the shape is a square, press your middle finger.
+>
+> You should respond as quickly and accurately as possible to each shape.
 
-If the shape is a circle, press your index finger.
+#### Page 2: Setup cont.
 
-If the shape is a square, press your middle finger.
+> On some trials, a star will appear around the shape, shortly after the shape appears.
+>
+> If you see the star, please try your best to withhold your response on that trial.
+>
+> If the star appears and you try your best to withhold your response, you will find that you will be able to stop sometimes, but not always.
+>
+> Please do not slow down your responses in order to wait for the star. It is equally important to respond quickly on trials without the star as it is to stop on trials with the star.
 
-You should respond as quickly and accurately as possible to each shape.
+#### Page 3: Practice Round
 
-### Task-Specific Instructions - Page 2
-On some trials, a star will appear around the shape, shortly after the shape appears.
+> We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
+>
+> Try to respond as quickly and accurately as possible.
 
-If you see the star, please try your best to withhold your response on that trial.
+#### Page 4: Start Practice
 
-If the star appears and you try your best to withhold your response, you will find that you will be able to stop sometimes, but not always.
-
-Please do not slow down your responses in order to wait for the star. It is equally important to respond quickly on trials without the star as it is to stop on trials with the star.
-
-### Task-Specific Instructions - Page 3
-
-We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
-
-Try to respond as quickly and accurately as possible.
-
-### Task-Specific Instructions - Page 4
-Press enter to begin practice.
+> Press enter to begin practice.

@@ -1,79 +1,56 @@
-# Flanker Description
-Flanker
+# Flanker Task
 
-## Flanker trial timing
-- test trial
-fixation : 500ms
-probe : 1500ms (1000ms stim presentation, 500ms blank screen)
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+---
 
---- 
-```code 
-2500ms trial duration 
-* 3 blocks 
-* 40 trials per block 
-/ 1000 
-/ 60
-= 5min
-```
+## Trial Structure
 
-- practice trial
-fixation : 500ms
-probe : 1500ms (1000ms stim presentation, 500ms blank screen)
-practice feedback : 500ms
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+| Event    | Duration (ms)                                           |
+| -------- | ------------------------------------------------------- |
+| Fixation | 500                                                     |
+| Probe    | 1500 (1000ms stimulus presentation, 500ms blank screen) |
+| ITI      | 500 (mean), 0 (min), 5000 (max)                         |
 
---- 
-```code 
-3000ms trial duration 
-* 1 block
-* 4 trials per block 
-/ 1000 
-/ 60
-= .2 min
-```
+## Conditions and Probabilities
 
-## Flanker Conditions and Proportions
-Congruent : 50%
-Incongruent : 50%
+| Block Type | Number of Blocks | Trials per Block |
+| ---------- | ---------------- | ---------------- |
+| Test       | 3                | 40               |
 
-3 test blocks
-32 test trials for each test block
-= 96 test trials total 
+## Conditions and Probabilities
 
-3 practice blocks (maxiumum)
-12 trials for practice
-= 12 practice trials minimum
-= 36 practice trials maximum
+| Condition   | Probability |
+| ----------- | ----------- |
+| Congruent   | 50%         |
+| Incongruent | 50%         |
 
-Accuracy Threshold: .75
+---
 
-Note: practice moves to test if practice block accuracy is > .75 or if current practice block is their third attempt. 
+## Flanker Task Instructions
 
-## Flanker Instructions
+### Enable Fullscreen
 
-### Enable fullscreen
-The experiment will switch to full screen mode when you press the button below
+> The experiment will switch to full screen mode when you press the button below.
 
 ### Welcome Screen
-Welcome! This experiment will take around 10 minutes.
 
-To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.
+> Welcome! This experiment will take around 7 minutes. To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the entire duration of each task. Press enter to begin.
 
-Press enter to begin.
+---
 
-### Task-Specific Instructions - Page 1
-Place your index finger on the comma key (,) and your middle finger on the period key (.)
+### Task Instructions
 
-During this task, on each trial you will see a string of F's and H's. For instance, you might see 'FFFFF' or 'HHFHH'.
+#### Page 1: Setup
 
-If the middle letter is an H, press your index finger.
-If the middle letter is an F, press your middle finger.
-So, if you see 'FFHFF', you would press your index finger.
+> Place your index finger on the comma key (,) and your middle finger on the period key (.). During this task, on each trial, you will see a string of F's and H's. For instance, you might see 'FFFFF' or 'HHFHH'.
+>
+> If the middle letter is an H, press your index finger.
+> If the middle letter is an F, press your middle finger.
+> So, if you see 'FFHFF', you would press your index finger.
+>
+> We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
+>
+> Try to respond as quickly and accurately as possible.
 
-We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
+#### Page 2: Start Practice
 
-Try to respond as quickly and accurately as possible.
-
-### Task-Specific Instructions - Page 2
-Press enter to begin practice.
+> Press enter to begin practice.

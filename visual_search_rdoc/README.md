@@ -1,87 +1,77 @@
-# Visual Search Description
-Visual Search 
+# Visual Search Task
 
-## Visual Search trial timing
-- test trial
-fixation : 500ms
-probe : 2000ms (1500ms stimulus presentation, 500ms blank screen)
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+---
 
---- 
-```code 
-3000ms trial duration 
-* 3 blocks
-* 64 trials per block 
-/ 1000 
-/ 60
-= 9.6min
-```
+## Trial Structure
 
-- practice trial
-fixation : 500ms
-probe : 2000ms (1500ms stimulus presentation, 500ms blank screen)
-feedback : 500ms  
-ITI : 500ms (mean), 0ms (min), 5000ms (max)
+| Event    | Duration (ms)                                           |
+| -------- | ------------------------------------------------------- |
+| Fixation | 500                                                     |
+| Probe    | 2000 (1500ms stimulus presentation, 500ms blank screen) |
+| ITI      | 500 (mean), 0 (min), 5000 (max)                         |
 
---- 
-```code 
-3500ms trial duration 
-* 1 block
-* 4 trials per block 
-/ 1000 
-/ 60
-= .233min
-```
+## Blocks
 
-## Visual Search Conditions and Proportions
-Feature : 50%
-Conjunction : 50%
+| Block Type | Number of Blocks | Trials per Block |
+| ---------- | ---------------- | ---------------- |
+| Test       | 3                | 64               |
 
-Low-load (8 stim) : 50%
-High-load (24 stim) : 50%
+## Conditions and Proportions
 
-3 test blocks
-64 test trials for each test block
-= 192 test trials total 
+| Condition   | Percentage |
+| ----------- | ---------- |
+| Feature     | 50%        |
+| Conjunction | 50%        |
 
-3 practice blocks (maxiumum)
-6 trials for practice
-= 6 practice trials minimum
-= 18 practice trials maximum
+| Load                | Percentage |
+| ------------------- | ---------- |
+| Low-load (8 stim)   | 50%        |
+| High-load (24 stim) | 50%        |
 
-Accuracy Threshold = 0.6
+---
 
 ## Visual Search Instructions
 
-## Visual Search Instructions
+### Enable Fullscreen
 
-### Enable fullscreen
-The experiment will switch to full screen mode when you press the button below
+> The experiment will switch to full screen mode when you press the button below.
 
 ### Welcome Screen
-Welcome! This experiment will take around 10 minutes.
 
-To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task.
+> Welcome! This experiment will take around 12 minutes. To avoid technical issues, please keep the experiment tab (on Chrome or Firefox) active and fullscreen for the whole duration of each task. Press enter to begin.
 
-Press enter to begin.
+---
 
-### Task-Specific Instructions - Page 1
+### Task Instructions
 
-Place your index finger on the comma key (,) and your middle finger on the period key (.).
+#### Page 1: Setup
 
-During this task, on each trial rectangles will appear on the screen. The rectangles can be either black or white in color.
+> Place your index finger on the comma key (,) and your middle finger on the period key (.).
+>
+> During this task, on each trial, rectangles will appear on the screen. The rectangles can be either black or white in color.
+>
+> On some trials, one of these rectangles will be a vertical white rectangle. This is the 'target' you will be looking for.
+>
+> The target looks like this:
 
-<!-- Change instructions to remove "if you determine"? Make it simpler? -->
-On some trials, one of these rectangles will be a vertical white rectangle. We will call this rectangle the 'target'.
+> <div style='display: flex; align-items: center; justify-content: center; background-color: #707070; width: 200px; height: 200px; margin: auto;'>
+> <div style='background-color:white; width: 40px; height: 80px;'>
+> </div>
+> </div>
 
-Your task is to determine whether a target is present or absent on each trial.
+#### Page 2: Task
 
-If you determine a target is present, press your index finger, and if you determine a target is absent, press your middle finger.
+> Your task is to determine whether a target is absent or present on each trial.
+>
+> - If you determine a target is **absent**, press your index finger.
+> - If you determine a target is **present**, press your middle finger.
+>
+> We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
+>
+> Try to respond as quickly and accurately as possible.
 
-### Task-Specific Instructions - Page 2
-We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.
+</div>
 
-Try to respond as quickly and accurately as possible.
+#### Page 3: Start Practice
 
-### Task-Specific Instructions - Page 3
-Press enter to begin practice.
+> Press enter to begin practice.

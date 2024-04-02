@@ -116,7 +116,7 @@ var endBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
     trial_id: "end",
-    exp_id: "RMR_survey_rdoc",
+    exp_id: "retain_interest_survey_rdoc",
     trial_duration: 180000,
   },
   trial_duration: 180000,
