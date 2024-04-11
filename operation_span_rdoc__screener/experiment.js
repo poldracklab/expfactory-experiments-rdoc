@@ -7092,7 +7092,13 @@ var opSpanInstructions = `
   <div class="centerbox">
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
-      During this task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not.
+      During this task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is ${
+        processingChoices[0].keyname === "left arrow key"
+          ? "symmetric"
+          : "asymmetric"
+      } or ${
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}.
       Press the <b>left arrow key</b> if the grid is <b>${
         processingChoices[0].keyname === "left arrow key"
           ? "symmetric"
@@ -7552,12 +7558,20 @@ var practiceNode = {
       if (avgProcessingAcc < processingAccThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-          `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0].keyname}) or not (${processingChoices[1].keyname}).</p>`;
+          `<p class = block-text>Try your best determining if the 8x8 grid is ${
+            processingChoices[0].keyname === "left arrow key"
+              ? "symmetric"
+              : "asymmetric"
+          } (left arrow key) or ${
+            processingChoices[0].keyname === "left arrow key"
+              ? "asymmetric"
+              : "symmetric"
+          } (right arrow key).</p>`;
       }
       if (avgProcessingRT > processingRTThresh) {
         feedbackText +=
           "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-          `<p class = block-text>Try to respond (${processingChoices[0].keyname}/${processingChoices[1].keyname}) as quickly as accurately as possible as possible.</p>`;
+          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly as accurately as possible as possible.</p>`;
       }
       if (avgProcessingMissed > processingMissedThresh) {
         feedbackText +=
