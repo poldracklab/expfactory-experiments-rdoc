@@ -270,7 +270,7 @@ img.center {
   border-radius: 2px;
 }
 .activated {
-  background: linear-gradient(to bottom, #c0c0c0, #c0c0c0);
+  background: linear-gradient(to bottom, #5e5e5e, #5e5e5e);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
   transform: translateY(-0.5px);
 }
