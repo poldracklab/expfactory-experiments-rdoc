@@ -6605,33 +6605,6 @@ const OG_CHEIN_SYMM_GRIDS = [
 /* Define helper functions */
 /* ************************************ */
 // common
-// PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
-var meanITI = 5;
-function sampleFromDecayingExponential() {
-  // Decay parameter of the exponential distribution λ = 1 / μ
-  var lambdaParam = 1 / meanITI;
-  var minValue = 2;
-  var maxValue = 20;
-
-  /**
-   * Sample one value with replacement
-   * from a decaying exponential distribution within a specified range.
-   *
-   * @param {number} lambdaParam
-   * - The decay parameter lambda of the exponential distribution.
-   * @param {number} minValue - The minimum value of the range.
-   * @param {number} maxValue - The maximum value of the range.
-   * @returns {number}
-   * A single value sampled from the decaying
-   * exponential distribution within the specified range.
-   */
-  var sample;
-  do {
-    sample = -Math.log(Math.random()) / lambdaParam;
-  } while (sample < minValue || sample > maxValue);
-  return sample;
-}
-
 function calculatePartialAccuracy(trials) {
   if (trials.length === 0) return 0; // Handle case where trials array is empty
 
@@ -6674,11 +6647,29 @@ function generateSpatialTrialValues(n) {
   return randomList;
 }
 
+var memoryOnlyTrialList = [5, 6, 9, 10];
 var tutorialTrialList = [5, 1, 7, 11];
 
 var trialValue;
 
-var getStim = function (auto = false) {
+var getStim = function (auto = false, memoryOnly = false) {
+  if (memoryOnly) {
+    let html = '<div class="container">';
+
+    const trialIndex = memoryOnlyTrialList.shift();
+
+    for (var i = 0; i < 16; i++) {
+      if (i === trialIndex) {
+        html += '<div class="box active-box"></div>';
+      } else {
+        html += '<div class="box"></div>';
+      }
+    }
+    trialValue = trialIndex;
+    html += "</div>";
+    return html;
+  }
+
   if (auto) {
     let html = '<div class="container">';
 
@@ -6802,15 +6793,9 @@ var getRandomSpatial = function (auto = false) {
     makeAsymmetricGrids();
     bothGrids = shuffleArray(cheinSymmGrids.concat(asymmetricGrids));
   }
-  if (auto) {
-    const stim = bothGrids.shift();
-    spatialAns = stim.symmetric;
-    return generateDistractorGrid(stim);
-  } else {
-    const stim = bothGrids.shift();
-    spatialAns = stim.symmetric;
-    return generateDistractorGrid(stim);
-  }
+  const stim = bothGrids.shift();
+  spatialAns = stim.symmetric;
+  return generateDistractorGrid(stim);
 };
 
 function getProcessingStimProperties(htmlString) {
@@ -6838,8 +6823,8 @@ var timestampsMovingThroughGrid = [];
 var trackingCellMovingThroughGrid = [];
 var startingCellInGrid;
 
-var generateGrid = function (auto = false) {
-  var randomIndex = auto ? 6 : Math.floor(Math.random() * 16);
+var generateGrid = function (auto = false, memoryOnly = false) {
+  var randomIndex = auto ? 6 : memoryOnly ? 0 : Math.floor(Math.random() * 16);
   startingCellInGrid = randomIndex;
 
   // Variable to store the initial call time
@@ -6858,6 +6843,9 @@ var generateGrid = function (auto = false) {
     }
   }
   html += "</div>";
+
+  let sequenceIndex = 0;
+  const sequence = memoryOnly ? [5, 6, 9, 10] : [];
 
   let spacebarCount = 0;
   const selectedIndexes = [];
@@ -6912,11 +6900,25 @@ var generateGrid = function (auto = false) {
       timestampsSubmissions.push(timeDifference); // Store timestamp
 
       if (spacebarCount < 4) {
-        boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
-        activeBoxes.push(activeIndex);
-        selectedIndexes.push(activeIndex);
-        spacebarCount++;
-        submittedAnswers.push(activeIndex);
+        if (memoryOnly) {
+          if (activeIndex === sequence[sequenceIndex]) {
+            boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
+            activeBoxes.push(activeIndex);
+            selectedIndexes.push(activeIndex);
+            spacebarCount++;
+            sequenceIndex++;
+            submittedAnswers.push(activeIndex);
+            replaceAndRevertHtml(true);
+          } else {
+            replaceAndRevertHtml(false, sequence[sequenceIndex]);
+          }
+        } else {
+          boxes[activeIndex].classList.add("spacebar-box"); // Add spacebar-box class for spacebar selection
+          activeBoxes.push(activeIndex);
+          selectedIndexes.push(activeIndex);
+          spacebarCount++;
+          submittedAnswers.push(activeIndex);
+        }
       }
 
       // Clear any existing setTimeout calls
@@ -7051,6 +7053,7 @@ var generateGrid = function (auto = false) {
     activeBoxes.length = 0; // Clear the activeBoxes array
     selectedIndexes.length = 0; // Clear the selectedIndexes array
     spacebarCount = 0;
+    sequenceIndex = 0;
 
     // Remove the event listener
     document.removeEventListener("keydown", handleKeyDown);
@@ -7198,6 +7201,14 @@ var practicePromptResponse = `<div class = prompt_box_response>
   </p>
 </div>`;
 
+var memoryOnlyPromptResponse = `<div class="prompt_box_response">
+  <p class="center-block-text" style="font-size:16px; line-height:80%;">
+    Use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells colored black in the order they were shown.
+    <br><br>
+    Time left: <span id="countdown">15</span> seconds
+  </p>
+</div>`;
+
 var tutorialPromptResponse = `<div class = prompt_box_response>
   <p class = center-block-text style = "font-size:16px; line-height:80%%;">Step 3 -> Use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells colored black in the order they were shown.
   </p>
@@ -7225,6 +7236,47 @@ var tutorialPromptResponse = `<div class = prompt_box_response>
 </div>
 `;
 
+var correctHTML = "That's correct!";
+var incorrectHTML = "Incorrect! The correct cell is highlighted in red.";
+
+function replaceAndRevertHtml(correct, cellIndex = null) {
+  const boxes = document.querySelectorAll(".box");
+  const container = document.querySelector(".prompt_box_response");
+  const originalHtml = container.innerHTML;
+
+  const newHtml = `
+    <div class="prompt_box_response">
+      <p class="center-block-text" style="font-size:18px; line-height:80%;">${correct ? correctHTML : incorrectHTML}
+      </p>
+    </div>
+  `;
+
+  container.innerHTML = newHtml;
+
+  if (!correct && cellIndex !== null) {
+    console.log("Incorrect box:", boxes[cellIndex]);
+
+    boxes[cellIndex].style.border = "2px solid red";
+
+    setTimeout(() => {
+      container.innerHTML = originalHtml;
+      if (boxes[cellIndex]) {
+        boxes[cellIndex].style.border = "";
+      }
+    }, 1000);
+  } else {
+    setTimeout(() => {
+      container.innerHTML = originalHtml;
+    }, 1000);
+  }
+}
+
+var tutorialMemoryOnlyPrompt = `<div class = prompt_box_response>
+  <p class = center-block-text style = "font-size:16px; line-height:80%%;">Step 2 -> Memorize all the black colored cells.
+  </p>
+</div>
+`;
+
 var promptText = `<div class=prompt_box_operation>
     <p class = center-block-text style = "font-size:16px; line-height:80%%;">Memorize all the black colored cells.</p>
     <p class = center-block-text style = "font-size:16px; line-height:80%%;">Press <b>"left arrow key"</b> if 8x8 is <b>${
@@ -7237,6 +7289,39 @@ var promptText = `<div class=prompt_box_operation>
         : "symmetric"
     }</b>.</p>
   </div>`;
+
+var processingOnlyTutorialText = `<div class=prompt_box_operation>
+    <p class = center-block-text style = "font-size:16px; line-height:80%%;">Step 1 -> Respond to processing grid.</p>
+    <p class = center-block-text style = "font-size:16px; line-height:80%%;">Press <b>"left arrow key"</b> if 8x8 is <b>${
+      processingChoices[0].keyname === "left arrow key"
+        ? "symmetric"
+        : "asymmetric"
+    }</b> and <b>"right arrow key"</b> if <b>${
+      processingChoices[0].keyname === "left arrow key"
+        ? "asymmetric"
+        : "symmetric"
+    }</b>.</p>
+</div>
+<div class="arrows-container">
+  <div class="top-container">
+    <div class="arrow-box">
+      <i class="arrow up"></i>
+    </div>
+  </div>
+  <div class="bottom-container">
+    <div class="arrow-box">
+      <i class="arrow left"></i>
+    </div>
+    <div class="arrow-box">
+      <i class="arrow down"></i>
+    </div>
+    <div class="arrow-box">
+      <i class="arrow right"></i>
+    </div>
+  </div>
+</div>
+
+`;
 
 var tutorialText = `<div class=prompt_box_operation>
     <p class = center-block-text style = "font-size:16px; line-height:80%%;">Step 1 -> Respond to processing grid.</p>
@@ -7397,35 +7482,60 @@ var instructionNode = {
 
 var feedbackText = `<div class = centerbox>
   <p class="block-text">
-    You are about to start a tutorial that will guide you
+    You are about to start a series of tutorials that will guide you
     through the sequence of events in a trial.
   </p>
   <p class="block-text">
-   You do not need to respond during this tutorial, as all
-   responses will be simulated automatically.
-  <p class="block-text">
-   This tutorial is designed to clearly illustrate the tasks and responses
-   expected of you during the actual practice trials.
+   Let's begin with the first part of a trial: <b>the symmetry judgements</b>.
   </p>
-
   <p class="block-text">
-  Please pay close attention to the sequence of responses.
-  Understanding when and how you will be responding is crucial
-  for your completion of the practice trials.
+   On the next page, you'll see arrow keys at the bottom of the page.
+   The arrow key corresponding to the correct symmetry judgement for the 8x8 grid
+   will appear as if it is being pressed.
   </p>
-
   <p class="block-text">
-  At the end of the tutorial, you will be asked if
-  you would like to repeat the tutorial or proceed.
-
-  If you choose "Yes," you will repeat the tutorial to better familiarize
-  yourself with the trial's events. Choosing "No" will advance you to the practice trials.
+   Your task for this tutorial is to identify and respond with the correct judgment by pressing this key.
+   Once you press this key, a new 8x8 grid will appear. This sequence will occur five times in total,
+   serving as practice for what you'll be doing during the presentation of the 8x8 grids during the task.
   </p>
-
   <p class="block-text">
-  The tutorial will begin on the next page. Press <i>enter</i> to begin.
+   For this tutorial, you will be given a maximum of 5 seconds to respond to each judgement before the
+   grid moves on to the next one. In the actual task, you must respond as quickly and as accurately as
+   possible, completing as many judgements as you can in 3 seconds.
   </p>
   </div>`;
+
+// var feedbackText = `<div class = centerbox>
+//   <p class="block-text">
+//     You are about to start a tutorial that will guide you
+//     through the sequence of events in a trial.
+//   </p>
+//   <p class="block-text">
+//    You do not need to respond during this tutorial, as all
+//    responses will be simulated automatically.
+//   <p class="block-text">
+//    This tutorial is designed to illustrate the tasks and expected responses
+//    during the actual task.
+//   </p>
+
+//   <p class="block-text">
+//   Please pay close attention to the sequence of responses.
+//   Understanding when and how you will be responding is crucial
+//   for the completion of the task.
+//   </p>
+
+//   <p class="block-text">
+//   At the end of the tutorial, you will be asked if
+//   you would like to repeat the tutorial or proceed.
+
+//   If you choose "Yes," you will repeat the tutorial to better familiarize
+//   yourself with the trial's events. Choosing "No" will advance you to the practice trials.
+//   </p>
+
+//   <p class="block-text">
+//   The tutorial will begin on the next page. Press <i>enter</i> to begin.
+//   </p>
+//   </div>`;
 
 var repeatFeedbackText = `<div class = centerbox>
   <p class="block-text">
@@ -7438,14 +7548,14 @@ var repeatFeedbackText = `<div class = centerbox>
    You do not need to respond during this tutorial, as all
    responses will be simulated automatically.
   <p class="block-text">
-   This tutorial is designed to clearly illustrate the tasks and responses
-   expected of you during the actual practice trials.
+   This tutorial is designed to illustrate the tasks and expected responses
+   during the actual task.
   </p>
 
   <p class="block-text">
   Please pay close attention to the sequence of responses.
   Understanding when and how you will be responding is crucial
-  for your completion of the practice trials.
+  for the completion of the task.
   </p>
 
   <p class="block-text">
@@ -7653,9 +7763,9 @@ var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
     var last = jsPsych.data.get().last(1).trials[0];
-    if (last.correct_trial == null) {
+    if (last.response.length === 0) {
       return "<div class=center-box><div class='center-text'><font size =20>Respond Faster!</font></div></div>";
-    } else if (last.correct_trial == 1) {
+    } else if (last.correct_trial === 1) {
       return "<div class=center-box><div class='center-text'><font size =20>Correct!</font></div></div>";
     } else {
       return "<div class=center-box><div class='center-text'><font size =20>Incorrect</font></div></div>";
@@ -7740,6 +7850,7 @@ var testTrial = {
     timestampsMovingThroughGrid = [];
 
     activeGrid.resetGrid();
+    console.log(data);
   },
 };
 
@@ -7755,22 +7866,17 @@ var ITIBlock = {
     return {
       trial_id: "practice_ITI",
       ITIParams: {
-        min: 2,
-        max: 20,
-        mean: 5,
+        duration: 5,
       },
       block_num: practiceCount,
       exp_stage: "practice",
       condition: getCurrCondition(),
     };
   },
-  trial_duration: function () {
-    ITIms = sampleFromDecayingExponential();
-    return ITIms * 1000;
-  },
+  trial_duration: 5000,
   on_finish: function (data) {
-    data["trial_duration"] = ITIms * 1000;
-    data["stimulus_duration"] = ITIms * 1000;
+    data["trial_duration"] = 5000;
+    data["stimulus_duration"] = 5000;
   },
 };
 
@@ -7798,23 +7904,7 @@ var tutorialSurvey = {
       {
         type: "multi-choice",
         prompt:
-          'You just completed the tutorial. Are you ready to proceed to the practice? Select "No" if you would like to repeat the tutorial once more.',
-        options: ["Yes", "No"],
-        name: "repeat_tutorial",
-        required: true,
-      },
-    ],
-  ],
-};
-
-var tutorialSurvey = {
-  type: jsPsychSurvey,
-  pages: [
-    [
-      {
-        type: "multi-choice",
-        prompt:
-          'You just completed the tutorial. Are you ready to proceed to the practice? Select "No" if you would like to repeat the tutorial once more.',
+          'You just completed the tutorial. Would you like to repeat the tutorial once more? Select "Yes" if you would like to repeat the tutorial once more. Select "No" if you would like to begin practice.',
         options: ["Yes", "No"],
         name: "repeat_tutorial",
         required: true,
@@ -7826,7 +7916,6 @@ var tutorialSurvey = {
 var tutorialSurveyNode = {
   timeline: [tutorialSurvey],
   conditional_function: function () {
-    console.log(tutorialBlockNum);
     if (tutorialBlockNum === 0) {
       return true;
     } else {
@@ -7835,13 +7924,13 @@ var tutorialSurveyNode = {
   },
 };
 
-function activateArrow(arrow) {
+function activateArrow(arrow, duration = 200) {
   const ele = document.querySelector(`.${arrow}`).parentNode;
   ele.classList.add("activated");
 
   setTimeout(function () {
     ele.classList.remove("activated");
-  }, 200);
+  }, duration);
 }
 
 function activateSpacebar() {
@@ -7852,6 +7941,194 @@ function activateSpacebar() {
     ele.classList.remove("activated");
   }, 200);
 }
+
+function generateProcessingOnlyTutorialBlocks() {
+  var returnArray = [];
+
+  for (let i = 0; i < 5; i++) {
+    var tutorialProcessingBlock = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        return getRandomSpatial(true);
+      },
+      data: function () {
+        return {
+          trial_id: "tutorial_processing_only_block",
+        };
+      },
+      on_start: function () {
+        if (processingChoices[0].keycode === "ArrowLeft") {
+          if (spatialAns === true) {
+            var direction = "left";
+          } else {
+            var direction = "right";
+          }
+        } else {
+          if (spatialAns === true) {
+            var direction = "right";
+          } else {
+            var direction = "left";
+          }
+        }
+
+        setTimeout(function () {
+          activateArrow(direction, 2000);
+        }, 200);
+      },
+      choices: function () {
+        if (spatialAns === true) {
+          return [processingChoices[0].keycode];
+        } else {
+          return [processingChoices[1].keycode];
+        }
+      },
+      prompt: processingOnlyTutorialText,
+      response_ends_trial: true,
+      trial_duration: 10_000,
+      on_finish: function () {
+        clearArrowAnimations();
+      },
+    };
+
+    returnArray.push(tutorialProcessingBlock);
+  }
+
+  return returnArray;
+}
+
+function clearArrowAnimations() {
+  // Remove 'activated' class from all arrow elements, if present
+  document.querySelectorAll(".left, .right").forEach(ele => {
+    ele.classList.remove("activated");
+  });
+}
+
+var tutorialProcessingOnlyBlocks = generateProcessingOnlyTutorialBlocks();
+
+var tutorialProcessingOnly = {
+  timeline: [feedbackBlock].concat(tutorialProcessingOnlyBlocks),
+  loop_function: function () {
+    feedbackText = `<div class = centerbox>
+      <p class="block-text">
+        You have just completed the tutorial for the first part of the trial.
+        Now let's begin the next part of the trial: <b>the memory phase</b>.
+      </p>
+      <p class="block-text">
+        In this tutorial, you will be presented with the series of colored squares
+        on 4x4 grids. You must remember the location of each of these squares. Then you must
+        respond on a 4x4 grid, selecting the squares you saw in the order in which they appeared
+        on the screen.
+      </p>
+      <p class="block-text">
+        You will be given 3 seconds to memorize the location of each square, and 15 seconds to respond on the grid.
+      </p>
+      <p class="block-text">
+       During the actual task, you will be given 1 second to memorize the location each square and 5 seconds to respond on the grid.
+      </p>
+      <p class="block-text">
+        Press <i>enter</i> to begin the tutorial.
+      </p>
+      </div>`;
+    return false;
+  },
+};
+
+function generateMemoryOnlyTutorialBlocks() {
+  var returnArray = [];
+
+  for (let i = 0; i < 4; i++) {
+    var memoryOnlyStimulusBlock = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        return getStim(false, true);
+      },
+      stimulus_duration: 3000,
+      trial_duration: 3000,
+      data: function () {
+        return {
+          trial_id: "tutorial_memory_only_stim",
+        };
+      },
+      choices: ["NO_KEYS"],
+      prompt: tutorialMemoryOnlyPrompt,
+    };
+
+    returnArray.push(memoryOnlyStimulusBlock);
+  }
+
+  var memoryOnlyTestTrial = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: function () {
+      activeGrid = generateGrid(false, true);
+      return activeGrid.html;
+    },
+    choices: ["NO_KEYS"],
+    data: function () {
+      return {
+        trial_id: "tutorial_memory_only_test_trial",
+      };
+    },
+    trial_duration: 15_000,
+    stimulus_duration: 15_000,
+    prompt: memoryOnlyPromptResponse,
+    on_start: function (trial) {
+      // Function to start the countdown
+      var timeLeft = 15; // Countdown starting from 15 seconds
+      trial.countdownInterval = setInterval(function () {
+        timeLeft--;
+        var countdownElement = document.getElementById("countdown");
+        if (countdownElement) countdownElement.innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(trial.countdownInterval);
+        }
+      }, 1000);
+    },
+    on_finish: function () {
+      activeGrid.resetGrid();
+    },
+  };
+
+  returnArray.push(memoryOnlyTestTrial);
+
+  return returnArray;
+}
+
+var tutorialMemoryOnlyBlocks = generateMemoryOnlyTutorialBlocks();
+
+var tutorialMemoryOnly = {
+  timeline: [feedbackBlock].concat(tutorialMemoryOnlyBlocks),
+  loop_function: function () {
+    feedbackText = `<div class = centerbox>
+      <p class="block-text">
+        For the final part of the tutorial, you will
+        view a single trial at the pace it will be performed during the
+        actual task.
+      </p>
+        <p class="block-text">
+         You do not need to respond during this tutorial, as all
+         responses will be simulated automatically.
+        </p>
+        <p class="block-text">
+        Please pay close attention to the sequence of responses.
+        Understanding when and how you will be responding is crucial
+        for the completion of the task.
+        </p>
+
+        <p class="block-text">
+        At the end of the tutorial, you will be asked if
+        you would like to repeat the tutorial or proceed.
+
+        If you choose "Yes," you will repeat the tutorial to better familiarize
+        yourself with the trial's events. Choosing "No" will advance you to the practice trials.
+        </p>
+
+        <p class="block-text">
+        The tutorial will begin on the next page. Press <i>enter</i> to begin.
+        </p>
+      </div>`;
+    return false;
+  },
+};
 
 function generateTutorialBlocks() {
   var returnArray = [];
@@ -8242,6 +8519,8 @@ operation_span_rdoc__screener_experiment = [];
 var operation_span_rdoc__screener_init = () => {
   operation_span_rdoc__screener_experiment.push(fullscreen);
   operation_span_rdoc__screener_experiment.push(instructionNode);
+  operation_span_rdoc__screener_experiment.push(tutorialProcessingOnly);
+  operation_span_rdoc__screener_experiment.push(tutorialMemoryOnly);
   operation_span_rdoc__screener_experiment.push(tutorial);
   operation_span_rdoc__screener_experiment.push(practiceNode);
   operation_span_rdoc__screener_experiment.push(postTaskBlock);
