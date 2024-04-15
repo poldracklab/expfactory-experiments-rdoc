@@ -7216,7 +7216,13 @@ var opSpanInstructions = `
   <div class="centerbox">
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
-      During this task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is symmetric or not. 
+      During this task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is ${
+        processingChoices[0].keyname === "left arrow key"
+          ? "symmetric"
+          : "asymmetric"
+      } or ${
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}.
       Press the <b>left arrow key</b> if the grid is <b>${
         processingChoices[0].keyname === "left arrow key"
           ? "symmetric"
@@ -7353,6 +7359,17 @@ var stimulusBlock = {
 };
 
 var startTime = null;
+var checkTime = null;
+var endTime = null;
+
+var initializingTrialIDs = new Set([
+  "practice_feedback",
+  "practice_ITI",
+  "test_ITI",
+  "test_attention_check",
+  "practice_stim",
+  "test_stim",
+]);
 
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -7360,28 +7377,25 @@ var waitBlock = {
     return getRandomSpatial();
   },
   choices: [processingChoices[0].keycode, processingChoices[1].keycode],
-  stimulus_duration: processingStimulusDuration,
-  trial_duration: processingTrialDuration,
+  trial_duration: function () {
+    var { trial_id } = jsPsych.data.get().last(1).trials[0];
+
+    if (
+      trial_id === "practice_inter-stimulus" ||
+      trial_id === "test_inter-stimulus"
+    ) {
+      var timeLeft = processingTrialDuration - endTime;
+      return timeLeft;
+    } else {
+      return processingTrialDuration;
+    }
+  },
   response_ends_trial: true,
   on_start: function () {
-    // calculate time to last 3000ms then end trial
-    if (startTime === null) {
+    var { trial_id } = jsPsych.data.get().last(1).trials[0];
+    if (initializingTrialIDs.has(trial_id)) {
       startTime = performance.now();
-    }
-
-    // get last trial
-    var lastTrial = jsPsych.data.get().last(1).trials[0];
-    // last trials IDs that start new trials
-    var trialIDs = [
-      "practice_feedback",
-      "practice_ITI",
-      "test_ITI",
-      "test_attention_check",
-    ];
-    // if id starts new trial then set stimuli for that trial
-    if (trialIDs.includes(lastTrial.trial_id)) {
       trialList = generateSpatialTrialValues(numStimuli);
-      trialValues = trialList;
     }
   },
   data: function () {
@@ -7439,14 +7453,15 @@ var waitBlock = {
 var waitNode = {
   timeline: [waitBlock],
   loop_function: function (data) {
-    var elapsedTime = performance.now() - startTime;
+    checkTime = performance.now();
 
-    if (elapsedTime >= processingTrialDuration) {
-      startTime = null; // Reset startTime for the next trial
-      return false; // End the loop
+    endTime = checkTime - startTime;
+
+    if (endTime >= processingTrialDuration) {
+      return false;
     }
 
-    return true; // Continue the loop for the current trial
+    return true;
   },
 };
 
@@ -7739,13 +7754,22 @@ var practiceNode = {
       if (avgProcessingAcc < processingAccThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-          `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0].keyname}) or not (${processingChoices[1].keyname}).</p>`;
+          `<p class = block-text>Try your best determining if the 8x8 grid is ${
+            processingChoices[0].keyname === "left arrow key"
+              ? "symmetric"
+              : "asymmetric"
+          } (left arrow key) or ${
+            processingChoices[0].keyname === "left arrow key"
+              ? "asymmetric"
+              : "symmetric"
+          } (right arrow key).</p>`;
       }
       if (avgProcessingRT > processingRTThresh) {
         feedbackText +=
           "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-          `<p class = block-text>Try to respond (${processingChoices[0].keyname}/${processingChoices[1].keyname}) as quickly as accurately as possible as possible.</p>`;
+          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly as accurately as possible as possible.</p>`;
       }
+
       if (avgProcessingMissed > processingMissedThresh) {
         feedbackText +=
           "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
@@ -7871,13 +7895,22 @@ var testNode = {
       if (avgProcessingAcc < processingAccThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
-          `<p class = block-text>Try your best determining if the 8x8 grid is symmetric (${processingChoices[0].keyname}) or not (${processingChoices[1].keyname}).</p>`;
+          `<p class = block-text>Try your best determining if the 8x8 grid is ${
+            processingChoices[0].keyname === "left arrow key"
+              ? "symmetric"
+              : "asymmetric"
+          } (left arrow key) or ${
+            processingChoices[0].keyname === "left arrow key"
+              ? "asymmetric"
+              : "symmetric"
+          } (right arrow key).</p>`;
       }
       if (avgProcessingRT > processingRTThresh) {
         feedbackText +=
           "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-          `<p class = block-text>Try to respond (${processingChoices[0].keyname}/${processingChoices[1].keyname}) as quickly as accurately as possible as possible.</p>`;
+          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly as accurately as possible as possible.</p>`;
       }
+
       if (avgProcessingMissed > processingMissedThresh) {
         feedbackText +=
           "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
