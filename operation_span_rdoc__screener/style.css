@@ -71,7 +71,6 @@ body {
   font-size: 24px;
 }
 
-
 .prompt_box_simple {
   width: 75%;
   height: 20%;
@@ -95,7 +94,6 @@ body {
   background-color: none;
   text-align: center;
 }
-
 
 .prompt_box_response {
   width: 75%;
@@ -152,7 +150,6 @@ img.center {
   background-color: black;
 }
 
-
 .box {
   width: 50px;
   height: 50px;
@@ -174,7 +171,6 @@ img.center {
 
 .spacebar-box {
   background-color: white;
-  /* Color for spacebar selection */
 }
 .jspsych-instructions-nav {
   display: flex !important;
@@ -229,4 +225,126 @@ img.center {
 
 .centerbox {
   height: 70vh !important;
+}
+.arrows-container {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Ensure alignment is centered */
+}
+
+.top-container,
+.bottom-container {
+  display: flex;
+  justify-content: center;
+  position: relative; /* Establishes positioning context */
+}
+
+.spacebar-btn {
+  width: 156px; /* Calculated as three arrow boxes plus margins */
+  height: 50px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, #ffffff, #f8f8f8);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  position: absolute; /* Position absolutely so it doesn't affect the centering of arrows */
+  left: -164px; /* Move it left by its width plus some margin */
+}
+
+.arrow-box {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  background: linear-gradient(to bottom, #ffffff, #f8f8f8);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+.activated {
+  background: linear-gradient(to bottom, #c0c0c0, #c0c0c0);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+  transform: translateY(-0.5px);
+}
+.arrow {
+  border: solid black;
+  border-width: 0 1.5px 1.5px 0; /* Half of the original border width */
+  display: inline-block;
+  padding: 5px; /* Half of the original padding */
+}
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+/* tutorial survey */
+.sv_row {
+  background: #707070 !important;
+  color: white !important;
+}
+
+.sv_body {
+  background: #707070 !important;
+  color: white !important;
+}
+
+.sv_q_radiogroup {
+  display: flex !important;
+}
+
+.sv-action-bar {
+  margin: 0px !important;
+  padding: 0px !important;
+}
+
+#sv-nav-complete {
+  margin-top: 12px;
+}
+
+.sv_nav_btn,
+.sv_complete_btn {
+  padding: 10px 20px !important;
+  background-color: cornflowerblue !important;
+  color: white !important;
+  font-size: 16px !important;
+  border: none !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+  cursor: pointer !important;
+}
+
+.sv_nav_btn:hover,
+.sv_complete_btn:hover {
+  background-color: darkblue !important;
+}
+
+.sv_q_title {
+  font-size: 24px !important;
+  width: 50vw;
+  line-height: 120%;
+  text-align: justify;
+}
+
+.sv_q_required_text {
+  display: none !important;
 }

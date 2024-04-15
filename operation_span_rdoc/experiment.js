@@ -7359,6 +7359,17 @@ var stimulusBlock = {
 };
 
 var startTime = null;
+var checkTime = null;
+var endTime = null;
+
+var initializingTrialIDs = new Set([
+  "practice_feedback",
+  "practice_ITI",
+  "test_ITI",
+  "test_attention_check",
+  "practice_stim",
+  "test_stim",
+]);
 
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
@@ -7366,28 +7377,25 @@ var waitBlock = {
     return getRandomSpatial();
   },
   choices: [processingChoices[0].keycode, processingChoices[1].keycode],
-  stimulus_duration: processingStimulusDuration,
-  trial_duration: processingTrialDuration,
+  trial_duration: function () {
+    var { trial_id } = jsPsych.data.get().last(1).trials[0];
+
+    if (
+      trial_id === "practice_inter-stimulus" ||
+      trial_id === "test_inter-stimulus"
+    ) {
+      var timeLeft = processingTrialDuration - endTime;
+      return timeLeft;
+    } else {
+      return processingTrialDuration;
+    }
+  },
   response_ends_trial: true,
   on_start: function () {
-    // calculate time to last 3000ms then end trial
-    if (startTime === null) {
+    var { trial_id } = jsPsych.data.get().last(1).trials[0];
+    if (initializingTrialIDs.has(trial_id)) {
       startTime = performance.now();
-    }
-
-    // get last trial
-    var lastTrial = jsPsych.data.get().last(1).trials[0];
-    // last trials IDs that start new trials
-    var trialIDs = [
-      "practice_feedback",
-      "practice_ITI",
-      "test_ITI",
-      "test_attention_check",
-    ];
-    // if id starts new trial then set stimuli for that trial
-    if (trialIDs.includes(lastTrial.trial_id)) {
       trialList = generateSpatialTrialValues(numStimuli);
-      trialValues = trialList;
     }
   },
   data: function () {
@@ -7445,14 +7453,15 @@ var waitBlock = {
 var waitNode = {
   timeline: [waitBlock],
   loop_function: function (data) {
-    var elapsedTime = performance.now() - startTime;
+    checkTime = performance.now();
 
-    if (elapsedTime >= processingTrialDuration) {
-      startTime = null; // Reset startTime for the next trial
-      return false; // End the loop
+    endTime = checkTime - startTime;
+
+    if (endTime >= processingTrialDuration) {
+      return false;
     }
 
-    return true; // Continue the loop for the current trial
+    return true;
   },
 };
 

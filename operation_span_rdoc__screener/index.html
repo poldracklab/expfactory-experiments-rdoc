@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arrow Key Layout</title>
+    <style>
+      .arrows-container {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        width: 150px; /* Half of the original width */
+      }
+      .top-container,
+      .bottom-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+      .bottom-container {
+        display: flex;
+        justify-content: space-around;
+      }
+      .box {
+        width: 50px; /* Half of the original width */
+        height: 50px; /* Half of the original height */
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2px;
+        background: linear-gradient(to bottom, #fff, #e6e6e6);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        border-radius: 2px; /* Slightly rounded corners for a soft look */
+        transition: all 0.2s ease-in-out;
+      }
+      .activated {
+        background: linear-gradient(to bottom, #e9e9e9, #d0d0d0);
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        transform: translateY(-0.5px);
+      }
+      .arrow {
+        border: solid black;
+        border-width: 0 1.5px 1.5px 0; /* Half of the original border width */
+        display: inline-block;
+        padding: 5px; /* Half of the original padding */
+      }
+      .right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+      }
+      .left {
+        transform: rotate(135deg);
+        -webkit-transform: rotate(135deg);
+      }
+      .up {
+        transform: rotate(-135deg);
+        -webkit-transform: rotate(-135deg);
+      }
+      .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="arrows-container">
+      <div class="top-container">
+        <div class="box">
+          <i class="arrow up"></i>
+        </div>
+      </div>
+      <div class="bottom-container">
+        <div class="box">
+          <i class="arrow left"></i>
+        </div>
+        <div class="box">
+          <i class="arrow down"></i>
+        </div>
+        <div class="box">
+          <i class="arrow right"></i>
+        </div>
+      </div>
+    </div>
+    <script>
+      function activateUpBox(arrow) {
+        const upBox = document.querySelector(`.${arrow}`).parentNode;
+        upBox.classList.add("activated");
+
+        setTimeout(function () {
+          upBox.classList.remove("activated");
+        }, 200);
+      }
+
+      setTimeout(function () {
+        activateUpBox("right");
+      }, 1500);
+    </script>
+  </body>
+</html>
