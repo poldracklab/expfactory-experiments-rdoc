@@ -6787,7 +6787,6 @@ makeCheinSymmGrids();
 var bothGrids = shuffleArray(asymmetricGrids.concat(cheinSymmGrids));
 
 var getRandomSpatial = function (auto = false) {
-  console.log("auto: ", auto);
   if (bothGrids.length == 0) {
     makeCheinSymmGrids();
     makeAsymmetricGrids();
@@ -7254,8 +7253,6 @@ function replaceAndRevertHtml(correct, cellIndex = null) {
   container.innerHTML = newHtml;
 
   if (!correct && cellIndex !== null) {
-    console.log("Incorrect box:", boxes[cellIndex]);
-
     boxes[cellIndex].style.border = "2px solid red";
 
     setTimeout(() => {
@@ -7505,38 +7502,6 @@ var feedbackText = `<div class = centerbox>
   </p>
   </div>`;
 
-// var feedbackText = `<div class = centerbox>
-//   <p class="block-text">
-//     You are about to start a tutorial that will guide you
-//     through the sequence of events in a trial.
-//   </p>
-//   <p class="block-text">
-//    You do not need to respond during this tutorial, as all
-//    responses will be simulated automatically.
-//   <p class="block-text">
-//    This tutorial is designed to illustrate the tasks and expected responses
-//    during the actual task.
-//   </p>
-
-//   <p class="block-text">
-//   Please pay close attention to the sequence of responses.
-//   Understanding when and how you will be responding is crucial
-//   for the completion of the task.
-//   </p>
-
-//   <p class="block-text">
-//   At the end of the tutorial, you will be asked if
-//   you would like to repeat the tutorial or proceed.
-
-//   If you choose "Yes," you will repeat the tutorial to better familiarize
-//   yourself with the trial's events. Choosing "No" will advance you to the practice trials.
-//   </p>
-
-//   <p class="block-text">
-//   The tutorial will begin on the next page. Press <i>enter</i> to begin.
-//   </p>
-//   </div>`;
-
 var repeatFeedbackText = `<div class = centerbox>
   <p class="block-text">
     You selected to repeat the tutorial.
@@ -7642,8 +7607,15 @@ var initializingTrialIDs = new Set([
   "practice_ITI",
   "test_ITI",
   "test_attention_check",
-  "practice_stim",
+]);
+
+var timerInitializingTrialIDs = new Set([
+  "practice_feedback",
+  "practice_ITI",
+  "test_ITI",
+  "test_attention_check",
   "test_stim",
+  "practice_stim",
 ]);
 
 var waitBlock = {
@@ -7669,8 +7641,11 @@ var waitBlock = {
   on_start: function () {
     var { trial_id } = jsPsych.data.get().last(1).trials[0];
     if (initializingTrialIDs.has(trial_id)) {
-      startTime = performance.now();
       trialList = generateSpatialTrialValues(numStimuli);
+    }
+
+    if (timerInitializingTrialIDs.has(trial_id)) {
+      startTime = performance.now();
     }
   },
   data: function () {
@@ -7850,7 +7825,6 @@ var testTrial = {
     timestampsMovingThroughGrid = [];
 
     activeGrid.resetGrid();
-    console.log(data);
   },
 };
 
@@ -7866,7 +7840,7 @@ var ITIBlock = {
     return {
       trial_id: "practice_ITI",
       ITIParams: {
-        duration: 5,
+        duration: 5000,
       },
       block_num: practiceCount,
       exp_stage: "practice",
@@ -8470,11 +8444,6 @@ var endBlock = {
       finalBlockProcessingTrials
     );
 
-    console.log(overallResponsePerformance);
-    console.log(overallProcessingPerformance);
-    console.log(finalBlockResponsePerformance);
-    console.log(finalBlockProcessingPerformance);
-
     const isSubjectIncludedFlag = (
       responsePerformance,
       processingPerformance
@@ -8510,18 +8479,16 @@ var endBlock = {
       )
         ? 1
         : 0;
-
-    console.log(data.include_subject);
   },
 };
 
 operation_span_rdoc__screener_experiment = [];
 var operation_span_rdoc__screener_init = () => {
-  operation_span_rdoc__screener_experiment.push(fullscreen);
-  operation_span_rdoc__screener_experiment.push(instructionNode);
-  operation_span_rdoc__screener_experiment.push(tutorialProcessingOnly);
-  operation_span_rdoc__screener_experiment.push(tutorialMemoryOnly);
-  operation_span_rdoc__screener_experiment.push(tutorial);
+  // operation_span_rdoc__screener_experiment.push(fullscreen);
+  // operation_span_rdoc__screener_experiment.push(instructionNode);
+  // operation_span_rdoc__screener_experiment.push(tutorialProcessingOnly);
+  // operation_span_rdoc__screener_experiment.push(tutorialMemoryOnly);
+  // operation_span_rdoc__screener_experiment.push(tutorial);
   operation_span_rdoc__screener_experiment.push(practiceNode);
   operation_span_rdoc__screener_experiment.push(postTaskBlock);
   operation_span_rdoc__screener_experiment.push(endBlock);
