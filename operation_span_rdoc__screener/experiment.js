@@ -7500,7 +7500,7 @@ var feedbackText = `<div class = centerbox>
   </p>
   <p class="block-text">
    For this tutorial, you will be given a maximum of 5 seconds to respond to each judgement before the
-   grid moves on to the next one. In the actual task, you must respond as quickly and as accurately as
+   grid disappears and is replaced by a new one. In the actual task, you must respond as quickly and as accurately as
    possible, completing as many judgements as you can in 3 seconds.
   </p>
   </div>`;
@@ -8023,7 +8023,7 @@ var tutorialProcessingOnly = {
         You will be given 3 seconds to memorize the location of each square, and 15 seconds to respond on the grid.
       </p>
       <p class="block-text">
-       During the actual task, you will be given 1 second to memorize the location each square and 5 seconds to respond on the grid.
+       During the actual task, you will be given 1 second to memorize the location of each square and 5 seconds to respond on the grid.
       </p>
       <p class="block-text">
         Press <i>enter</i> to begin the tutorial.
