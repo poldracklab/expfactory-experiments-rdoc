@@ -7958,7 +7958,7 @@ function generateProcessingOnlyTutorialBlocks() {
       },
       prompt: processingOnlyTutorialText,
       response_ends_trial: true,
-      trial_duration: 10_000,
+      trial_duration: 5_000,
       on_finish: function () {
         clearArrowAnimations();
       },
