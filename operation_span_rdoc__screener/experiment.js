@@ -8484,11 +8484,11 @@ var endBlock = {
 
 operation_span_rdoc__screener_experiment = [];
 var operation_span_rdoc__screener_init = () => {
-  // operation_span_rdoc__screener_experiment.push(fullscreen);
-  // operation_span_rdoc__screener_experiment.push(instructionNode);
-  // operation_span_rdoc__screener_experiment.push(tutorialProcessingOnly);
-  // operation_span_rdoc__screener_experiment.push(tutorialMemoryOnly);
-  // operation_span_rdoc__screener_experiment.push(tutorial);
+  operation_span_rdoc__screener_experiment.push(fullscreen);
+  operation_span_rdoc__screener_experiment.push(instructionNode);
+  operation_span_rdoc__screener_experiment.push(tutorialProcessingOnly);
+  operation_span_rdoc__screener_experiment.push(tutorialMemoryOnly);
+  operation_span_rdoc__screener_experiment.push(tutorial);
   operation_span_rdoc__screener_experiment.push(practiceNode);
   operation_span_rdoc__screener_experiment.push(postTaskBlock);
   operation_span_rdoc__screener_experiment.push(endBlock);
