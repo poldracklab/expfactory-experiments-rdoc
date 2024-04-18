@@ -458,13 +458,13 @@ const pageInstruct = [
     <p class="block-text">Your task is to determine whether a target is ${
       possibleResponses[0][0] == "index finger" ? "present" : "absent"
     } or ${
-    possibleResponses[0][0] == "index finger" ? "absent" : "present"
-  } on each trial.</p>
+      possibleResponses[0][0] == "index finger" ? "absent" : "present"
+    } on each trial.</p>
     <p class="block-text">If you determine a target is <b>${
       possibleResponses[0][0] == "index finger" ? "present" : "absent"
     }</b>, press your <b>index finger</b>, and if you determine a target is <b>${
-    possibleResponses[0][0] == "index finger" ? "absent" : "present"
-  }</b>, press your <b>middle finger</b>.</p>
+      possibleResponses[0][0] == "index finger" ? "absent" : "present"
+    }</b>, press your <b>middle finger</b>.</p>
     <p class="block-text">We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
     ${speedReminder}
   </div>`,

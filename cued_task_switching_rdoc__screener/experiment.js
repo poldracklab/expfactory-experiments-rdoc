@@ -302,13 +302,13 @@ var promptTextList = `
     <li>Cue "Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
       responseMappings.oddEven.even === "," ? "even" : "odd"
     }</b> and <b>period key (.)</b> if <b>${
-  responseMappings.oddEven.even === "," ? "odd" : "even"
-}</b>.</li>
+      responseMappings.oddEven.even === "," ? "odd" : "even"
+    }</b>.</li>
     <li>Cue "Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
       responseMappings.higherLower.higher === "," ? "high" : "low"
     }</b> and <b>period key (.)</b> if <b>${
-  responseMappings.higherLower.higher === "," ? "low" : "high"
-}</b>.</li>
+      responseMappings.higherLower.higher === "," ? "low" : "high"
+    }</b>.</li>
   </ul>
 `;
 
@@ -317,13 +317,13 @@ var promptText = `
     <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
       responseMappings.oddEven.even === "," ? "even" : "odd"
     }</b> and <b>period key (.)</b> if <b>${
-  responseMappings.oddEven.even === "," ? "odd" : "even"
-}</b></p>
+      responseMappings.oddEven.even === "," ? "odd" : "even"
+    }</b></p>
    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
      responseMappings.higherLower.higher === "," ? "high" : "low"
    }</b> and <b>period key (.)</b> if <b>${
-  responseMappings.higherLower.higher === "," ? "low" : "high"
-}</b></p>
+     responseMappings.higherLower.higher === "," ? "low" : "high"
+   }</b></p>
   </div>
 `;
 
@@ -772,7 +772,7 @@ var endBlock = {
       ).length;
       const missedTrialsCount = trials.filter(obj => obj.rt === null).length;
       const responseTimes = trials
-        .filter(obj => obj.rt !== null)
+        .filter(obj => obj.rt !== null && obj.correct_trial === 1)
         .map(obj => obj.rt);
       const meanResponseTime =
         responseTimes.reduce((acc, rt) => acc + rt, 0) / responseTimes.length;
