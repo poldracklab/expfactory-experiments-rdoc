@@ -7,6 +7,17 @@ body {
   color: white;
 }
 
+.feedback_text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.feedback_text p {
+  font-size: 24px;
+}
+
 .fb_box {
   width: 35vw;
   height: 20vh;
@@ -161,12 +172,10 @@ img.center {
 .response-active {
   border: 8px solid black;
   background-color: lightgray;
-  /* Color for arrow key navigation */
 }
 
 .active-box {
   background-color: black;
-  /* Color for arrow key navigation */
 }
 
 .spacebar-box {
@@ -226,76 +235,6 @@ img.center {
 .centerbox {
   height: 70vh !important;
 }
-.arrows-container {
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Ensure alignment is centered */
-}
-
-.top-container,
-.bottom-container {
-  display: flex;
-  justify-content: center;
-  position: relative; /* Establishes positioning context */
-}
-
-.spacebar-btn {
-  width: 156px; /* Calculated as three arrow boxes plus margins */
-  height: 50px;
-  border: 1px solid black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(to bottom, #ffffff, #f8f8f8);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  position: absolute; /* Position absolutely so it doesn't affect the centering of arrows */
-  left: -164px; /* Move it left by its width plus some margin */
-}
-
-.arrow-box {
-  width: 50px;
-  height: 50px;
-  border: 1px solid black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 2px;
-  background: linear-gradient(to bottom, #ffffff, #f8f8f8);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-}
-.activated {
-  background: linear-gradient(to bottom, #5e5e5e, #5e5e5e);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
-  transform: translateY(-0.5px);
-}
-.arrow {
-  border: solid black;
-  border-width: 0 1.5px 1.5px 0; /* Half of the original border width */
-  display: inline-block;
-  padding: 5px; /* Half of the original padding */
-}
-.right {
-  transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-}
-.left {
-  transform: rotate(135deg);
-  -webkit-transform: rotate(135deg);
-}
-.up {
-  transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
-}
-.down {
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
 
 /* tutorial survey */
 .sv_row {
@@ -347,4 +286,9 @@ img.center {
 
 .sv_q_required_text {
   display: none !important;
+}
+
+.flowchart_image {
+  height: 800px !important;
+  width: 100% !important;
 }
