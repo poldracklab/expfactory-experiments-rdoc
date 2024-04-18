@@ -7112,9 +7112,7 @@ var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
-var accuracyThresh = 0.6;
 var partialAccuracyThresh = 0.75;
-var missedResponseThresh = 0.1;
 var practiceThresh = 3;
 
 var processingChoices;
@@ -7169,8 +7167,10 @@ var promptText = `<div class=prompt_box_operation>
         ? "symmetric"
         : "asymmetric"
     }</b> and <b>"right arrow key"</b> if <b>${
-  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
-}</b>.</p>
+      processingChoices[0].keyname === "left arrow key"
+        ? "asymmetric"
+        : "symmetric"
+    }</b>.</p>
   </div>`;
 
 /* ************************************ */
@@ -7221,15 +7221,19 @@ var opSpanInstructions = `
           ? "symmetric"
           : "asymmetric"
       } or ${
-  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
-}.
+        processingChoices[0].keyname === "left arrow key"
+          ? "asymmetric"
+          : "symmetric"
+      }.
       Press the <b>left arrow key</b> if the grid is <b>${
         processingChoices[0].keyname === "left arrow key"
           ? "symmetric"
           : "asymmetric"
       }</b> and press the <b>right arrow key</b> if it is <b>${
-  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
-}</b>.
+        processingChoices[0].keyname === "left arrow key"
+          ? "asymmetric"
+          : "symmetric"
+      }</b>.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7371,6 +7375,15 @@ var initializingTrialIDs = new Set([
   "test_stim",
 ]);
 
+var timerInitializingTrialIDs = new Set([
+  "practice_feedback",
+  "practice_ITI",
+  "test_ITI",
+  "test_attention_check",
+  "test_stim",
+  "practice_stim",
+]);
+
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
@@ -7394,8 +7407,11 @@ var waitBlock = {
   on_start: function () {
     var { trial_id } = jsPsych.data.get().last(1).trials[0];
     if (initializingTrialIDs.has(trial_id)) {
-      startTime = performance.now();
       trialList = generateSpatialTrialValues(numStimuli);
+    }
+
+    if (timerInitializingTrialIDs.has(trial_id)) {
+      startTime = performance.now();
     }
   },
   data: function () {
@@ -7605,9 +7621,7 @@ var ITIBlock = {
       return {
         trial_id: "practice_ITI",
         ITIParams: {
-          min: 2,
-          max: 20,
-          mean: 5,
+          duration: 5,
         },
         block_num: practiceCount,
         exp_stage: "practice",
@@ -7628,12 +7642,19 @@ var ITIBlock = {
     }
   },
   trial_duration: function () {
+    if (getExpStage() === "practice") return 5000;
+
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   on_finish: function (data) {
-    data["trial_duration"] = ITIms * 1000;
-    data["stimulus_duration"] = ITIms * 1000;
+    if (getExpStage() === "practice") {
+      data["trial_duration"] = 5000;
+      data["stimulus_duration"] = 5000;
+    } else {
+      data["trial_duration"] = ITIms * 1000;
+      data["stimulus_duration"] = ITIms * 1000;
+    }
   },
 };
 
@@ -7667,24 +7688,6 @@ var practiceNode = {
     var partialAccuracy = calculatePartialAccuracy(responseGridData);
 
     practiceCount += 1;
-    var correct = 0;
-    var totalTrials = responseGridData.length;
-    var missedCount = 0;
-    var responseCount = 0;
-
-    for (var i = 0; i < responseGridData.length; i++) {
-      if (responseGridData[i].correct_trial == null) {
-        missedCount += 1;
-      } else {
-        responseCount += 1;
-        if (responseGridData[i].correct_trial == 1) {
-          correct += 1;
-        }
-      }
-    }
-
-    var accuracy = correct / responseCount;
-    var missedResponses = missedCount / totalTrials;
 
     var responseProcessingData = jsPsych.data.get().filter({
       trial_id: "practice_inter-stimulus",
@@ -7693,27 +7696,26 @@ var practiceNode = {
     }).trials;
 
     var processingCorrect = 0;
-    var totalTrials = responseProcessingData.length;
-    var missedProcessingCount = 0;
-    var responseCount = 0;
+    var totalTrials = 0;
     var rt = 0;
 
-    for (var i = 0; i < totalTrials; i++) {
-      if (responseProcessingData[i].rt == null) {
-        missedProcessingCount += 1;
+    for (var i = 0; i < responseProcessingData.length; i++) {
+      if (responseProcessingData[i].response === -1) {
+        totalTrials += 1;
       } else {
-        responseCount += 1;
-        rt += responseProcessingData[i].rt;
-        if (responseProcessingData[i].correct_trial == 1) {
-          processingCorrect += 1;
+        if (responseProcessingData[i].rt !== null) {
+          totalTrials += 1;
+
+          if (responseProcessingData[i].correct_trial === 1) {
+            processingCorrect += 1;
+            rt += responseProcessingData[i].rt;
+          }
         }
       }
     }
 
-    var avgProcessingAcc = processingCorrect / responseCount;
-    var avgProcessingMissed = missedProcessingCount / totalTrials;
-    var avgProcessingRT = rt / responseCount;
-
+    var avgProcessingAcc = processingCorrect / totalTrials;
+    var avgProcessingRT = rt / processingCorrect;
     var canProceedToTest;
 
     if (practiceCount == practiceThresh) {
@@ -7722,8 +7724,7 @@ var practiceNode = {
       if (
         partialAccuracy >= partialAccuracyThresh &&
         avgProcessingAcc > processingAccThresh &&
-        avgProcessingRT < processingRTThresh &&
-        avgProcessingMissed < processingMissedThresh
+        avgProcessingRT < processingRTThresh
       ) {
         canProceedToTest = true;
       } else {
@@ -7767,17 +7768,7 @@ var practiceNode = {
       if (avgProcessingRT > processingRTThresh) {
         feedbackText +=
           "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly as accurately as possible as possible.</p>`;
-      }
-
-      if (avgProcessingMissed > processingMissedThresh) {
-        feedbackText +=
-          "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
-      }
-
-      if (missedResponses > missedResponseThresh) {
-        feedbackText +=
-          "<p class = block-text>You have not been responding to some trials. Please respond on every trial that requires a response.</p>";
+          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly and accurately as possible.</p>`;
       }
 
       feedbackText +=
@@ -7818,26 +7809,9 @@ var testNode = {
       block_num: getCurrBlockNum(),
     }).trials;
 
+    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+
     testCount += 1;
-    var correct = 0;
-    var totalTrials = responseGridData.length;
-    var missedCount = 0;
-    var responseCount = 0;
-
-    for (var i = 0; i < responseGridData.length; i++) {
-      if (responseGridData[i].correct_trial == null) {
-        missedCount += 1;
-      } else {
-        responseCount += 1;
-
-        if (responseGridData[i].correct_trial == 1) {
-          correct += 1;
-        }
-      }
-    }
-
-    var accuracy = correct / responseCount;
-    var missedResponses = missedCount / totalTrials;
 
     var responseProcessingData = jsPsych.data.get().filter({
       trial_id: "test_inter-stimulus",
@@ -7846,26 +7820,26 @@ var testNode = {
     }).trials;
 
     var processingCorrect = 0;
-    var totalTrials = responseProcessingData.length;
-    var missedProcessingCount = 0;
-    var responseCount = 0;
+    var totalTrials = 0;
     var rt = 0;
 
-    for (var i = 0; i < totalTrials; i++) {
-      if (responseProcessingData[i].rt == null) {
-        missedProcessingCount += 1;
+    for (var i = 0; i < responseProcessingData.length; i++) {
+      if (responseProcessingData[i].response === -1) {
+        totalTrials += 1;
       } else {
-        responseCount += 1;
-        rt += responseProcessingData[i].rt;
-        if (responseProcessingData[i].correct_trial == 1) {
-          processingCorrect += 1;
+        if (responseProcessingData[i].rt !== null) {
+          totalTrials += 1;
+
+          if (responseProcessingData[i].correct_trial === 1) {
+            processingCorrect += 1;
+            rt += responseProcessingData[i].rt;
+          }
         }
       }
     }
 
-    var avgProcessingAcc = processingCorrect / responseCount;
-    var avgProcessingMissed = missedProcessingCount / totalTrials;
-    var avgProcessingRT = rt / responseCount;
+    var avgProcessingAcc = processingCorrect / totalTrials;
+    var avgProcessingRT = rt / processingCorrect;
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
@@ -7882,16 +7856,10 @@ var testNode = {
 
       feedbackText += `<p class=block-text>You have completed ${testCount} out of ${numTestBlocks} blocks of trials.</p>`;
 
-      if (accuracy < accuracyThresh) {
+      if (partialAccuracy < partialAccuracyThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 4x4 grid is low. Try your best to recall all the black colored cells.</p>";
       }
-
-      if (missedResponses > missedResponseThresh) {
-        feedbackText +=
-          "<p class = block-text>You have not been responding to some trials. Please respond on every trial that requires a response.</p>";
-      }
-
       if (avgProcessingAcc < processingAccThresh) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
@@ -7908,12 +7876,7 @@ var testNode = {
       if (avgProcessingRT > processingRTThresh) {
         feedbackText +=
           "<p class = block-text>You are responding too slowly to the 8x8 grids when they appear on the screen.</p>" +
-          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly as accurately as possible as possible.</p>`;
-      }
-
-      if (avgProcessingMissed > processingMissedThresh) {
-        feedbackText +=
-          "<p class = block-text>You are not responding to the 8x8 grids when they appear on the screen.</p>";
+          `<p class = block-text>Try to respond (left arrow/right arrow) as quickly and accurately as possible.</p>`;
       }
 
       feedbackText +=
