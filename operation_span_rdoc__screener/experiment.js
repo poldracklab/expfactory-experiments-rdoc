@@ -7232,7 +7232,7 @@ var stimulusBlock = {
     return {
       trial_id: "practice_stim",
       exp_stage: "practice",
-      condition: getCurrCondition(),
+      condition: "operation",
       trial_duration: stimTrialDuration,
       stimulus_duration: stimStimulusDuration,
       block_num: practiceCount,
@@ -7297,7 +7297,7 @@ var waitBlock = {
     return {
       trial_id: "practice_inter-stimulus",
       exp_stage: "practice",
-      condition: getCurrCondition(),
+      condition: "operation",
       choices: [processingChoices[0].keycode, processingChoices[1].keycode],
       block_num: practiceCount,
     };
@@ -7443,7 +7443,7 @@ var testTrial = {
       data["correct_trial"] = correct ? 1 : 0;
     }
 
-    data["condition"] = getCurrCondition();
+    data["condition"] = "operation";
 
     var lastInterStimTrials = jsPsych.data
       .get()
@@ -7489,7 +7489,7 @@ var ITIBlock = {
       },
       block_num: practiceCount,
       exp_stage: "practice",
-      condition: getCurrCondition(),
+      condition: "operation",
     };
   },
   trial_duration: 5000,
@@ -7834,7 +7834,7 @@ const generate_memory_only_trials = () => {
         data["correct_trial"] = correct ? 1 : 0;
       }
 
-      data["condition"] = getCurrCondition();
+      data["condition"] = "operation";
 
       var lastInterStimTrials = jsPsych.data
         .get()
@@ -7997,7 +7997,7 @@ var practiceNode = {
   loop_function: function () {
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "practice_trial",
-      condition: getCurrCondition(),
+      condition: "operation",
       block_num: getCurrBlockNum(),
     }).trials;
     var partialAccuracy = calculatePartialAccuracy(responseGridData);
