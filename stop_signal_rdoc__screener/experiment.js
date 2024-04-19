@@ -680,7 +680,7 @@ var endBlock = {
 
       const missedTrialsCount = trials.filter(obj => obj.rt === null).length;
       const responseTimes = trials
-        .filter(obj => obj.rt !== null)
+        .filter(obj => obj.rt !== null && obj.correct_trial === 1)
         .map(obj => obj.rt);
       const meanResponseTime =
         responseTimes.reduce((acc, rt) => acc + rt, 0) / responseTimes.length;
@@ -705,7 +705,6 @@ var endBlock = {
     const overallStopPerformance = evaluateStopTrials(stopTrials);
 
     const finalBlockGoPerformance = evaluateGoTrials(finalBlockGoTrials);
-    const finalBlockStopPerformance = evaluateStopTrials(finalBlockStopTrials);
 
     const isSubjectIncludedFlagGo = performance => {
       return (

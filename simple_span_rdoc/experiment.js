@@ -881,9 +881,7 @@ var ITIBlock = {
       return {
         trial_id: "practice_ITI",
         ITIParams: {
-          min: 2,
-          max: 20,
-          mean: 5,
+          duration: 5,
         },
         block_num: practiceCount,
         exp_stage: "practice",
@@ -904,12 +902,19 @@ var ITIBlock = {
     }
   },
   trial_duration: function () {
+    if (getExpStage() == "practice") return 5000;
+
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   on_finish: function (data) {
-    data["trial_duration"] = ITIms * 1000;
-    data["stimulus_duration"] = ITIms * 1000;
+    if (getExpStage() === "practice") {
+      data["trial_duration"] = 5000;
+      data["stimulus_duration"] = 5000;
+    } else {
+      data["trial_duration"] = ITIms * 1000;
+      data["stimulus_duration"] = ITIms * 1000;
+    }
   },
 };
 
