@@ -7167,10 +7167,8 @@ var promptText = `<div class=prompt_box_operation>
         ? "symmetric"
         : "asymmetric"
     }</b> and <b>"right arrow key"</b> if <b>${
-      processingChoices[0].keyname === "left arrow key"
-        ? "asymmetric"
-        : "symmetric"
-    }</b>.</p>
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.</p>
   </div>`;
 
 /* ************************************ */
@@ -7221,19 +7219,15 @@ var opSpanInstructions = `
           ? "symmetric"
           : "asymmetric"
       } or ${
-        processingChoices[0].keyname === "left arrow key"
-          ? "asymmetric"
-          : "symmetric"
-      }.
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}.
       Press the <b>left arrow key</b> if the grid is <b>${
         processingChoices[0].keyname === "left arrow key"
           ? "symmetric"
           : "asymmetric"
       }</b> and press the <b>right arrow key</b> if it is <b>${
-        processingChoices[0].keyname === "left arrow key"
-          ? "asymmetric"
-          : "symmetric"
-      }</b>.
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.
     </p>
     <p class="block-text">
       When you make a response, a new 8x8 grid will immediately appear, and you should complete as many correct symmetry judgments as you can. Then a single 4x4 grid will appear. This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7365,6 +7359,7 @@ var stimulusBlock = {
 var startTime = null;
 var checkTime = null;
 var endTime = null;
+var timeLeft = null;
 
 var initializingTrialIDs = new Set([
   "practice_feedback",
@@ -7397,7 +7392,7 @@ var waitBlock = {
       trial_id === "practice_inter-stimulus" ||
       trial_id === "test_inter-stimulus"
     ) {
-      var timeLeft = processingTrialDuration - endTime;
+      timeLeft = processingTrialDuration - endTime;
       return timeLeft;
     } else {
       return processingTrialDuration;
@@ -7432,32 +7427,46 @@ var waitBlock = {
     };
   },
   on_finish: function (data) {
+    let processingStimProperties = getProcessingStimProperties(data.stimulus);
+
+    data["order_and_color_of_processing_boxes"] = processingStimProperties;
     data["correct_spatial_judgement_key"] =
       spatialAns == 1
         ? processingChoices[0].keycode.toLowerCase()
         : processingChoices[1].keycode.toLowerCase();
-
     data["grid_symmetry"] = spatialAns == 1 ? "symmetric" : "asymmetric";
+    data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
 
-    if (spatialAns == 1) {
-      if (data.response == processingChoices[0].keycode.toLowerCase()) {
-        data["correct_trial"] = 1;
-      } else {
-        data["correct_trial"] = 0;
+    // Handling "omissions"
+    if (timeLeft === null) {
+      if (data.response === null) {
+        data["response"] = -1;
       }
     } else {
-      if (data.response == processingChoices[0].keycode.toLowerCase()) {
-        data["correct_trial"] = 0;
-      } else {
-        data["correct_trial"] = 1;
+      if (data.response === null) {
+        if (timeLeft > processingRTThresh) {
+          data["response"] = -1;
+        }
       }
     }
 
-    data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
-
-    let processingStimProperties = getProcessingStimProperties(data.stimulus);
-
-    data["order_and_color_of_processing_boxes"] = processingStimProperties;
+    if (data.response === null || data.response === -1) {
+      data["correct_trial"] = null;
+    } else {
+      if (spatialAns === true) {
+        if (data.response === processingChoices[0].keycode.toLowerCase()) {
+          data["correct_trial"] = 1;
+        } else {
+          data["correct_trial"] = 0;
+        }
+      } else {
+        if (data.response === processingChoices[0].keycode.toLowerCase()) {
+          data["correct_trial"] = 0;
+        } else {
+          data["correct_trial"] = 1;
+        }
+      }
+    }
   },
   prompt: function () {
     if (getExpStage() == "practice") {
@@ -7501,9 +7510,9 @@ var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
     var last = jsPsych.data.get().last(1).trials[0];
-    if (last.correct_trial == null) {
+    if (last.response.length === 0) {
       return "<div class=center-box><div class='center-text'><font size =20>Respond Faster!</font></div></div>";
-    } else if (last.correct_trial == 1) {
+    } else if (last.correct_trial === 1) {
       return "<div class=center-box><div class='center-text'><font size =20>Correct!</font></div></div>";
     } else {
       return "<div class=center-box><div class='center-text'><font size =20>Incorrect</font></div></div>";
