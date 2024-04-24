@@ -7083,19 +7083,22 @@ var opSpanInstructions = [
   `
   <div class="centerbox">
   <p class='block-text'>
-    Place your fingers on the arrow keys.
+    Please place your fingers on the arrow keys.
   </p>
   <p class='block-text'>
-    During this task, you will encounter an 8x8 grid filled with black and gray cells.
+    This task is divided into three parts. You will work through the first and second parts, completing practice sessions for each. Then, you will 
+    work through the third and final part of the task which combines the first and second parts. 
+  <p class='block-text'>
+    During the first part, you will encounter an 8x8 grid filled with black and gray cells.
     You have to determine if the grid is ${
       processingChoices[0].keyname === "left arrow key"
         ? "symmetric"
         : "asymmetric"
     } or ${
-      processingChoices[0].keyname === "left arrow key"
-        ? "asymmetric"
-        : "symmetric"
-    }.
+    processingChoices[0].keyname === "left arrow key"
+      ? "asymmetric"
+      : "symmetric"
+  }.
   </p>
   <p class='block-text'>
   Press the <b>left arrow key</b> if the grid is <b>${
@@ -7674,10 +7677,10 @@ var processing_only_node = {
       feedbackText = `
         <div class="centerbox">
         <p class='block-text'>
-          Keep your fingers on the arrow keys.
+          Please keep your fingers on the arrow keys.
         </p>
         <p class='block-text'>
-          During the next task, you will see a fixation (+) and then a 4x4 grid appear on the screen.
+          During the next part, you will see a fixation (+) and then a 4x4 grid appear on the screen.
         </p>
         <p class='block-text'>
           This grid will have one cell colored black. Try to remember the location of the black cell.
@@ -7901,10 +7904,10 @@ var memory_only_node = {
       feedbackText = `
         <div class="centerbox">
         <p class='block-text'>
-          Keep your fingers on the arrow keys.
+          Please keep your fingers on the arrow keys.
         </p>
         <p class='block-text'>
-          During the next task, you will first see an 8x8 grid filled with black and gray cells.
+          This is the final part of the task, which combines the two parts you just completed. During this part, you will first see an 8x8 grid filled with black and gray cells.
         </p>
         <p class='block-text'>
           Determine if the grid is <b>${
@@ -8050,7 +8053,7 @@ var practiceNode = {
     if (canProceedToTest) {
       feedbackText =
         "<div class = centerbox><p class = center-block-text>We will now start the test portion.</p>" +
-        '<p class="block-text">Keep your fingers on the arrow keys.</p>';
+        '<p class="block-text">Please keep your fingers on the arrow keys.</p>';
 
       feedbackText +=
         "<p class = block-text>Press <i>enter</i> to continue.</p></div>";
