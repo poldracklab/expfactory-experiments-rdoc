@@ -129,7 +129,7 @@ const fixationDuration = 500;
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 1; // /in seconds
+var instructTimeThresh = 5; // /in seconds
 
 
 /* *********** Feedback performance thresholds ************* */
