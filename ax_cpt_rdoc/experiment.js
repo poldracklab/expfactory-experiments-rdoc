@@ -2,7 +2,8 @@
 /* Define helper functions */
 /* ************************************ */
 
-// ITIs
+/* ********** ITIS ****************** */
+
 var meanITI = 0.5;
 function sampleFromDecayingExponential() {
   // Decay parameter of the exponential distribution λ = 1 / μ
@@ -42,6 +43,7 @@ function shuffleArray(array) {
   return shuffledArray;
 }
 
+/* ********** GETTERS ****************** */
 const getCurrAttentionCheckQuestion = () =>
   `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute. Do not press shift.</div>`;
 
@@ -90,28 +92,17 @@ function appendData() {
     .addToLast({ correct_trial: correctTrial, probe_letter: parsedLetter });
 }
 
-// Task-Specific
+/* ********** SETTING CURRENT CUE AND STIM FROM BLOCK LIST ****************** */
 var setStims = function () {
-  currCondition = blockList.pop();
+  currCondition = blockList.shift();
+  const isAXorBX = currCondition === "AX" || currCondition === "BX";
+  const isAXorAY = currCondition === "AX" || currCondition === "AY";
 
-  switch (currCondition) {
-    case "AX":
-      currStim = "<div class = centerbox><div class = AX_text>X</div></div>";
-      currCue = "<div class = centerbox><div class = AX_text>A</div></div>";
-      break;
-    case "BY":
-      currStim = getChar();
-      currCue = getChar();
-      break;
-    case "BX":
-      currStim = "<div class = centerbox><div class = AX_text>X</div></div>";
-      currCue = getChar();
-      break;
-    case "AY":
-      currStim = getChar();
-      currCue = "<div class = centerbox><div class = AX_text>A</div></div>";
-      break;
-  }
+  const setAXText = letter =>
+    `<div class = centerbox><div class = AX_text>${letter}</div></div>`;
+
+  currCue = isAXorAY ? setAXText("A") : getChar();
+  currStim = isAXorBX ? setAXText("X") : getChar();
 };
 
 const createHTML = char =>
@@ -122,13 +113,11 @@ const getChar = () =>
 
 function getKeyMappingForTask(group_index) {
   if (group_index % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
     possibleResponses = [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
     ];
   } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
     possibleResponses = [
       ["middle finger", ".", "period key (.)"],
       ["index finger", ",", "comma key (,)"],
@@ -234,7 +223,7 @@ const probeStimulusDuration = 1000;
 const probeTrialDuration = 1500;
 
 // generic task variables
-var instructTimeThresh = 1;
+var instructTimeThresh = 5;
 
 /* ******************************* */
 /* ATTENTION CHECK STUFF  */
@@ -244,12 +233,10 @@ var runAttentionChecks = true;
 /* ******************************* */
 /* THRESHOLDS */
 /* ******************************* */
-
-var practiceThresh = 3; // 3 blocks max
+var practiceThresh = 3; // 3 practice blocks max
 var accuracyThresh = 0.8; // block-level accuracy feedback
 var practiceAccuracyThresh = 0.8; // min accuracy to proceed to test
-
-var rtThresh = 750; // min of 1s on instructions to proceed to practice
+var rtThresh = 750; 
 var missedResponseThresh = 0.1; // get feedback if missed responses > 10% of trials
 
 /* ******************************* */
@@ -257,7 +244,8 @@ var missedResponseThresh = 0.1; // get feedback if missed responses > 10% of tri
 /* ******************************* */
 var chars = "BCDEFGHIJLMNOPQRSTUVWZ";
 
-// 4: 2: 2: 2
+/* ************ CONDITION PROPORTIONS ************ */
+// 4 AX: 2 BX: 2 AY: 2 BY
 var trialProportions = [
   "AX",
   "AX",
@@ -271,8 +259,9 @@ var trialProportions = [
   "BY",
 ];
 
-var numTestBlocks = 3;
-var numTrialsPerBlock = trialProportions.length * 5; // 50
+/* ************ TASK LENGTH SETUP ************ */
+var numTestBlocks = 3; // 3 test blocks - 150 trials total
+var numTrialsPerBlock = trialProportions.length * 5; // 50 trials per test block
 var practiceLen = trialProportions.length / 2; // 5
 var currCondition = "";
 var expStage = "practice";
@@ -287,69 +276,41 @@ var fixation = {
   stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_fixation",
-        exp_stage: getExpStage(),
-        trial_duration: fixationDuration,
-        stimulus_duration: fixationDuration,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_fixation",
-        exp_stage: getExpStage(),
-        trial_duration: fixationDuration,
-        stimulus_duration: fixationDuration,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage(); 
+    return {
+      trial_id: `${stage}_fixation`,
+      exp_stage: stage,
+      trial_duration: fixationDuration,
+      stimulus_duration: fixationDuration,
+      block_num: stage === "practice" ? practiceCount : testCount, 
+    };
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
 };
 
-// *** FIXATION2 *** //
-var fixation2 = {
+// *** ISI *** //
+var ISI = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_inter-stimulus",
-        exp_stage: getExpStage(),
-        trial_duration: fixationDuration + 2500,
-        stimulus_duration: fixationDuration + 2500,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_inter-stimulus",
-        exp_stage: getExpStage(),
-        trial_duration: fixationDuration + 2500,
-        stimulus_duration: fixationDuration + 2500,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_inter-stimulus`, 
+      exp_stage: stage,
+      trial_duration: fixationDuration + 2500,
+      stimulus_duration: fixationDuration + 2500,
+      block_num: stage === "practice" ? practiceCount : testCount, 
+    };
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration + 2500, // 3000
   trial_duration: fixationDuration + 2500, // 3000
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
 };
 
@@ -362,41 +323,24 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -416,7 +360,6 @@ var feedbackInstructBlock = {
     trial_id: "instruction_feedback",
     trial_duration: 180000,
   },
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
 
@@ -431,7 +374,6 @@ var instructionsBlock = {
     stimulus: pageInstruct,
   },
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var sumInstructTime = 0; // ms
@@ -501,25 +443,16 @@ var practiceFeedbackBlock = {
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`, 
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  post_trial_gap: 1000,
   trial_duration: 60000,
   response_ends_trial: true,
 };
@@ -611,13 +544,13 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -658,7 +591,7 @@ for (i = 0; i < practiceLen; i++) {
     stimulus_duration: cueStimulusDuration, // 500
     trial_duration: cueTrialDuration, // 500
     response_ends_trial: false,
-    post_trial_gap: 0,
+
     prompt: promptText,
     on_finish: function (data) {
       data["cue_letter"] = extractTextFromStimulus(data);
@@ -685,7 +618,7 @@ for (i = 0; i < practiceLen; i++) {
     },
     stimulus_duration: probeStimulusDuration,
     trial_duration: probeTrialDuration,
-    post_trial_gap: 0,
+
     response_ends_trial: false,
     prompt: promptText,
     on_finish: appendData,
@@ -695,7 +628,7 @@ for (i = 0; i < practiceLen; i++) {
     setStimsBlock,
     fixation,
     cueBlock,
-    fixation2,
+    ISI,
     probeBlock,
     practiceFeedbackBlock,
     ITIBlock
@@ -742,7 +675,6 @@ var practiceNode = {
 
       blockList = conditionValues.concat(["AX"]);
       blockList = jsPsych.randomization.repeat(blockList, 10);
-
       expStage = "test";
       return false;
     } else {
@@ -800,7 +732,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     stimulus_duration: cueStimulusDuration,
     trial_duration: cueTrialDuration,
     response_ends_trial: false,
-    post_trial_gap: 0,
     on_finish: function (data) {
       data["cue_letter"] = extractTextFromStimulus(data);
     },
@@ -826,7 +757,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     },
     stimulus_duration: probeStimulusDuration,
     trial_duration: probeTrialDuration,
-    post_trial_gap: 0,
     response_ends_trial: false,
     on_finish: appendData,
   };
@@ -834,7 +764,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     setStimsBlock,
     fixation,
     cueBlock,
-    fixation2,
+    ISI,
     probeBlock,
     ITIBlock
   );
@@ -871,7 +801,7 @@ var testNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
+    currentAttentionCheckData = attentionCheckData.shift(); 
 
     if (testCount == numTestBlocks) {
       feedbackText = `
@@ -970,7 +900,6 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
-  post_trial_gap: 0,
 };
 
 var ax_cpt_rdoc_experiment = [];
