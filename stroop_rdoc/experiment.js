@@ -257,7 +257,7 @@ var expStage = "practice";
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
 var runAttentionChecks = true;
-var instructTimeThresh = 1;
+var instructTimeThresh = 5;
 
 var accuracyThresh = 0.8; // threshold for block-level feedback
 var practiceAccuracyThresh = 0.75; // threshold to proceed to test, .75 for 3 out of 4 trials
@@ -528,7 +528,6 @@ var feedbackInstructBlock = {
   },
   choices: ["Enter"],
   stimulus: getInstructFeedback,
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
 
@@ -542,7 +541,6 @@ var instructionsBlock = {
   pages: pageInstruct,
   allow_keys: false,
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var sumInstructTime = 0; // ms
@@ -591,7 +589,6 @@ var fixationBlock = {
       window.removeEventListener("keydown", preventSlash);
     };
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
   on_finish: data => (data["block_num"] = testCount),
@@ -618,7 +615,6 @@ var practiceFixationBlock = {
       window.removeEventListener("keydown", preventSlash);
     };
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration,
   trial_duration: fixationDuration,
   prompt: promptText,
@@ -670,25 +666,16 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  post_trial_gap: 1000,
   trial_duration: 60000,
   response_ends_trial: true,
 };
@@ -702,31 +689,18 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
@@ -743,11 +717,7 @@ var ITIBlock = {
     };
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -787,7 +757,7 @@ for (i = 0; i < practiceLen; i++) {
     response_ends_trial: false,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
-    post_trial_gap: 0,
+
     prompt: promptText,
     on_finish: appendData,
   };
@@ -911,7 +881,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     response_ends_trial: false,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
-    post_trial_gap: 0,
     on_finish: appendData,
   };
 
@@ -1034,7 +1003,6 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
-  post_trial_gap: 0,
   on_finish: function () {
     renameDataProperties();
   },

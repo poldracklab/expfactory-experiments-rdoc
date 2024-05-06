@@ -7110,7 +7110,7 @@ const responseBlockDuration = 5000;
 
 var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 1; // /in seconds
+var instructTimeThresh = 5; // /in seconds
 
 var partialAccuracyThresh = 0.75;
 var practiceThresh = 3;
@@ -7180,14 +7180,14 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
     condition: getCurrCondition(),
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -7292,21 +7292,13 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
@@ -7324,31 +7316,19 @@ var stimulusBlock = {
   stimulus_duration: stimStimulusDuration,
   trial_duration: stimTrialDuration,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_stim",
-        exp_stage: getExpStage(),
-        condition: getCurrCondition(),
-        trial_duration: stimTrialDuration,
-        stimulus_duration: stimStimulusDuration,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_stim",
-        exp_stage: getExpStage(),
-        condition: getCurrCondition(),
-        trial_duration: stimTrialDuration,
-        stimulus_duration: stimStimulusDuration,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_stim`,
+      exp_stage: stage,
+      condition: getCurrCondition(),
+      trial_duration: stimTrialDuration,
+      stimulus_duration: stimStimulusDuration,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   choices: ["NO_KEYS"],
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["spatial_location"] = trialValue;
@@ -7469,9 +7449,7 @@ var waitBlock = {
     }
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
 };
 
@@ -7551,9 +7529,7 @@ var testTrial = {
   trial_duration: responseBlockDuration,
   stimulus_duration: responseBlockDuration,
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return practicePromptResponse;
-    }
+    return getExpStage() === "practice" ? practicePromptResponse : "";
   },
   on_finish: function (data) {
     if (getExpStage() == "practice") {
@@ -7626,29 +7602,25 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          duration: 5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-        condition: getCurrCondition(),
-      };
+    const stage = getExpStage();
+    const commonData = {
+      trial_id: `${stage}_ITI`,
+      exp_stage: stage,
+      block_num: stage === "practice" ? practiceCount : testCount,
+      condition: getCurrCondition(),
+    };
+
+    if (stage === "practice") {
+      commonData.ITIParams = { duration: 5 };
     } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 2,
-          max: 20,
-          mean: 5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-        condition: getCurrCondition(),
+      commonData.ITIParams = {
+        min: 2,
+        max: 20,
+        mean: 5,
       };
     }
+
+    return commonData;
   },
   trial_duration: function () {
     if (getExpStage() === "practice") return 5000;

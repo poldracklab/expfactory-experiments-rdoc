@@ -397,8 +397,6 @@ const getFeedback = () =>
 
 const getCurrSeq = () => currSeq;
 
-const getCurrCondition = () => currCondition;
-
 const getCurrBlockNum = () =>
   getExpStage() === "practice" ? practiceCount : testCount;
 
@@ -441,13 +439,11 @@ var spanResponses = [
 // stimulus and fixation
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000;
-const processingStimulusDuration = 3000;
-const processingTrialDuration = 3000;
 const responseBlockDuration = 5000;
 
 var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 1; // /in seconds
+var instructTimeThresh = 5; // /in seconds
 
 var accuracyThresh = 0.6;
 var partialAccuracyThresh = 0.75;
@@ -474,10 +470,6 @@ var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
 getKeyMappingForTask(group_index);
-
-var processingAccThresh = 0.85;
-var processingRTThresh = 1000;
-var processingMissedThresh = 0.1;
 
 var practiceLen = 1;
 var numTrialsPerBlock = 8;
@@ -510,14 +502,14 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
-    condition: getCurrCondition(),
+    condition: "simple",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -606,23 +598,14 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: practiceCount,
-        condition: getCurrCondition(),
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: testCount,
-        condition: getCurrCondition(),
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount,
+      condition: "simple"
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
@@ -640,31 +623,19 @@ var stimulusBlock = {
   stimulus_duration: stimStimulusDuration,
   trial_duration: stimTrialDuration,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_stim",
-        exp_stage: getExpStage(),
-        condition: getCurrCondition(),
-        trial_duration: stimTrialDuration,
-        stimulus_duration: stimStimulusDuration,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_stim",
-        exp_stage: getExpStage(),
-        condition: getCurrCondition(),
-        trial_duration: stimTrialDuration,
-        stimulus_duration: stimStimulusDuration,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_stim`,
+      exp_stage: stage,
+      condition: "simple",
+      trial_duration: stimTrialDuration,
+      stimulus_duration: stimStimulusDuration,
+      block_num: stage === "practice" ? practiceCount : testCount, 
+    };
   },
   choices: ["NO_KEYS"],
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return practicePromptText;
-    }
+    return getExpStage() === "practice" ? practicePromptText : "";
   },
   on_finish: function (data) {
     data["spatial_location"] = trialValue;
@@ -678,8 +649,8 @@ var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: "<div class = centerbox><div class = fixation>****</div></div>",
   choices: "NO_KEYS",
-  stimulus_duration: processingStimulusDuration,
-  trial_duration: processingTrialDuration,
+  stimulus_duration: 3000,
+  trial_duration: 3000,
   response_ends_trial: true,
   on_start: function () {
     // calculate time to last 3000ms then end trial
@@ -709,10 +680,10 @@ var waitBlock = {
           ? "practice_inter-stimulus"
           : "test_inter-stimulus",
       exp_stage: getExpStage(),
-      condition: getCurrCondition(),
+      condition: "simple",
       choices: "",
-      trial_duration: processingTrialDuration,
-      stimulus_duration: processingStimulusDuration,
+      trial_duration: 3000,
+      stimulus_duration: 3000,
       block_num: getExpStage() == "practice" ? practiceCount : testCount,
     };
   },
@@ -732,7 +703,7 @@ var waitNode = {
   loop_function: function (data) {
     var elapsedTime = performance.now() - startTime;
 
-    if (elapsedTime >= processingTrialDuration) {
+    if (elapsedTime >= 3000) {
       startTime = null; // Reset startTime for the next trial
       return false; // End the loop
     }
@@ -829,7 +800,7 @@ var testTrial = {
       data["correct_trial"] = correct ? 1 : 0;
     }
 
-    data["condition"] = getCurrCondition();
+    data["condition"] = "simple";
 
     if (getExpStage() == "practice") {
       var lastInterStimTrials = jsPsych.data
@@ -877,32 +848,28 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          duration: 5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-        condition: getCurrCondition(),
-      };
+    const stage = getExpStage();
+    const commonData = {
+      trial_id: `${stage}_ITI`,
+      exp_stage: stage,
+      block_num: stage === "practice" ? practiceCount : testCount,
+      condition: "simple",
+    };
+
+    if (stage === "practice") {
+      commonData.ITIParams = { duration: 5 };
     } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 2,
-          max: 20,
-          mean: 5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-        condition: getCurrCondition(),
+      commonData.ITIParams = {
+        min: 2,
+        max: 20,
+        mean: 5,
       };
     }
+
+    return commonData;
   },
   trial_duration: function () {
-    if (getExpStage() == "practice") return 5000;
+    if (getExpStage() === "practice") return 5000;
 
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
@@ -941,7 +908,7 @@ var practiceNode = {
   loop_function: function () {
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "practice_trial",
-      condition: getCurrCondition(),
+      condition: "simple",
       block_num: getCurrBlockNum(),
     }).trials;
 
@@ -964,7 +931,6 @@ var practiceNode = {
       }
     }
 
-    var accuracy = correct / responseCount;
     var missedResponses = missedCount / totalTrials;
 
     if (
@@ -1029,7 +995,7 @@ var testNode = {
     var responseGridData = jsPsych.data.get().filter({
       trial_id: "test_trial",
       exp_stage: "test",
-      condition: getCurrCondition(),
+      condition: "simple",
       block_num: getCurrBlockNum(),
     }).trials;
 
