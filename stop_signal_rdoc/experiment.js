@@ -267,7 +267,7 @@ const stimTrialDuration = 1500;
 
 // generic task variables
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 1; // /in seconds
+var instructTimeThresh = 5; // /in seconds
 var runAttentionChecks = true;
 
 var practiceLen = 6; // must be divisible by shapes.length * stopSignalsConditions.length
@@ -374,13 +374,13 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -400,7 +400,6 @@ var feedbackInstructBlock = {
     trial_duration: 180000,
   },
   stimulus: getInstructFeedback,
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
 
@@ -414,7 +413,6 @@ var instructionsBlock = {
   pages: pageInstruct,
   allow_keys: false,
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var instructionNode = {
@@ -450,7 +448,6 @@ var fixationBlock = {
     stimulus_duration: fixationDuration,
     exp_stage: "test",
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
   on_finish: data => (data["block_num"] = testCount),
@@ -466,7 +463,6 @@ var practiceFixation = {
     stimulus_duration: 500,
     exp_stage: "practice",
   },
-  post_trial_gap: 0,
   stimulus_duration: 500, // 500
   trial_duration: 500, // 500
   prompt: promptText,
@@ -478,24 +474,15 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   stimulus: getFeedback,
-  post_trial_gap: 0,
   trial_duration: 60000,
   choices: ["Enter"],
   response_ends_trial: true,
@@ -510,41 +497,24 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -556,7 +526,7 @@ var ITIBlock = {
 /*				Set up nodes				*/
 /** ******************************************/
 
-var practiceStopTrials = [];
+var practiceTrials = [];
 for (i = 0; i < practiceLen; i++) {
   var practiceTrial = {
     type: jsPoldracklabStopSignal,
@@ -635,7 +605,7 @@ for (i = 0; i < practiceLen; i++) {
     prompt: promptText,
   };
 
-  practiceStopTrials.push(
+  practiceTrials.push(
     practiceFixation,
     practiceTrial,
     practiceFeedbackBlock,
@@ -645,7 +615,7 @@ for (i = 0; i < practiceLen; i++) {
 
 var practiceCount = 0;
 var practiceNode = {
-  timeline: [feedbackBlock].concat(practiceStopTrials),
+  timeline: [feedbackBlock].concat(practiceTrials),
   loop_function: function (data) {
     practiceCount += 1;
     currentTrial = 0;
@@ -766,10 +736,10 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     response_ends_trial: false,
     SSD: getSSD,
     SS_duration: 500, // 500
-    post_trial_gap: 0,
     on_finish: function (data) {
       appendData(data);
     },
+    post_trial_gap: 0,
   };
   testTrials.push(fixationBlock, testTrial, ITIBlock);
 }
@@ -917,7 +887,6 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
-  post_trial_gap: 0,
 };
 
 var stop_signal_rdoc_experiment = [];

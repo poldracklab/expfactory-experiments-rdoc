@@ -401,7 +401,7 @@ const stimTrialDuration = 1500;
 // generic task variables
 var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 1;
+var instructTimeThresh = 5;
 
 var expLen = 120;
 var practiceLen = 5;
@@ -528,13 +528,13 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -554,7 +554,6 @@ var feedbackInstructBlock = {
   },
   choices: ["Enter"],
   stimulus: getInstructFeedback,
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
 
@@ -570,7 +569,6 @@ var instructionsBlock = {
   },
   allow_keys: false,
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var instructionNode = {
@@ -621,7 +619,6 @@ var fixationBlock = {
   },
   trial_duration: fixationDuration, // 500
   stimulus_duration: fixationDuration,
-  post_trial_gap: 0,
   prompt: function () {
     if (getExpStage() == "practice") {
       return getPromptText();
@@ -637,28 +634,20 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-      };
-    }
+    const stage = getExpStage(); 
+    return {
+      trial_id: `${stage}_feedback`, 
+      exp_stage: stage, 
+      trial_duration: 60000,
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  post_trial_gap: 0,
   trial_duration: 60000,
   response_ends_trial: true,
   on_finish: data =>
     (data["block_num"] =
-      getExpStage() == "practice" ? practiceCount : testCount),
+      getExpStage() == "practice" ? practiceCount : testCount)
 };
 
 var ITIms = null;
@@ -670,41 +659,24 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return getPromptText();
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? getPromptText() : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -731,7 +703,6 @@ for (i = 0; i < practiceLen + 1; i++) {
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
-    post_trial_gap: 0,
     response_ends_trial: false,
     prompt: getPromptText,
     on_finish: appendData,
@@ -785,7 +756,6 @@ for (i = 0; i < practiceLen + 2; i++) {
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
-    post_trial_gap: 0,
     response_ends_trial: false,
     prompt: getPromptText,
     on_finish: appendData,
@@ -1008,7 +978,6 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
-    post_trial_gap: 0,
     response_ends_trial: false,
     on_finish: appendData,
   };
@@ -1030,7 +999,6 @@ for (i = 0; i < numTrialsPerBlock + 2; i++) {
     choices: choices,
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
-    post_trial_gap: 0,
     response_ends_trial: false,
     on_finish: appendData,
   };
@@ -1243,8 +1211,7 @@ var endBlock = {
   },
   trial_duration: 180000,
   stimulus: endText,
-  choices: ["Enter"],
-  post_trial_gap: 0,
+  choices: ["Enter"]
 };
 
 var n_back_rdoc_experiment = [];

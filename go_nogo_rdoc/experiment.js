@@ -1,8 +1,8 @@
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
-// common
-// PARAMETERS FOR DECAYING EXPONENTIAL FUNCTION
+
+/* ************* ITIs **************** */
 var meanITI = 0.5;
 
 function sampleFromDecayingExponential() {
@@ -201,28 +201,26 @@ const stimTrialDuration = 1500;
 
 // generic task variables
 var runAttentionChecks = true;
-// var attentionCheckThresh = 0.45;
 var sumInstructTime = 0; // ms
-var instructTimeThresh = 1; // /in seconds
+var instructTimeThresh = 5; // /in seconds
 var goResponse = " "; // spacebar
 
-// task specific variables
-var numGoStim = 6; // per one no-go stim
+var numGoStim = 6; 
 var correctResponses = [
   ["go", goResponse],
   ["nogo", null],
 ];
 
-// var stims = jsPsych.randomization.shuffle([["orange", "stim1"],["blue","stim2"]])
+// styled with css
 var stims = [
   ["solid white", "stim1"],
   ["outlined white", "stim2"],
-]; // solid and outlined squares used as stimuli for this task are not png files as in some others, but they are defined in style.css
-// var gap = 0;
-varcurrentTrial = 0;
+]; 
+
+
+var currentTrial = 0;
 var practiceStimuli = [
   {
-    // To change go:nogo ratio, add or remove one or more sub-dictionaries within practiceStimuli and testStimuliBlock
     stimulus:
       "<div class = bigbox><div class = centerbox><div class = gng_number><div class = cue-text><div id = " +
       stims[1][1] +
@@ -249,7 +247,6 @@ var practiceStimuli = [
   })
 );
 
-// set up block stim. test_stim_responses indexed by [block][stim][type]
 var testStimuliBlock = [
   {
     stimulus:
@@ -323,13 +320,13 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -349,10 +346,10 @@ var feedbackInstructBlock = {
     trial_duration: 180000,
   },
   stimulus: getInstructFeedback,
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
-// TODO: add missed count in assess performance
+
+
 var instructionsBlock = {
   type: jsPsychInstructions,
   data: {
@@ -363,7 +360,6 @@ var instructionsBlock = {
   pages: [pageInstruct],
   allow_keys: false,
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var instructionNode = {
@@ -394,23 +390,15 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-      };
-    }
+    const stage = getExpStage(); 
+    return {
+      trial_id: `${stage}_feedback`, 
+      exp_stage: stage, 
+      trial_duration: 60000, 
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  post_trial_gap: 0,
   trial_duration: 60000,
   response_ends_trial: true,
 };
@@ -428,7 +416,6 @@ var fixationBlock = {
       block_num: testCount,
     };
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration,
   trial_duration: fixationDuration,
 };
@@ -446,7 +433,6 @@ var promptFixationBlock = {
       block_num: practiceCount,
     };
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration,
   trial_duration: fixationDuration,
   prompt: promptText,
@@ -461,41 +447,24 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -503,7 +472,6 @@ var ITIBlock = {
   },
 };
 
-// / need to put these in a function because it has to call jsPsych-dependent stuff
 var practiceTrials = [];
 for (var i = 0; i < practiceLen; i++) {
   var practiceTrial = {
@@ -520,7 +488,7 @@ for (var i = 0; i < practiceLen; i++) {
     stimulus_duration: stimStimulusDuration, // 1000,
     trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
-    post_trial_gap: 0,
+
     on_finish: appendData,
     prompt: promptText,
   };
@@ -671,7 +639,7 @@ for (var i = 0; i < numTrialsPerBlock; i++) {
         block_num: testCount,
       });
     },
-    post_trial_gap: 0,
+
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
@@ -813,7 +781,6 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
-  post_trial_gap: 0,
 };
 
 var go_nogo_rdoc_experiment = [];

@@ -476,8 +476,8 @@ const stimTrialDuration = 2000;
 var runAttentionChecks = true;
 
 // thresholds
-const instructTimeThresh = 1; // /in seconds
 var sumInstructTime = 0; // ms
+const instructTimeThresh = 5; // /in seconds
 const accuracyThresh = 0.8; // threshhold for block-level feedback
 const practiceAccuracyThresh = 0.75; //threshold to proceed to test blocks, 3 out of 4 trials for .75
 
@@ -535,13 +535,13 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -561,7 +561,6 @@ var feedbackInstructBlock = {
     trial_duration: 180000,
   },
   stimulus: getInstructFeedback,
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
 
@@ -571,33 +570,19 @@ var testTrial = {
   choices: choices,
   stimulus_duration: stimStimulusDuration, // 1500,
   trial_duration: stimTrialDuration, // 1500
-  post_trial_gap: 0,
   response_ends_trial: false,
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_trial",
-        choices: choices,
-        trial_duration: stimTrialDuration,
-        stimulus_duration: stimStimulusDuration,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_trial",
-        choices: choices,
-        trial_duration: stimTrialDuration,
-        stimulus_duration: stimStimulusDuration,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage(); 
+    return {
+      trial_id: `${stage}_trial`, 
+      choices: choices, 
+      trial_duration: stimTrialDuration,
+      stimulus_duration: stimStimulusDuration,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   on_finish: function (data) {
     data["target_present"] = trialTargetPresent ? 1 : 0;
@@ -644,7 +629,6 @@ var instructionsBlock = {
     stimulus: pageInstruct,
   },
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var instructionNode = {
@@ -677,25 +661,16 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: practiceCount,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-        block_num: testCount,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  post_trial_gap: 1000,
   trial_duration: 60000,
   response_ends_trial: true,
 };
@@ -730,7 +705,6 @@ var fixationBlock = {
       return "";
     }
   },
-  post_trial_gap: 0,
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
 };
@@ -743,31 +717,18 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
@@ -784,11 +745,7 @@ var ITIBlock = {
     };
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -822,11 +779,7 @@ var practiceFeedbackBlock = {
   stimulus_duration: 500,
   trial_duration: 500,
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
 };
 
@@ -1055,7 +1008,6 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
-  post_trial_gap: 0,
 };
 
 var visual_search_rdoc_experiment = [];
