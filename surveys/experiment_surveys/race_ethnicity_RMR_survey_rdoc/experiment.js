@@ -10,6 +10,7 @@ var questions = [
     type: "multi-select",
     prompt: "What is your race?",
     name: "What is your race?",
+    key: "race",
     required: true,
     options: [
       "American Indian or Alaska Native",
@@ -25,16 +26,19 @@ var questions = [
     prompt:
       "If you chose 'Other' for racial background, how would you describe it?",
     name: "If you chose 'Other' for racial background, how would you describe it?",
+    key: "race_other",
     required: false,
   },
   {
     type: "multi-choice",
     prompt: "Are you of Hispanic, Latino or Spanish origin?",
     name: "Are you of Hispanic, Latino or Spanish origin?",
+    key: "latino",
     required: true,
     options: ["Yes", "No"],
   },
 ];
+
 
 var instructions = [
   `<div class='instructions'>
@@ -58,6 +62,19 @@ var trial = {
   type: jsPsychSurvey,
   pages: [questions],
   button_label_finish: "Submit",
+  on_finish: function(data) {
+  
+     Object.keys(data.response).forEach(function (key) {
+       var questionItem = questions.find(q => q.name === key);
+       if (questionItem) {
+         data[questionItem.key] = {
+           key: questionItem.key,
+           question: questionItem.prompt,
+           response: data.response[key],
+         };
+       }
+     });
+  }
 };
 
 var postTaskQuestion =

@@ -52,8 +52,8 @@ const createSurveyQuestions = questions => {
         { value: 4, text: "Often true" },
         { value: 5, text: "Very often true" },
       ],
-      prompt: `${questions[i]}`,
-      name: `${questions[i]}`,
+      prompt: `${questions[i].question}`,
+      name: `${questions[i].question}`,
       required: true,
     };
     surveyQuestions.push(questionObj);
@@ -80,34 +80,110 @@ const createSurveyQuestions = questions => {
 };
 
 var questions = [
-  "People in my family called me things like stupid, lazy, or ugly.",
-  "I thought that my parents wished I had never been born.",
-  "I felt that someone in my family hated me.",
-  "People in my family said hurtful or insulting things to me.",
-  "I believe I was emotionally abused.",
-  "I got hit so hard by someone in my family that I had to see a doctor or go to the hospital.",
-  "People in my family hit me so hard that it left me with bruises or marks.",
-  "I was punished with a belt, a board, a cord, or some other hard object.",
-  "I believe that I was physically abused.",
-  "I got hit or beaten so badly that it was noticed by someone like a teacher, neighbour, or doctor.",
-  "Someone tried to touch me in a sexual way, or tried to make me touch them.",
-  "Someone threatened to hurt me or tell lies about me unless I did something sexual with them.",
-  "Someone tried to make me do sexual things or watch sexual things.",
-  "Someone molested me.",
-  "I believe that I was sexually abused.",
-  "There was someone in my family who helped me feel that I was important or special.",
-  "I felt loved.",
-  "People in my family looked out for each other.",
-  "People in my family felt close to each other.",
-  "My family was a source of strength and support.",
-  "I didnt have enough to eat.",
-  "I knew that there was someone to take care of me and protect me.",
-  "My parents were too drunk or high to take care of the family.",
-  "I had to wear dirty clothes.",
-  "There was someone to take me to the doctor if I needed it.",
-  "There was nothing I wanted to change about my family.",
-  "I had the perfect childhood.",
-  "I had the best family in the world.",
+  {
+    key: "called_stupid_lazy_ugly",
+    question:
+      "People in my family called me things like stupid, lazy, or ugly.",
+  },
+  {
+    key: "parents_wished_unborn",
+    question: "I thought that my parents wished I had never been born.",
+  },
+  {
+    key: "felt_hated_by_family",
+    question: "I felt that someone in my family hated me.",
+  },
+  {
+    key: "family_said_hurtful_things",
+    question: "People in my family said hurtful or insulting things to me.",
+  },
+  {
+    key: "believe_emotionally_abused",
+    question: "I believe I was emotionally abused.",
+  },
+  {
+    key: "hit_needed_doctor",
+    question:
+      "I got hit so hard by someone in my family that I had to see a doctor or go to the hospital.",
+  },
+  {
+    key: "hit_left_marks",
+    question:
+      "People in my family hit me so hard that it left me with bruises or marks.",
+  },
+  {
+    key: "punished_with_objects",
+    question:
+      "I was punished with a belt, a board, a cord, or some other hard object.",
+  },
+  {
+    key: "believe_physically_abused",
+    question: "I believe that I was physically abused.",
+  },
+  {
+    key: "hit_noticed_by_others",
+    question:
+      "I got hit or beaten so badly that it was noticed by someone like a teacher, neighbour, or doctor.",
+  },
+  {
+    key: "inappropriate_touch",
+    question:
+      "Someone tried to touch me in a sexual way, or tried to make me touch them.",
+  },
+  {
+    key: "sexual_threats",
+    question:
+      "Someone threatened to hurt me or tell lies about me unless I did something sexual with them.",
+  },
+  {
+    key: "forced_to_do_sexual_things",
+    question:
+      "Someone tried to make me do sexual things or watch sexual things.",
+  },
+  { key: "molested", question: "Someone molested me." },
+  {
+    key: "believe_sexually_abused",
+    question: "I believe that I was sexually abused.",
+  },
+  {
+    key: "felt_important_by_family",
+    question:
+      "There was someone in my family who helped me feel that I was important or special.",
+  },
+  { key: "felt_loved", question: "I felt loved." },
+  {
+    key: "family_looked_out",
+    question: "People in my family looked out for each other.",
+  },
+  {
+    key: "family_felt_close",
+    question: "People in my family felt close to each other.",
+  },
+  {
+    key: "family_strength_support",
+    question: "My family was a source of strength and support.",
+  },
+  { key: "not_enough_to_eat", question: "I didnt have enough to eat." },
+  {
+    key: "someone_protected_me",
+    question:
+      "I knew that there was someone to take care of me and protect me.",
+  },
+  {
+    key: "parents_too_drunk_high",
+    question: "My parents were too drunk or high to take care of the family.",
+  },
+  { key: "wore_dirty_clothes", question: "I had to wear dirty clothes." },
+  {
+    key: "access_to_doctor",
+    question: "There was someone to take me to the doctor if I needed it.",
+  },
+  {
+    key: "nothing_to_change_family",
+    question: "There was nothing I wanted to change about my family.",
+  },
+  { key: "perfect_childhood", question: "I had the perfect childhood." },
+  { key: "best_family", question: "I had the best family in the world." },
 ];
 
 var surveyQuestions = createSurveyQuestions(questions);
@@ -143,6 +219,22 @@ var trial = {
     data.likert_scale_3_label = "Sometimes true";
     data.likert_scale_4_label = "Often true";
     data.likert_scale_5_label = "Very often true";
+
+    var questionKeys = {};
+    questions.forEach(function (q) {
+      questionKeys[q.question] = q.key;
+    });
+
+    for (var question in data.response) {
+      var key = questionKeys[question];
+      if (key) {
+        data[key] = {
+          response: data.response[question],
+          question: question,
+          key: key,
+        };
+      }
+    }
   },
 };
 

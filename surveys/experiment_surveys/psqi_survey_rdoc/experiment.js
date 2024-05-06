@@ -47,6 +47,7 @@ var questions = [
       prompt:
         "Indicate the most accurate reply for the majority of days and nights in the past month.",
       name: "Indicate the most accurate reply for the majority of days and nights in the past month.",
+      key: "intro_prompt",
     },
     {
       type: "text",
@@ -55,6 +56,7 @@ var questions = [
       name: "During the past month, what time have you usually gone to bed at night? (hour:minutes AM/PM)",
       required: true,
       placeholder: "",
+      key: "bedtime",
     },
     {
       type: "text",
@@ -63,6 +65,7 @@ var questions = [
       name: "During the past month, how long (in minutes) has it usually taken you to fall asleep each night?",
       required: true,
       placeholder: "",
+      key: "time_to_sleep",
     },
     {
       type: "text",
@@ -71,6 +74,7 @@ var questions = [
       name: "During the past month, what time have you usually gotten up in the morning? (hour:minutes AM/PM)",
       required: true,
       placeholder: "",
+      key: "wake_time",
     },
     {
       type: "text",
@@ -79,18 +83,21 @@ var questions = [
       name: "During the past month, how many hours of actual sleep did you get at night ? (This may be different than the number of hours you spent in bed.)",
       required: true,
       placeholder: "",
+      key: "actual_sleep_hours",
     },
     {
       type: "html",
       prompt:
         "<h4 style='margin-top: 50px;'>For each of the remaining questions, check the one best response. Please answer all questions.</h4>",
       name: "For each of the remaining questions, check the one best response. Please answer all questions.",
+      key: "question_instructions",
     },
     {
       type: "html",
       prompt:
         "<b>During the past month, how often have you had trouble sleeping because you...</b>",
       name: "During the past month, how often have you had trouble sleeping because you...",
+      key: "trouble_sleeping_causes_intro",
     },
     {
       type: "multi-choice",
@@ -103,6 +110,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "sleep_delay",
     },
     {
       type: "multi-choice",
@@ -115,6 +123,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "night_waking",
     },
     {
       type: "multi-choice",
@@ -127,9 +136,8 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "night_bathroom_visits",
     },
-  ],
-  [
     {
       type: "multi-choice",
       prompt: "Cannot breathe comfortably",
@@ -141,6 +149,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "breathing_difficulty",
     },
     {
       type: "multi-choice",
@@ -153,6 +162,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "snoring",
     },
     {
       type: "multi-choice",
@@ -165,6 +175,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "feeling_cold",
     },
     {
       type: "multi-choice",
@@ -177,6 +188,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "bad_dreams",
     },
     {
       type: "multi-choice",
@@ -189,12 +201,13 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "pain_while_sleeping",
     },
     {
       type: "text",
       prompt: "Other reason(s), please describe:",
       name: "Other reason(s), please describe:",
-      placeholder: "",
+      key: "other_sleep_issues",
     },
     {
       type: "multi-choice",
@@ -208,6 +221,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "frequency_of_trouble_sleeping",
     },
     {
       type: "multi-choice",
@@ -216,9 +230,8 @@ var questions = [
       name: "During the past month, how would you rate your sleep quality overall?",
       required: true,
       options: ["Very good", "Fairly good", "Fairly bad", "Very bad"],
+      key: "overall_sleep_quality",
     },
-  ],
-  [
     {
       type: "multi-choice",
       prompt:
@@ -231,6 +244,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "sleep_medication_use",
     },
     {
       type: "multi-choice",
@@ -244,6 +258,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "trouble_staying_awake",
     },
     {
       type: "multi-choice",
@@ -257,6 +272,7 @@ var questions = [
         "Somewhat of a problem",
         "A very big problem",
       ],
+      key: "enthusiasm_for_tasks",
     },
     {
       type: "multi-choice",
@@ -269,12 +285,14 @@ var questions = [
         "Partner in same room but not same bed",
         "Partner in same bed",
       ],
+      key: "bed_partner_status",
     },
     {
       type: "html",
       prompt:
         "<h4 style='margin-top:50px;'>If you have a room mate or bed partner, ask him/her how often in the past month you have had...</h4>",
       name: "If you have a room mate or bed partner, ask him/her how often in the past month you have had...",
+      key: "partner_observation_intro",
     },
     {
       type: "multi-choice",
@@ -287,6 +305,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "loud_snoring",
     },
     {
       type: "multi-choice",
@@ -299,6 +318,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "breathing_pauses",
     },
     {
       type: "multi-choice",
@@ -311,9 +331,8 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "leg_twitching",
     },
-  ],
-  [
     {
       type: "multi-choice",
       prompt: "Episodes of disorientation or confusion during sleep",
@@ -325,12 +344,14 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "sleep_disorientation",
     },
     {
       type: "text",
       prompt: "Other restlessness while you sleep, please describe:",
       name: "Other restlessness while you sleep, please describe:",
       required: false,
+      key: "other_restlessness_description",
     },
     {
       type: "multi-choice",
@@ -343,6 +364,7 @@ var questions = [
         "Once or twice a week",
         "Three or more times a week",
       ],
+      key: "frequency_of_restlessness",
     },
   ],
 ];
@@ -370,6 +392,18 @@ var trial = {
   type: jsPsychSurvey,
   pages: questions,
   button_label_finish: "Submit",
+  on_finish: function (data) {
+    Object.keys(data.response).forEach(function(key) {
+      var questionItem = questions.flat().find(q => q.name === key);
+      if (questionItem) {
+        data[questionItem.key] = {
+          key: questionItem.key,
+          question: questionItem.prompt,
+          response: data.response[key],
+        };
+      }
+    });
+  },
 };
 
 var postTaskQuestion =

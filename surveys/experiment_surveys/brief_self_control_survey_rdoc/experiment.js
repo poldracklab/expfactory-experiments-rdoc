@@ -33,8 +33,8 @@ const createSurveyQuestions = questions => {
       type: "likert",
       likert_scale_min_label: "Not at all",
       likert_scale_max_label: "Very much",
-      prompt: `${questions[i]}`,
-      name: `${questions[i]}`,
+      prompt: `${questions[i].question}`,
+      name: `${questions[i].question}`,
       required: true,
     };
     surveyQuestions.push(questionObj);
@@ -61,20 +61,55 @@ const createSurveyQuestions = questions => {
 };
 
 var questions = [
-  "I am good at resisting temptation.",
-  "I have a hard time breaking bad habits.",
-  "I am lazy.",
-  "I say inappropriate things.",
-  "I do certain things that are bad for me, if they are fun.",
-  "I refuse things that are bad for me.",
-  "I wish I had more self-discipline.",
-  "People would say that I have iron self-discipline.",
-  "Pleasure and fun sometimes keep me from getting work done.",
-  "I have trouble concentrating.",
-  "I am able to work effectively toward long-term goals.",
-  "Sometimes I can't stop myself from doing something, even if I know it is wrong.",
-  "I often act without thinking through all the alternatives.",
+  {
+    key: "resisting_temptation",
+    question: "I am good at resisting temptation.",
+  },
+  {
+    key: "breaking_bad_habits",
+    question: "I have a hard time breaking bad habits.",
+  },
+  { key: "being_lazy", question: "I am lazy." },
+  {
+    key: "saying_inappropriate_things",
+    question: "I say inappropriate things.",
+  },
+  {
+    key: "doing_bad_fun_things",
+    question: "I do certain things that are bad for me, if they are fun.",
+  },
+  {
+    key: "refusing_bad_things",
+    question: "I refuse things that are bad for me.",
+  },
+  {
+    key: "wishing_more_discipline",
+    question: "I wish I had more self-discipline.",
+  },
+  {
+    key: "having_iron_discipline",
+    question: "People would say that I have iron self-discipline.",
+  },
+  {
+    key: "pleasure_blocking_work",
+    question: "Pleasure and fun sometimes keep me from getting work done.",
+  },
+  { key: "trouble_concentrating", question: "I have trouble concentrating." },
+  {
+    key: "working_toward_goals",
+    question: "I am able to work effectively toward long-term goals.",
+  },
+  {
+    key: "cant_stop_wrong",
+    question:
+      "Sometimes I can't stop myself from doing something, even if I know it is wrong.",
+  },
+  {
+    key: "acting_without_thinking",
+    question: "I often act without thinking through all the alternatives.",
+  },
 ];
+
 
 var surveyQuestions = createSurveyQuestions(questions);
 
@@ -107,6 +142,22 @@ var trial = {
     }
     data.likert_scale_min_label = "Not at all";
     data.likert_scale_max_label = "Very much";
+
+    var questionKeys = {};
+    questions.forEach(function (q) {
+      questionKeys[q.question] = q.key;
+    });
+
+    for (var question in data.response) {
+      var key = questionKeys[question];
+      if (key) {
+        data[key] = {
+          response: data.response[question],
+          question: question,
+          key: key
+        };
+      }
+    }
   },
 };
 

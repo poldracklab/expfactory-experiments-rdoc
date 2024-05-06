@@ -86,7 +86,7 @@ span[data-bind="css: question.koCss().error.item"] {
 }
 
 .sv_q_rating fieldset {
-  width: 600px;
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }

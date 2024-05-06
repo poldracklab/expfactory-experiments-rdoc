@@ -46,8 +46,8 @@ const createSurveyQuestions = (questions, questions2) => {
         },
         { value: 4, text: "Definitely false" },
       ],
-      prompt: `${questions[i]}`,
-      name: `${questions[i]}`,
+      prompt: `${questions[i].question}`,
+      name: `${questions[i].question}`,
       required: true,
     };
     surveyQuestions.push(questionObj);
@@ -75,19 +75,64 @@ const createSurveyQuestions = (questions, questions2) => {
 };
 
 var questions = [
-  "When I smell a sizzling steak or juicy piece of meat, I find it very difficult to keep from eating, even if I have just finished a meal.",
-  "I deliberately take small helpings as a means of controlling my weight.",
-  "When I feel anxious, I find myself eating.",
-  "Sometimes when I start eating, I just can’t seem to stop.",
-  "Being with someone who is eating often makes me hungry enough to eat also.",
-  "When I feel blue, I often overeat.",
-  "When I see a real delicacy, I often get so hungry that I have to eat right away.",
-  "I get so hungry that my stomach often seems like a bottomless pit.",
-  "I am always hungry so it is hard for me to stop eating before I finish the food on my plate.",
-  "When I feel lonely, I console myself by eating.",
-  "I consciously hold back at meals in order not to gain weight.",
-  "I do not eat some foods because they make me fat.",
-  "I am always hungry enough to eat at any time.",
+  {
+    key: "smell_meat_difficulty_resisting",
+    question:
+      "When I smell a sizzling steak or juicy piece of meat, I find it very difficult to keep from eating, even if I have just finished a meal.",
+  },
+  {
+    key: "takes_small_helpings_control_weight",
+    question:
+      "I deliberately take small helpings as a means of controlling my weight.",
+  },
+  {
+    key: "eating_when_anxious",
+    question: "When I feel anxious, I find myself eating.",
+  },
+  {
+    key: "cant_stop_eating",
+    question: "Sometimes when I start eating, I just can’t seem to stop.",
+  },
+  {
+    key: "eating_when_others_eat",
+    question:
+      "Being with someone who is eating often makes me hungry enough to eat also.",
+  },
+  {
+    key: "overeating_when_sad",
+    question: "When I feel blue, I often overeat.",
+  },
+  {
+    key: "eating_when_seeing_delicacies",
+    question:
+      "When I see a real delicacy, I often get so hungry that I have to eat right away.",
+  },
+  {
+    key: "bottomless_pit_feeling",
+    question:
+      "I get so hungry that my stomach often seems like a bottomless pit.",
+  },
+  {
+    key: "always_hungry_hard_to_stop",
+    question:
+      "I am always hungry so it is hard for me to stop eating before I finish the food on my plate.",
+  },
+  {
+    key: "eating_when_lonely",
+    question: "When I feel lonely, I console myself by eating.",
+  },
+  {
+    key: "hold_back_at_meals",
+    question: "I consciously hold back at meals in order not to gain weight.",
+  },
+  {
+    key: "avoid_foods_gain_weight",
+    question: "I do not eat some foods because they make me fat.",
+  },
+  {
+    key: "hungry_anytime",
+    question: "I am always hungry enough to eat at any time.",
+  },
 ];
 
 var questions2 = [
@@ -178,6 +223,22 @@ var trial = {
     data.likert_scale_2_label = "Mostly true";
     data.likert_scale_3_label = "Mostly false";
     data.likert_scale_4_label = "Definitely false";
+
+     var questionKeys = {};
+     questions.forEach(function (q) {
+       questionKeys[q.question] = q.key;
+     });
+
+     for (var question in data.response) {
+       var key = questionKeys[question];
+       if (key) {
+         data[key] = {
+           response: data.response[question],
+           question: question,
+           key: key,
+         };
+       }
+     }
   },
 };
 

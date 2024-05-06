@@ -20,8 +20,8 @@ const createSurveyQuestions = questions => {
         },
         { value: 4, text: "Applied to me very much or most of the time" },
       ],
-      prompt: `${questions[i]}`,
-      name: `${questions[i]}`,
+      prompt: `${questions[i].question}`,
+      name: `${questions[i].question}`,
       required: true,
     };
     surveyQuestions.push(questionObj);
@@ -48,27 +48,67 @@ const createSurveyQuestions = questions => {
 };
 
 var questions = [
-  "I found it hard to wind down.",
-  "I was aware of dryness of my mouth.",
-  "I couldn't seem to experience any positive feeling at all.",
-  "I experienced breathing difficulty (e.g. excessively rapid breathing, breathlessness in the absence of physical exertion).",
-  "I found it difficult to work up the initiative to do things.",
-  "I tended to over-react to situations.",
-  "I experienced trembling (e.g. in the hands).",
-  "I felt that I was using a lot of nervous energy.",
-  "I was worried about situations in which I might panic and make a fool of myself.",
-  "I felt that I had nothing to look forward to.",
-  "I found myself getting agitated.",
-  "I found it difficult to relax.",
-  "I felt down-hearted and blue.",
-  "I was intolerant of anything that kept me from getting on with what I was doing.",
-  "I felt I was close to panic.",
-  "I was unable to become enthusiastic about anything.",
-  "I felt I wasn't worth much as a person.",
-  "I felt I was rather touchy.",
-  "I was aware of the action of my heart in the absence of physical exertion (e.g. sense of heart rate increase, heart missing a beat).",
-  "I felt scared without any good reason.",
-  "I felt that life was meaningless.",
+  { key: "hard_to_wind_down", question: "I found it hard to wind down." },
+  { key: "mouth_dryness", question: "I was aware of dryness of my mouth." },
+  {
+    key: "no_positive_feelings",
+    question: "I couldn't seem to experience any positive feeling at all.",
+  },
+  {
+    key: "breathing_difficulty",
+    question:
+      "I experienced breathing difficulty (e.g. excessively rapid breathing, breathlessness in the absence of physical exertion).",
+  },
+  {
+    key: "lack_of_initiative",
+    question: "I found it difficult to work up the initiative to do things.",
+  },
+  { key: "over_react", question: "I tended to over-react to situations." },
+  {
+    key: "experienced_trembling",
+    question: "I experienced trembling (e.g. in the hands).",
+  },
+  {
+    key: "using_nervous_energy",
+    question: "I felt that I was using a lot of nervous energy.",
+  },
+  {
+    key: "worry_about_panic",
+    question:
+      "I was worried about situations in which I might panic and make a fool of myself.",
+  },
+  {
+    key: "nothing_to_look_forward",
+    question: "I felt that I had nothing to look forward to.",
+  },
+  { key: "getting_agitated", question: "I found myself getting agitated." },
+  { key: "difficult_to_relax", question: "I found it difficult to relax." },
+  { key: "down_hearted_blue", question: "I felt down-hearted and blue." },
+  {
+    key: "intolerant_of_interference",
+    question:
+      "I was intolerant of anything that kept me from getting on with what I was doing.",
+  },
+  { key: "close_to_panic", question: "I felt I was close to panic." },
+  {
+    key: "no_enthusiasm",
+    question: "I was unable to become enthusiastic about anything.",
+  },
+  {
+    key: "low_self_worth",
+    question: "I felt I wasn't worth much as a person.",
+  },
+  { key: "feeling_touchy", question: "I felt I was rather touchy." },
+  {
+    key: "aware_of_heart_action",
+    question:
+      "I was aware of the action of my heart in the absence of physical exertion (e.g. sense of heart rate increase, heart missing a beat).",
+  },
+  {
+    key: "felt_scared_unreasonably",
+    question: "I felt scared without any good reason.",
+  },
+  { key: "life_meaningless", question: "I felt that life was meaningless." },
 ];
 
 var surveyQuestions = createSurveyQuestions(questions);
@@ -111,6 +151,22 @@ var trial = {
     data.likert_scale_3_label =
       "Applied to me to a considerable degree or good part of the time";
     data.likert_scale_4_label = "Applied to me very much or most of the time";
+
+    var questionKeys = {};
+    questions.forEach(function (q) {
+      questionKeys[q.question] = q.key;
+    });
+
+    for (var question in data.response) {
+      var key = questionKeys[question];
+      if (key) {
+        data[key] = {
+          response: data.response[question],
+          question: question,
+          key: key,
+        };
+      }
+    }
   },
 };
 

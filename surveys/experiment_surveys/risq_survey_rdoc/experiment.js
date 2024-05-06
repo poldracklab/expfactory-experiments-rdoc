@@ -271,41 +271,101 @@
 // instruction	Congratulations for completing this survey! Press <strong>finish</strong> to continue.	0	41
 
 var behaviors = [
-  "Shoplifted things",
-  "Drove 30mph or faster over the speed limit",
-  "Bet on sports, horses, or other animals",
-  "Used cocaine or crack",
-  "Bought drugs",
-  "Impulsively bought stuff you did not need & won't use",
-  "Had unprotected sex with someone you just met or didn't know well",
-  "Gotten in a physical fight",
-  "Had sex for money or drugs",
-  "Drank alcohol untill you blacked or passed out",
-  "Used hallucinogens, LSD, or mushrooms",
-  "Gone to work intoxicated or high",
-  "Attacked someone with a weapon, such as a knife or gun",
-  "Punched or hit someone with a fist or object",
-  "Cut, burned, or hurt yourself on purpose without trying to die",
-  "Lost more money than you can afford gambling",
-  "Threatened to physically hurt someone",
-  "Threatened someone with a weapon, such a knife or a gun",
-  "Used heroin",
-  "Destroyed or vandalized property",
-  "Drank 5 or more alcholic drinks in 3 hours or less",
-  "Paid for sex",
-  "Sold drugs",
-  "Robbed someone",
-  "Used marijuana",
-  "Had difficulty stopping eating",
-  "Been in 2 or more sexual relationships at the same time",
-  "Bought expensive items you could not afford on the spur of the moment",
-  "Abused multiple drugs at once",
-  "Played lotteries, card games for money, or went to the casino",
-  "Gambled illegally (not part of a legal business, using a bookie)",
-  "Abused prescription medication",
-  "Ate a lot of food when not hungry",
-  "Ran red lights or ignored stop signs",
-  "Stole money",
+  { key: "shoplifted", question: "Shoplifted things" },
+  {
+    key: "speeding_over_30mph",
+    question: "Drove 30mph or faster over the speed limit",
+  },
+  {
+    key: "betting_sports",
+    question: "Bet on sports, horses, or other animals",
+  },
+  { key: "used_cocaine", question: "Used cocaine or crack" },
+  { key: "bought_drugs", question: "Bought drugs" },
+  {
+    key: "impulsive_buying",
+    question: "Impulsively bought stuff you did not need & won't use",
+  },
+  {
+    key: "unprotected_sex",
+    question:
+      "Had unprotected sex with someone you just met or didn't know well",
+  },
+  { key: "physical_fight", question: "Gotten in a physical fight" },
+  { key: "sex_for_money_drugs", question: "Had sex for money or drugs" },
+  {
+    key: "alcohol_blackout",
+    question: "Drank alcohol until you blacked or passed out",
+  },
+  {
+    key: "used_hallucinogens",
+    question: "Used hallucinogens, LSD, or mushrooms",
+  },
+  { key: "intoxicated_at_work", question: "Gone to work intoxicated or high" },
+  {
+    key: "attacked_with_weapon",
+    question: "Attacked someone with a weapon, such as a knife or gun",
+  },
+  {
+    key: "physical_assault",
+    question: "Punched or hit someone with a fist or object",
+  },
+  {
+    key: "self_harm",
+    question: "Cut, burned, or hurt yourself on purpose without trying to die",
+  },
+  {
+    key: "gambling_loss",
+    question: "Lost more money than you can afford gambling",
+  },
+  {
+    key: "threat_physical_harm",
+    question: "Threatened to physically hurt someone",
+  },
+  {
+    key: "threat_with_weapon",
+    question: "Threatened someone with a weapon, such as a knife or a gun",
+  },
+  { key: "used_heroin", question: "Used heroin" },
+  { key: "vandalism", question: "Destroyed or vandalized property" },
+  {
+    key: "binge_drinking",
+    question: "Drank 5 or more alcoholic drinks in 3 hours or less",
+  },
+  { key: "paid_for_sex", question: "Paid for sex" },
+  { key: "sold_drugs", question: "Sold drugs" },
+  { key: "robbery", question: "Robbed someone" },
+  { key: "used_marijuana", question: "Used marijuana" },
+  { key: "eating_difficulty", question: "Had difficulty stopping eating" },
+  {
+    key: "multiple_sexual_relationships",
+    question: "Been in 2 or more sexual relationships at the same time",
+  },
+  {
+    key: "impulsive_spending",
+    question:
+      "Bought expensive items you could not afford on the spur of the moment",
+  },
+  { key: "multi_drug_abuse", question: "Abused multiple drugs at once" },
+  {
+    key: "gambling_legal",
+    question: "Played lotteries, card games for money, or went to the casino",
+  },
+  {
+    key: "gambling_illegal",
+    question:
+      "Gambled illegally (not part of a legal business, using a bookie)",
+  },
+  {
+    key: "abused_prescription_meds",
+    question: "Abused prescription medication",
+  },
+  { key: "overeating", question: "Ate a lot of food when not hungry" },
+  {
+    key: "traffic_violations",
+    question: "Ran red lights or ignored stop signs",
+  },
+  { key: "stole_money", question: "Stole money" },
 ];
 
 const createSurveyQuestions = behaviors => {
@@ -326,27 +386,27 @@ const createSurveyQuestions = behaviors => {
   for (let i = 0; i < behaviors.length; i++) {
     const whichBehavior = {
       type: "html",
-      prompt: `<h1>Behavior: ${behaviors[i]}</h1>`,
+      prompt: `<h1>Behavior: ${behaviors[i].question}</h1>`,
     };
 
     const firstQ = {
       type: "text",
       prompt: "(A) How many times total have you done this in your life?",
-      name: `total_lifetime_${behaviors[i]}`,
+      name: `total_lifetime_${behaviors[i].key}`,
       required: true,
       placeholder: `Enter "0" if never`,
     };
     const secondQ = {
       type: "text",
       prompt: "(B) How many times have you done this in the past month?",
-      name: `total_last_month_${behaviors[i]}`,
+      name: `total_last_month_${behaviors[i].key}`,
       required: true,
       placeholder: `Enter "0" if never`,
     };
     const thirdQ = {
       type: "text",
       prompt: "(C) How old were you the first time?",
-      name: `age_first_time_${behaviors[i]}`,
+      name: `age_first_time_${behaviors[i].key}`,
       required: true,
       placeholder: `Enter "0" if never`,
     };
@@ -354,7 +414,7 @@ const createSurveyQuestions = behaviors => {
       type: "multi-choice",
       prompt:
         "(D) Did it ever cause you any problems, such as going to the hospital, legal trouble, problems at work, with family, or friends?",
-      name: `any_problems_${behaviors[i]}`,
+      name: `any_problems_${behaviors[i].key}`,
       required: true,
       options: ["Yes", "No", "N/A"],
     };
@@ -362,7 +422,7 @@ const createSurveyQuestions = behaviors => {
       type: "multi-choice",
       prompt:
         "(E) I do this behavior to stop feeling upset, distressed, or overwhelmed.",
-      name: `upset_distressed_or_overwhelmed_${behaviors[i]}`,
+      name: `upset_distressed_or_overwhelmed_${behaviors[i].key}`,
       required: false,
       options: [
         "Strongly Disagree",
@@ -376,7 +436,7 @@ const createSurveyQuestions = behaviors => {
       type: "multi-choice",
       prompt:
         "(F) I do this behavior to feel excitement, to get a thrill, or to feel pleasure.",
-      name: `excitement_thrill_or_pleasure_${behaviors[i]}`,
+      name: `excitement_thrill_or_pleasure_${behaviors[i].key}`,
       required: false,
       options: [
         "Strongly Disagree",
@@ -424,6 +484,14 @@ var trial = {
   type: jsPsychSurvey,
   pages: surveyQuestions,
   button_label_finish: "Submit",
+  on_finish: function (data) {
+    Object.keys(data.response).forEach(function (key) {
+      data[key] = data.response[key]
+    });
+
+    delete data['P0_Q0']
+    delete data["P1_Q0"];
+  },
 };
 
 var postTaskQuestion =

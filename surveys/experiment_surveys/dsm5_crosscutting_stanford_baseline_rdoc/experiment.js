@@ -50,8 +50,8 @@ const createSurveyQuestions = questions => {
         { value: 4, text: "More than half the days" },
         { value: 5, text: "Nearly every day" },
       ],
-      prompt: `${questions[i]}`,
-      name: `${questions[i]}`,
+      prompt: `${questions[i].question}`,
+      name: `${questions[i].question}`,
       required: true,
     };
     surveyQuestions.push(questionObj);
@@ -78,29 +78,107 @@ const createSurveyQuestions = questions => {
 };
 
 var questions = [
-  "Having little interest or pleasure in doing things?",
-  "Feeling down, depressed, or hopeless?",
-  "Feeling more irritated, grouchy, or angry than usual?",
-  "Sleeping less than usual, but still have lots of energy?",
-  "Starting lots more projects than usual or doing more risky things than usual?",
-  "Feeling nervous, anxious, frightened, worried, or on edge?",
-  "Feeling panic or being frightened?",
-  "Avoiding situations that make you anxious?",
-  "Unexplained aches and pains (e.g. head, back, joints, abdomen, legs)?",
-  "That your illnesses are not being taken seriously enough?",
-  "Thoughts of actually hurting yourself?",
-  "Hearing things other people couldn't hear, such as voices even when no one was around?",
-  "Feeling that someone could hear your thoughts, or that you could hear what another person was thinking?",
-  "Problems with sleep that affected your sleep quality over all?",
-  "Problems with memory (e.g., learning new information) or with location (e.g., finding your way home)?",
-  "Unpleasant thoughts, urges, or images that repeatedly enter your mind?",
-  "Feeling driven to perform certain behaviors or mental acts over and over again?",
-  "Feeling detached or distant from yourself, your body, your physical surroundings, or your memories?",
-  "Not knowing who you really are or what you want out of life?",
-  "Not feeling close to other people or enjoying your relationships with them?",
-  "Drinking at least 4 drinks of any kind of alcohol in a single day?",
-  "Smoking any cigarettes, a cigar, or pipe or using snuff or chewing tobacco?",
-  "Using any of the following medicines ON YOUR OWN, that is, without a doctor's prescription, in greater amounts or longer than prescribed [e.g., painkillers (like Vicodin), stimulants (like Ritalin or Adderall), sedatives or tranquilizers (like sleeping pills or Valium), or drugs like marijuana, cocaine or crack, club drugs (like ecstasy), hallucinogens (like LSD), heroin, inhalants or solvents (like glue), or methamphetamine (like speed)]?",
+  {
+    key: "little_interest",
+    question: "Having little interest or pleasure in doing things?",
+  },
+  {
+    key: "feeling_depressed",
+    question: "Feeling down, depressed, or hopeless?",
+  },
+  {
+    key: "more_irritated",
+    question: "Feeling more irritated, grouchy, or angry than usual?",
+  },
+  {
+    key: "sleeping_less_energy",
+    question: "Sleeping less than usual, but still have lots of energy?",
+  },
+  {
+    key: "starting_more_projects",
+    question:
+      "Starting lots more projects than usual or doing more risky things than usual?",
+  },
+  {
+    key: "feeling_anxious",
+    question: "Feeling nervous, anxious, frightened, worried, or on edge?",
+  },
+  { key: "feeling_panic", question: "Feeling panic or being frightened?" },
+  {
+    key: "avoiding_situations",
+    question: "Avoiding situations that make you anxious?",
+  },
+  {
+    key: "unexplained_pains",
+    question:
+      "Unexplained aches and pains (e.g. head, back, joints, abdomen, legs)?",
+  },
+  {
+    key: "illnesses_not_serious",
+    question: "That your illnesses are not being taken seriously enough?",
+  },
+  {
+    key: "thoughts_hurting_self",
+    question: "Thoughts of actually hurting yourself?",
+  },
+  {
+    key: "hearing_things",
+    question:
+      "Hearing things other people couldn't hear, such as voices even when no one was around?",
+  },
+  {
+    key: "telepathy_feelings",
+    question:
+      "Feeling that someone could hear your thoughts, or that you could hear what another person was thinking?",
+  },
+  {
+    key: "sleep_problems",
+    question: "Problems with sleep that affected your sleep quality over all?",
+  },
+  {
+    key: "memory_problems",
+    question:
+      "Problems with memory (e.g., learning new information) or with location (e.g., finding your way home)?",
+  },
+  {
+    key: "unpleasant_thoughts",
+    question:
+      "Unpleasant thoughts, urges, or images that repeatedly enter your mind?",
+  },
+  {
+    key: "repetitive_behaviors",
+    question:
+      "Feeling driven to perform certain behaviors or mental acts over and over again?",
+  },
+  {
+    key: "feeling_detached",
+    question:
+      "Feeling detached or distant from yourself, your body, your physical surroundings, or your memories?",
+  },
+  {
+    key: "identity_confusion",
+    question: "Not knowing who you really are or what you want out of life?",
+  },
+  {
+    key: "lacking_close_relationships",
+    question:
+      "Not feeling close to other people or enjoying your relationships with them?",
+  },
+  {
+    key: "heavy_drinking",
+    question:
+      "Drinking at least 4 drinks of any kind of alcohol in a single day?",
+  },
+  {
+    key: "smoking_tobacco",
+    question:
+      "Smoking any cigarettes, a cigar, or pipe or using snuff or chewing tobacco?",
+  },
+  {
+    key: "unprescribed_drug_use",
+    question:
+      "Using any of the following medicines ON YOUR OWN, that is, without a doctor's prescription, in greater amounts or longer than prescribed [e.g., painkillers (like Vicodin), stimulants (like Ritalin or Adderall), sedatives or tranquilizers (like sleeping pills or Valium), or drugs like marijuana, cocaine or crack, club drugs (like ecstasy), hallucinogens (like LSD), heroin, inhalants or solvents (like glue), or methamphetamine (like speed)]?",
+  },
 ];
 
 var surveyQuestions = createSurveyQuestions(questions);
@@ -141,6 +219,22 @@ var trial = {
     data.likert_scale_4_label = "Several days";
     data.likert_scale_5_label = "More than half the days";
     data.likert_scale_6_label = "Nearly every day ";
+
+    var questionKeys = {};
+    questions.forEach(function (q) {
+      questionKeys[q.question] = q.key;
+    });
+
+    for (var question in data.response) {
+      var key = questionKeys[question];
+      if (key) {
+        data[key] = {
+          response: data.response[question],
+          question: question,
+          key: key,
+        };
+      }
+    }
   },
 };
 
