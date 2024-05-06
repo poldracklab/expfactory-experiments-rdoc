@@ -74,11 +74,7 @@ const getCurrBlockNum = () =>
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
-// common variables
-const fixationDuration = 500;
-
 var possibleResponses;
-
 function getKeyMappingForTask(group_index) {
   if (Math.floor(group_index / 12) % 2 === 0) {
     // Assuming even group_index uses ",", odd group_index uses "."
@@ -127,18 +123,21 @@ var speedReminder = `
 `;
 
 var expStage = "practice";
+
 // *: Timing
+const fixationDuration = 500;
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1500;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 1; // /in seconds
 
-var accuracyThresh = 0.8;
-var practiceAccuracyThresh = 0.75;
 
+/* *********** Feedback performance thresholds ************* */
+var practiceThresh = 3;
 var rtThresh = 750;
 var missedResponseThresh = 0.1;
-var practiceThresh = 3; // 3 blocks of 12 trials
+var accuracyThresh = 0.8;
+var practiceAccuracyThresh = 0.75;
 
 /* ******************************* */
 /* ATTENTION CHECK STUFF  */
@@ -434,13 +433,13 @@ var attentionCheckBlock = {
   data: {
     trial_id: "test_attention_check",
     trial_duration: 60000,
-    timing_post_trial: 200,
+    timing_post_trial: 1000,
     exp_stage: "test",
   },
   question: getCurrAttentionCheckQuestion,
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
-  timing_post_trial: 200,
+  timing_post_trial: 1000,
   trial_duration: 60000,
   on_finish: data => (data["block_num"] = testCount),
 };
@@ -460,7 +459,6 @@ var feedbackInstructBlock = {
     trial_duration: 180000,
   },
   stimulus: getInstructFeedback,
-  post_trial_gap: 0,
   trial_duration: 180000,
 };
 var instructionsBlock = {
@@ -473,7 +471,6 @@ var instructionsBlock = {
     stimulus: pageInstruct,
   },
   show_clickable_nav: true,
-  post_trial_gap: 0,
 };
 
 var instructionNode = {
@@ -505,23 +502,16 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-      };
-    } else {
-      return {
-        trial_id: "test_feedback",
-        exp_stage: getExpStage(),
-        trial_duration: 60000,
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
+      block_num: stage === "practice" ? practiceCount : testCount,
+    };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  post_trial_gap: 1000,
   trial_duration: 60000,
   response_ends_trial: true,
 };
@@ -535,41 +525,24 @@ var ITIBlock = {
   is_html: true,
   choices: ["NO_KEYS"],
   data: function () {
-    if (getExpStage() == "practice") {
-      return {
-        trial_id: "practice_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: practiceCount,
-        exp_stage: "practice",
-      };
-    } else {
-      return {
-        trial_id: "test_ITI",
-        ITIParams: {
-          min: 0,
-          max: 5,
-          mean: 0.5,
-        },
-        block_num: testCount,
-        exp_stage: "test",
-      };
-    }
+    const stage = getExpStage();
+    return {
+      trial_id: `${stage}_ITI`,
+      ITIParams: {
+        min: 0,
+        max: 5,
+        mean: 0.5,
+      },
+      block_num: stage === "practice" ? practiceCount : testCount,
+      exp_stage: stage,
+    };
   },
-  post_trial_gap: 0,
   trial_duration: function () {
     ITIms = sampleFromDecayingExponential();
     return ITIms * 1000;
   },
   prompt: function () {
-    if (getExpStage() == "practice") {
-      return promptText;
-    } else {
-      return "";
-    }
+    return getExpStage() === "practice" ? promptText : "";
   },
   on_finish: function (data) {
     data["trial_duration"] = ITIms * 1000;
@@ -592,7 +565,7 @@ for (i = 0; i < practiceLen; i++) {
     choices: ["NO_KEYS"],
     stimulus_duration: fixationDuration, // 500
     trial_duration: fixationDuration, // 500
-    post_trial_gap: 0,
+
     prompt: promptText,
   };
 
@@ -613,7 +586,7 @@ for (i = 0; i < practiceLen; i++) {
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
-    post_trial_gap: 0,
+
     prompt: promptText,
     on_finish: appendData,
   };
@@ -682,7 +655,7 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var aveRT = sumRT / sumResponses;
 
-    if (accuracy >= practiceAccuracyThresh || practiceCount == practiceThresh) {
+    if (accuracy >= practiceAccuracyThresh || practiceCount === practiceThresh) {
       feedbackText = ` <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
@@ -743,7 +716,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: ["NO_KEYS"],
     stimulus_duration: fixationDuration,
     trial_duration: fixationDuration,
-    post_trial_gap: 0,
+
   };
 
   var testTrial = {
@@ -761,11 +734,11 @@ for (i = 0; i < numTrialsPerBlock; i++) {
       });
     },
     response_ends_trial: false,
-    post_trial_gap: 0,
+
     stimulus_duration: stimStimulusDuration, // 1000
     trial_duration: stimTrialDuration, // 1500
     response_ends_trial: false,
-    post_trial_gap: 0,
+
     on_finish: appendData,
   };
 
@@ -802,7 +775,7 @@ var testNode = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-    if (testCount == numTestBlocks) {
+    if (testCount === numTestBlocks) {
       feedbackText = `<div class=centerbox>
         <p class=block-text>Done with this task.</p>
         <p class=centerbox>Press <i>enter</i> to continue.</p>
@@ -894,7 +867,6 @@ var endBlock = {
   trial_duration: 180000,
   stimulus: endText,
   choices: ["Enter"],
-  post_trial_gap: 0,
 };
 
 flanker_rdoc_experiment = [];
