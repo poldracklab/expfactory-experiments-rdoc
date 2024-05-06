@@ -59,8 +59,8 @@ const createSurveyQuestions = questions => {
 
         { value: 7, text: "Extremely Likely" },
       ],
-      prompt: `${questions[i]}`,
-      name: `${questions[i]}`,
+      prompt: `${questions[i].question}`,
+      name: `${questions[i].question}`,
       required: true,
     };
     surveyQuestions.push(questionObj);
@@ -87,36 +87,115 @@ const createSurveyQuestions = questions => {
 };
 
 var questions = [
-  "Admitting that your tastes are different from those of a friend.",
-  "Going camping in the wilderness.",
-  "Betting a day's income at the horse races.",
-  "Investing 10% of your annual income in a moderate growth diversified fund.",
-  "Drinking heavily at a social function.",
-  "Taking some questionable deductions on your income tax return.",
-  "Disagreeing with an authority figure on a major issue.",
-  "Betting a day's income at a high-stake poker game.",
-  "Having an affair with a married man/woman.",
-  "Passing off somebody else’s work as your own.",
-  "Going down a ski run that is beyond your ability.",
-  "Investing 5% of your annual income in a very speculative stock.",
-  "Going whitewater rafting at high water in the spring.",
-  "Betting a day's income on the outcome of a sporting event.",
-  "Engaging in unprotected sex.",
-  "Revealing a friend's secret to someone else.",
-  "Driving a car without wearing a seat belt.",
-  "Investing 10% of your annual income in a new business venture.",
-  "Taking a skydiving class.",
-  "Riding a motorcycle without a helmet.",
-  "Choosing a career that you truly enjoy over a more secure one.",
-  "Speaking your mind about an unpopular issue in a meeting at work.",
-  "Sunbathing without sunscreen.",
-  "Bungee jumping off a tall bridge.",
-  "Piloting a small plane.",
-  "Walking home alone at night in an unsafe area of town.",
-  "Moving to a city far away from your extended family.",
-  "Starting a new career in your mid-thirties.",
-  "Leaving your young children alone at home while running an errand.",
-  "Not returning a wallet you found that contains $200.",
+  {
+    key: "admit_diff_tastes",
+    question:
+      "Admitting that your tastes are different from those of a friend.",
+  },
+  { key: "camping_wilderness", question: "Going camping in the wilderness." },
+  {
+    key: "betting_horse_races",
+    question: "Betting a day's income at the horse races.",
+  },
+  {
+    key: "investing_diversified_fund",
+    question:
+      "Investing 10% of your annual income in a moderate growth diversified fund.",
+  },
+  {
+    key: "drinking_heavily_social",
+    question: "Drinking heavily at a social function.",
+  },
+  {
+    key: "questionable_tax_deductions",
+    question: "Taking some questionable deductions on your income tax return.",
+  },
+  {
+    key: "disagreeing_authority",
+    question: "Disagreeing with an authority figure on a major issue.",
+  },
+  {
+    key: "betting_poker_game",
+    question: "Betting a day's income at a high-stake poker game.",
+  },
+  {
+    key: "having_affair",
+    question: "Having an affair with a married man/woman.",
+  },
+  {
+    key: "passing_off_work",
+    question: "Passing off somebody else’s work as your own.",
+  },
+  {
+    key: "skiing_beyond_ability",
+    question: "Going down a ski run that is beyond your ability.",
+  },
+  {
+    key: "investing_speculative_stock",
+    question: "Investing 5% of your annual income in a very speculative stock.",
+  },
+  {
+    key: "whitewater_rafting",
+    question: "Going whitewater rafting at high water in the spring.",
+  },
+  {
+    key: "betting_sporting_event",
+    question: "Betting a day's income on the outcome of a sporting event.",
+  },
+  { key: "unprotected_sex", question: "Engaging in unprotected sex." },
+  {
+    key: "revealing_secret",
+    question: "Revealing a friend's secret to someone else.",
+  },
+  {
+    key: "driving_no_seatbelt",
+    question: "Driving a car without wearing a seat belt.",
+  },
+  {
+    key: "investing_new_venture",
+    question: "Investing 10% of your annual income in a new business venture.",
+  },
+  { key: "taking_skydiving_class", question: "Taking a skydiving class." },
+  {
+    key: "riding_motorcycle_no_helmet",
+    question: "Riding a motorcycle without a helmet.",
+  },
+  {
+    key: "choosing_career_enjoy",
+    question: "Choosing a career that you truly enjoy over a more secure one.",
+  },
+  {
+    key: "speaking_unpopular_issue",
+    question:
+      "Speaking your mind about an unpopular issue in a meeting at work.",
+  },
+  { key: "sunbathing_no_sunscreen", question: "Sunbathing without sunscreen." },
+  {
+    key: "bungee_jumping_bridge",
+    question: "Bungee jumping off a tall bridge.",
+  },
+  { key: "piloting_small_plane", question: "Piloting a small plane." },
+  {
+    key: "walking_home_alone_unsafe",
+    question: "Walking home alone at night in an unsafe area of town.",
+  },
+  {
+    key: "moving_far_family",
+    question: "Moving to a city far away from your extended family.",
+  },
+  {
+    key: "starting_new_career_mid30s",
+    question: "Starting a new career in your mid-thirties.",
+  },
+  {
+    key: "leaving_children_home",
+    question:
+      "Leaving your young children alone at home while running an errand.",
+  },
+  {
+    key: "not_returning_wallet",
+    question: "Not returning a wallet you found that contains $200.",
+  },
 ];
 
 var surveyQuestions = createSurveyQuestions(questions);
@@ -160,6 +239,22 @@ var trial = {
     data.likert_scale_5_label = "Somewhat Likely";
     data.likert_scale_6_label = "Moderately Likely";
     data.likert_scale_7_label = "Extremely Likely";
+
+    var questionKeys = {};
+    questions.forEach(function (q) {
+      questionKeys[q.question] = q.key;
+    });
+
+    for (var question in data.response) {
+      var key = questionKeys[question];
+      if (key) {
+        data[key] = {
+          response: data.response[question],
+          question: question,
+          key: key,
+        };
+      }
+    }
   },
 };
 

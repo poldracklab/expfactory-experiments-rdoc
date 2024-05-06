@@ -103,10 +103,20 @@ var trial = {
       "Almost daily, that is five or more times a week, I did moderate activities such as brisk walking, swimming, or riding a bike for 30 minutes or more each time. Or about once a week, I did moderately difficult chores or played sports for 2 hours or more.";
     data.likert_scale_5_label =
       "About three times a week, I did vigorous activities such as running or riding hard on a bike for 30 minutes or more each time.";
-    data.likert_scale_5_label =
-      "About three times a week, I did vigorous activities such as running or riding hard on a bike for 30 minutes or more each time.";
     data.likert_scale_6_label =
       "Almost daily, that is five or more times a week, I did vigorous activities such as running or riding hard on a bike for 30 minutes or more each time.";
+    
+    let response =
+      data.response[
+        "Please select the option that best describes the kinds of physical activity you have usually done."
+      ];
+    
+    data["exercise"] = {
+      key: "exercise",
+      response: response,
+      question:
+        "Please select the option that best describes the kinds of physical activity you have usually done.",
+    };
   },
 };
 

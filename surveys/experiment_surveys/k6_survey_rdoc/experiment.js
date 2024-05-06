@@ -30,11 +30,13 @@ var questions = [
       type: "html",
       prompt: "During the past 30 days, about how often did you feel...",
       name: "During the past 30 days, about how often did you feel...",
+      key: "feelings_past_30_days",
     },
     {
       type: "multi-choice",
       prompt: "...nervous",
       name: "nervous",
+      key: "nervous",
       required: true,
       options: [
         "All of the time",
@@ -48,6 +50,7 @@ var questions = [
       type: "multi-choice",
       prompt: "...hopeless",
       name: "hopeless",
+      key: "hopeless",
       required: true,
       options: [
         "All of the time",
@@ -61,6 +64,7 @@ var questions = [
       type: "multi-choice",
       prompt: "...restless or fidgety",
       name: "restless or fidgety",
+      key: "restless_fidgety",
       required: true,
       options: [
         "All of the time",
@@ -74,6 +78,7 @@ var questions = [
       type: "multi-choice",
       prompt: "...so depressed that nothing could cheer you up?",
       name: "so depressed that nothing could cheer you up?",
+      key: "depressed_no_cheer",
       required: true,
       options: [
         "All of the time",
@@ -87,6 +92,7 @@ var questions = [
       type: "multi-choice",
       prompt: "...that everything was an effort?",
       name: "that everything was an effort?",
+      key: "everything_effort",
       required: true,
       options: [
         "All of the time",
@@ -100,6 +106,7 @@ var questions = [
       type: "multi-choice",
       prompt: "...worthless?",
       name: "worthless?",
+      key: "worthless",
       required: true,
       options: [
         "All of the time",
@@ -116,6 +123,7 @@ var questions = [
       prompt:
         "The last six questions asked about feelings that might have occurred during the past 30 days. Taking them altogether, did these feelings occur less often in the past 30 days than is usual for you, about the same as usual, or more often than usual? (If you never have any of these feelings, select “about the same as usual”)",
       name: "The last six questions asked about feelings that might have occurred during the past 30 days. Taking them altogether, did these feelings occur less often in the past 30 days than is usual for you, about the same as usual, or more often than usual? (If you never have any of these feelings, select “about the same as usual”)",
+      key: "feelings_occurrence",
       required: true,
       options: [
         "A little less often than usual",
@@ -132,12 +140,14 @@ var questions = [
       prompt:
         '<h4 style="margin-top:50px;">The next few questions are about how these feelings may have affected you in the past 30 days. If you answered "None of the time" to all of the six questions about your feelings, enter N/A for the following questions.<h4>',
       name: 'The next few questions are about how these feelings may have affected you in the past 30 days. If you answered "None of the time" to all of the six questions about your feelings, enter N/A for the following questions.',
+      key: "feelings_impact_intro",
     },
     {
       type: "text",
       prompt:
         "During the past 30 days, how many days out of 30 were you totally unable to work or carry out your normal activities because of these feelings? (Number of Days)",
       name: "During the past 30 days, how many days out of 30 were you totally unable to work or carry out your normal activities because of these feelings? (Number of Days)",
+      key: "unable_to_work_days",
       required: false,
       placeholder: "",
     },
@@ -146,6 +156,7 @@ var questions = [
       prompt:
         "Not counting the days you reported in response to the last question, how many days in the past 30 were you able to do only half or less of what you would normally have been able to do, because of these feelings? (Number of Days)",
       name: "Not counting the days you reported in response to the last question, how many days in the past 30 were you able to do only half or less of what you would normally have been able to do, because of these feelings? (Number of Days)",
+      key: "half_days_work",
       required: false,
       placeholder: "",
     },
@@ -154,6 +165,7 @@ var questions = [
       prompt:
         "During the past 30 days, how many times did you see a doctor or other health professional about these feelings? (Number of Times)",
       name: "During the past 30 days, how many times did you see a doctor or other health professional about these feelings? (Number of Times)",
+      key: "doctor_visits",
       required: false,
       placeholder: "",
     },
@@ -162,6 +174,7 @@ var questions = [
       prompt:
         "During the past 30 days, how often have physical health problems been the main cause of these feelings?",
       name: "During the past 30 days, how often have physical health problems been the main cause of these feelings?",
+      key: "physical_health_cause",
       required: false,
       options: [
         "All of the time",
@@ -178,6 +191,7 @@ var questions = [
       prompt:
         "Do you have or have you ever been diagnosed with any of the following psychological disorders (check all that apply)",
       name: "Do you have or have you ever been diagnosed with any of the following psychological disorders (check all that apply)",
+      key: "diagnosed_psych_disorders",
       required: true,
       options: [
         "ADHD",
@@ -201,6 +215,7 @@ var questions = [
       prompt:
         "If you responded “other” to the above question about psychological disorder, please describe:",
       name: "If you responded “other” to the above question about psychological disorder, please describe:",
+      key: "other_psych_disorder",
       required: false,
       placeholder: "",
     },
@@ -209,6 +224,7 @@ var questions = [
       prompt:
         "Have you been diagnosed with any neurological disorder (e.g. Alzheimer's, Parkinson's)?",
       name: "Have you been diagnosed with any neurological disorder (e.g. Alzheimer's, Parkinson's)?",
+      key: "diagnosed_neuro_disorder",
       required: true,
       options: ["Yes", "No"],
     },
@@ -216,6 +232,7 @@ var questions = [
       type: "text",
       prompt: "If you responded “yes” to the above question, please describe:",
       name: "If you responded “yes” to the above question, please describe:",
+      key: "yes_neuro_disorder",
       required: false,
       placeholder: "",
     },
@@ -224,6 +241,7 @@ var questions = [
       prompt:
         "Do you have or have you ever been diagnosed with any of the following medical conditions (check all that apply)?",
       name: "Do you have or have you ever been diagnosed with any of the following medical conditions (check all that apply)?",
+      key: "diagnosed_med_conditions",
       required: true,
       options: [
         "Type II diabetes",
@@ -242,6 +260,7 @@ var questions = [
       prompt:
         "If you responded “other” to the above question about medical conditions, please describe:",
       name: "If you responded “other” to the above question about medical conditions, please describe:",
+      key: "other_med_condition",
       required: false,
       placeholder: "",
     },
@@ -298,6 +317,17 @@ var trial = {
         "The next few questions are about how these feelings may have affected you in the past 30 days. You need not answer these questions if you answered “None of the time” to all of the six questions about your feelings."
       ];
     }
+
+    Object.keys(data.response).forEach(function (key) {
+      var questionItem = questions.flat().find(q => q.name === key);
+      if (questionItem) {
+        data[questionItem.key] = {
+          key: questionItem.key,
+          question: questionItem.prompt,
+          response: data.response[key],
+        };
+      }
+    });
   },
 };
 

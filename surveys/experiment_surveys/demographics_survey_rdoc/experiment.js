@@ -19,6 +19,7 @@ var questions = [
       "Non-binary/Third gender",
       "Prefer not to answer",
     ],
+    key: "gender",
   },
   {
     type: "text",
@@ -26,6 +27,7 @@ var questions = [
     name: "How old are you?",
     required: true,
     placeholder: "Enter your age in years",
+    key: "age",
   },
   {
     type: "multi-choice",
@@ -40,6 +42,7 @@ var questions = [
       "White",
       "Other (please specify)",
     ],
+    key: "race",
   },
   {
     type: "text",
@@ -48,6 +51,7 @@ var questions = [
     name: 'If you chose "Other" for racial background, how would you describe it?',
     required: false,
     placeholder: "Racial background or N/A",
+    key: "race_other",
   },
   {
     type: "multi-choice",
@@ -55,6 +59,7 @@ var questions = [
     name: "Are you of Hispanic, Latino or Spanish origin?",
     required: true,
     options: ["Yes", "No"],
+    key: "latino",
   },
   {
     type: "multi-choice",
@@ -69,6 +74,7 @@ var questions = [
       "Master's Degree",
       "Advanced Graduate work or Ph.D",
     ],
+    key: "education",
   },
   {
     type: "text",
@@ -77,6 +83,7 @@ var questions = [
     name: "How tall are you (in feet and inches)? Enter as X feet Y inches, for example: 5 feet 10 inches.",
     required: true,
     placeholder: "X feet Y inches",
+    key: "height",
   },
   {
     type: "text",
@@ -84,6 +91,7 @@ var questions = [
     name: "How much do you weight (in pounds)?",
     required: true,
     placeholder: "",
+    key: "weight",
   },
   {
     type: "multi-choice",
@@ -91,6 +99,7 @@ var questions = [
     name: "What is your relationship status?",
     required: true,
     options: ["Single", "Married", "In Committed Relationship"],
+    key: "relationship_status",
   },
   {
     type: "multi-choice",
@@ -98,6 +107,7 @@ var questions = [
     name: "How many times have you been divorced?",
     required: true,
     options: ["0", "1", "2", "3", "4", "5", "More than 5"],
+    key: "times_divorced",
   },
   {
     type: "text",
@@ -106,6 +116,7 @@ var questions = [
     name: "How long was/is your longest romantic relationship (in years and months)? Enter as X years Y months.",
     required: true,
     placeholder: "X years Y months",
+    key: "longest_romantic_relationship",
   },
   {
     type: "multi-choice",
@@ -113,6 +124,7 @@ var questions = [
     name: "How many romantic relationships have you had?",
     required: true,
     options: ["0", "1", "2", "3", "4", "5-10", "More than 10"],
+    key: "num_romantic_relationships",
   },
   {
     type: "multi-choice",
@@ -120,6 +132,7 @@ var questions = [
     name: "How many children do you have?",
     required: true,
     options: ["0", "1", "2", "3", "4", "5-10", "More than 10"],
+    key: "num_children",
   },
   {
     type: "text",
@@ -128,6 +141,7 @@ var questions = [
     name: "If you menstruate, when was the date of your last period (Enter as mm/dd/yyyy)? If you do not menstruate, enter N/A.",
     required: false,
     placeholder: "",
+    key: "date_last_period",
   },
   {
     type: "text",
@@ -136,6 +150,7 @@ var questions = [
     name: "If you menstruate, what is the length (in days) of your typical cycle? If you do not menstruate, enter N/A.",
     required: false,
     placeholder: "",
+    key: "cycle_length",
   },
   {
     type: "multi-choice",
@@ -143,6 +158,7 @@ var questions = [
     name: "Are you taking any form of hormonal birth control?",
     required: true,
     options: ["Yes", "No"],
+    key: "on_birth_control",
   },
   {
     type: "text",
@@ -151,6 +167,7 @@ var questions = [
     name: 'If you chose "Yes" for using hormonal birth control, which type are you using? (List brand and type if known). Enter N/A if not using hormonal birth control.',
     required: false,
     placeholder: "Brand and type of hormonal birth control",
+    key: "brand_type_birth_control",
   },
   {
     type: "text",
@@ -158,6 +175,7 @@ var questions = [
     name: "What is your household's annual income (in US dollars)?",
     required: true,
     placeholder: "",
+    key: "household_income",
   },
   {
     type: "multi-choice",
@@ -165,6 +183,7 @@ var questions = [
     name: "Do you have a retirement account?",
     required: true,
     options: ["Yes", "No"],
+    key: "retirement_account",
   },
   {
     type: "multi-choice",
@@ -185,6 +204,7 @@ var questions = [
       "80-89%",
       "90-100%",
     ],
+    key: "stocks_retirement_account",
   },
   {
     type: "multi-choice",
@@ -199,6 +219,7 @@ var questions = [
       "Shelter",
       "No current home",
     ],
+    key: "housing_status",
   },
   {
     type: "multi-choice",
@@ -216,6 +237,7 @@ var questions = [
       "More than $200000",
       "Prefer Not To Say",
     ],
+    key: "mortgage_debt",
   },
   {
     type: "multi-choice",
@@ -233,6 +255,7 @@ var questions = [
       "More than $200000",
       "Prefer Not To Say",
     ],
+    key: "car_debt",
   },
   {
     type: "multi-choice",
@@ -250,6 +273,7 @@ var questions = [
       "More than $200000",
       "Prefer Not To Say",
     ],
+    key: "education_debt",
   },
   {
     type: "multi-choice",
@@ -267,6 +291,7 @@ var questions = [
       "More than $200000",
       "Prefer Not To Say",
     ],
+    key: "credit_card_debt",
   },
   {
     type: "text",
@@ -275,6 +300,7 @@ var questions = [
     name: "Please list any other sources of debt you have (Enter N/A if none):",
     required: true,
     placeholder: "",
+    key: "other_debt",
   },
   {
     type: "multi-choice",
@@ -294,6 +320,7 @@ var questions = [
       "More than $200000",
       "Prefer Not To Say",
     ],
+    key: "amount_other_debt",
   },
   {
     type: "text",
@@ -301,6 +328,7 @@ var questions = [
     name: "On average, how many cups of coffee do you have each day?",
     required: true,
     placeholder: "",
+    key: "num_cups_coffee",
   },
   {
     type: "text",
@@ -308,6 +336,7 @@ var questions = [
     name: "On average, how many cups of tea do you have each day?",
     required: true,
     placeholder: "",
+    key: "num_cups_tea",
   },
   {
     type: "text",
@@ -316,6 +345,7 @@ var questions = [
     name: "On average, how many cans of caffeinated soda do you have each day?",
     required: true,
     placeholder: "",
+    key: "num_cans_caffeinated_soda",
   },
   {
     type: "text",
@@ -324,6 +354,7 @@ var questions = [
     name: "What is your daily caffeine intake from other sources each day (in mg)? For reference, a standard 16oz energy drink has about 140 mg and a 1 oz serving of milk chocolate has about 6 mg of caffeine.",
     required: true,
     placeholder: "",
+    key: "other_caffeine",
   },
   {
     type: "multi-choice",
@@ -331,6 +362,7 @@ var questions = [
     name: "Do you feel you have a problem with gambling?",
     required: true,
     options: ["No", "Yes in the past but not now", "Yes"],
+    key: "problem_gambling",
   },
   {
     type: "multi-choice",
@@ -338,6 +370,7 @@ var questions = [
     name: "How many traffic tickets have you gotten in the last year?",
     required: true,
     options: ["0", "1", "2", "3", "4", "5-10", "More than 10"],
+    key: "num_traffic_tickets",
   },
   {
     type: "multi-choice",
@@ -345,6 +378,7 @@ var questions = [
     name: "How many traffic accidents have you been in over your life?",
     required: true,
     options: ["0", "1", "2", "3", "4", "5-10", "More than 10"],
+    key: "num_traffic_accidents",
   },
   {
     type: "multi-choice",
@@ -353,6 +387,7 @@ var questions = [
     name: "How many times in your life have you been arrested and/or charged with illegal activities?",
     required: true,
     options: ["0", "1", "2", "3", "4", "5-10", "More than 10"],
+    key: "num_arrested_illegal_activities",
   },
   {
     type: "multi-choice",
@@ -365,6 +400,7 @@ var questions = [
       "Want to contribute to research",
       "Other",
     ],
+    key: "motivations_to_participate",
   },
   {
     type: "text",
@@ -373,6 +409,7 @@ var questions = [
     name: "If you have other motivations, please list them. Enter N/A if you do not have other motivations for participating.",
     required: true,
     placeholder: "",
+    key: "other_motivations_to_participate",
   },
 ];
 
@@ -399,6 +436,18 @@ var trial = {
   type: jsPsychSurvey,
   pages: [questions],
   button_label_finish: "Submit",
+  on_finish: function(data) {
+    Object.keys(data.response).forEach(function (key) {
+      var questionItem = questions.find(q => q.prompt === key);
+      if (questionItem) {
+        data[questionItem.key] = {
+          key: questionItem.key,
+          question: questionItem.prompt,
+          response: data.response[key],
+        };
+      }
+    });
+  }
 };
 
 var postTaskQuestion =

@@ -214,6 +214,13 @@ var trial = {
     data.likert_scale_3_label = "Moderately";
     data.likert_scale_4_label = "Quite a bit";
     data.likert_scale_5_label = "Extremely";
+    
+    Object.keys(data.response).forEach(function (key) {
+      data[key] = {
+        key: key,
+        response: data.response[key],
+      };
+    });
   },
 };
 
