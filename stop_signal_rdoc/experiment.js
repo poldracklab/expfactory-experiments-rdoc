@@ -739,6 +739,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     on_finish: function (data) {
       appendData(data);
     },
+    post_trial_gap: 0,
   };
   testTrials.push(fixationBlock, testTrial, ITIBlock);
 }
