@@ -526,7 +526,7 @@ var ITIBlock = {
 /*				Set up nodes				*/
 /** ******************************************/
 
-var practiceStopTrials = [];
+var practiceTrials = [];
 for (i = 0; i < practiceLen; i++) {
   var practiceTrial = {
     type: jsPoldracklabStopSignal,
@@ -546,6 +546,7 @@ for (i = 0; i < practiceLen; i++) {
     response_ends_trial: false,
     SSD: getSSD,
     SS_duration: 500, // 500
+    post_trial_gap: 0,
     on_finish: function (data) {
       appendData(data);
     },
@@ -597,13 +598,14 @@ for (i = 0; i < practiceLen; i++) {
         }
       }
     },
+    post_trial_gap: 0,
     stimulus_duration: 500, // 500
     trial_duration: 500, // 500
     response_ends_trial: false,
     prompt: promptText,
   };
 
-  practiceStopTrials.push(
+  practiceTrials.push(
     practiceFixation,
     practiceTrial,
     practiceFeedbackBlock,
@@ -613,7 +615,7 @@ for (i = 0; i < practiceLen; i++) {
 
 var practiceCount = 0;
 var practiceNode = {
-  timeline: [feedbackBlock].concat(practiceStopTrials),
+  timeline: [feedbackBlock].concat(practiceTrials),
   loop_function: function (data) {
     practiceCount += 1;
     currentTrial = 0;
