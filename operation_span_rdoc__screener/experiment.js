@@ -7188,11 +7188,13 @@ var instruction_flowchart = {
   choices: ["Enter"],
   stimulus: function () {
     return `
-        <div style='width: 50vw; margin: auto;'>
+        <div style='width: 50vw; margin: 24px auto 0px auto;'>
           <p class="block-text">The diagram below represents a sample trial.</p>
           <p class="block-text">Please review this diagram carefully and then press <i>enter</i> when you are ready to begin.</p>
         </div>
+        <div>
         <img class="flowchart_image" src="${images[0]}" alt='operation_span_figure' />
+        </div>
     `;
   },
   trial_duration: 60000,
@@ -7675,7 +7677,7 @@ var processing_only_node = {
       processing_only_count === 2
     ) {
       feedbackText = `
-        <div class="centerbox">
+        <div style='height: 85vh !important;' class="centerbox">
         <p class='block-text'>
           Please keep your fingers on the arrow keys.
         </p>
@@ -7694,6 +7696,9 @@ var processing_only_node = {
         <p class='block-text'>
           On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding four 4x4 grids.
           Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
+        </p>
+        <p class='block-text'>
+          <b>Please note</b>, it's important to be ready to respond promptly when the grid appears, as the screen will move on automatically after a limited time, whether you have responded or not.
         </p>
         <p class='block-text'>
           During the trials, there will be a reminder of the rules at the top of your screen.
@@ -7902,7 +7907,7 @@ var memory_only_node = {
 
     if (partial_accuracy >= 0.5 || memory_only_count === 2) {
       feedbackText = `
-        <div class="centerbox">
+        <div style='height: 90vh !important; width: 60vw !important;' class="centerbox">
         <p class='block-text'>
           Please keep your fingers on the arrow keys.
         </p>
@@ -7915,10 +7920,10 @@ var memory_only_node = {
               ? "symmetric"
               : "asymmetric"
           }</b> <b>(left arrow key)</b> or <b>${
-            processingChoices[0].keyname === "left arrow key"
-              ? "asymmetric"
-              : "symmetric"
-          }</b> <b>(right arrow key)</b>.
+        processingChoices[0].keyname === "left arrow key"
+          ? "asymmetric"
+          : "symmetric"
+      }</b> <b>(right arrow key)</b>.
         </p>
         <p class='block-text'>
           After responding, a new 8x8 grid will immediately appear. Try to complete as many correct symmetry judgments as you can.
@@ -7932,6 +7937,9 @@ var memory_only_node = {
         <p class='block-text'>
           On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding four 4x4 grids.
           Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
+        </p>
+        <p class='block-text'>
+          <b>Please note</b>, it's important to be ready to respond promptly when the grid appears, as the screen will move on automatically after a limited time, whether you have responded or not.
         </p>
         <p class='block-text'>
           During the trials, there will be a reminder of the rules at the top of your screen.
