@@ -114,3 +114,8 @@ span[data-bind="css: question.koCss().error.item"] {
 .sv_q_rating_min_text {
   margin-right: 10px;
 }
+
+.jspsych-survey-text-preamble {
+  margin: 0 auto;
+  max-width: 1000px;
+}

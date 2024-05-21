@@ -7211,7 +7211,7 @@ var feedbackInstructBlock = {
 };
 
 var opSpanInstructions = `
-  <div class="centerbox">
+  <div style='height: 85vh !important;' class="centerbox">
     <p class="block-text">Place your fingers on the arrow keys.</p>
     <p class="block-text">
       During this task, you will first encounter an 8x8 grid filled with black and gray cells. You have to determine if the grid is ${
@@ -7234,6 +7234,9 @@ var opSpanInstructions = `
     </p>
     <p class="block-text">
       This sequence of 8x8 grids and 4x4 grid will alternate four times. After the fourth time, a blank 4x4 grid will be presented.
+    </p>
+    <p class='block-text'>
+      <b>Please note</b>, it's important to be ready to respond promptly when the grid appears, as the screen will move on automatically after a limited time, whether you have responded or not.
     </p>
     <p class="block-text">
       On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
@@ -7297,7 +7300,7 @@ var feedbackBlock = {
       trial_id: `${stage}_feedback`,
       exp_stage: stage,
       trial_duration: 60000,
-      block_num: stage === "practice" ? practiceCount : testCount
+      block_num: stage === "practice" ? practiceCount : testCount,
     };
   },
   choices: ["Enter"],
