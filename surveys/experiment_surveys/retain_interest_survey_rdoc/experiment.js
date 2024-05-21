@@ -46,18 +46,35 @@ var trial = {
 };
 
 var followUpTrial = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: `<div style='max-width:1000px;text-align: left;'>
+  type: jsPsychSurveyText,
+  preamble: `<div style='max-width:1000px; text-align:left;'>
   <p>Thank you for your honesty. You chose <b>not to proceed</b> to the main study.</p>
     <p>We understand that this study requires a significant commitment, and it's important to us that our participants feel confident in their ability to complete all sessions.</p>
     <p>We appreciate the time you've invested in the practice sessions.</p>
     <p>Please be assured that you will still receive compensation for the screener and any practice sessions you've completed.</p> 
     <p>Choosing not to proceed allows us to ensure that all participants in the main study can fully commit to the required schedule, which is crucial for the integrity of our research findings. We hope that you found the experience insightful and that you might consider participating in future studies that better fit your schedule or interests.</p>
     <p>Thank you again for your participation and understanding.</p>
-    <p>Press <i>enter</i> to continue.</p>
     </div>`,
-  choices: ["Enter"],
+  questions: [
+    {
+      prompt: `<div style='max-width:1000px; text-align:left;'>
+      <p><b>We Value Your Feedback</b></p>
+    <p>We would greatly appreciate it if you could tell us more about your decision not to proceed to the main study. Your feedback is crucial for us to understand your concerns and to improve the experience for all participants in the future.</p>
+    <p>Please share any thoughts or reasons for your decision in the box below:</p>
+    </div>`,
+      rows: 10,
+      columns: 60,
+      required: false,
+      placeholder:
+        "Please share your reasons for not continuing, or any feedback you have about the study so far.",
+    },
+  ],
   trial_duration: 60000,
+  on_finish: function (data) {
+    data.question =
+      "Please share your reasons for not continuing, or any feedback you have about the study so far.";
+    data.response = data.response["Q0"];
+  },
 };
 
 var conditionalTrial = {
