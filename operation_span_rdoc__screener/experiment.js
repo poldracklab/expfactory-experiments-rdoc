@@ -7042,10 +7042,8 @@ var promptText = `<div class=prompt_box_operation>
         ? "symmetric"
         : "asymmetric"
     }</b> and <b>"right arrow key"</b> if <b>${
-      processingChoices[0].keyname === "left arrow key"
-        ? "asymmetric"
-        : "symmetric"
-    }</b>.</p>
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.</p>
   </div>`;
 
 var prompt_processing = `<div class=prompt_box_operation>
@@ -7054,10 +7052,8 @@ var prompt_processing = `<div class=prompt_box_operation>
       ? "symmetric"
       : "asymmetric"
   }</b> and <b>"right arrow key"</b> if <b>${
-    processingChoices[0].keyname === "left arrow key"
-      ? "asymmetric"
-      : "symmetric"
-  }</b>.</p>
+  processingChoices[0].keyname === "left arrow key" ? "asymmetric" : "symmetric"
+}</b>.</p>
   </div>`;
 
 var prompt_memorize = `<div class=prompt_box_operation>
@@ -8150,13 +8146,29 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   on_finish: data => {
+    /*
+      By the end of the task, we want to exclude subjects based on their 
+      overall accuracy and response times for the practice trials. 
+
+      The values with FLAG_ are thresholds for overall performance. 
+      The values with PRACTICE_ are thresholds for the final block of practice trials.
+
+      The idea is that if their overall performance is okay (meets lower threshold) then they pass
+      this screener, OR if their final block of practice trials meets the higher threshold, they pass.
+
+      So, they couldn've been okay throughout (passing the lower threshold) or they could've improved
+      by the end and understood the task better (passing the higher threshold).
+    */
+
+    // FLAGS for overall performance
     const FLAG_PARTIAL_ACCURACY_THRESHOLD = 0.25;
     const FLAG_PROCESSING_ACCURACY_THRESHOLD = 0.6;
     const FLAG_PROCESSING_RT_THRESHOLD = 1250;
 
-    const PRACTICE_PARTIAL_ACCURACY_THRESHOLD = partialAccuracyThresh;
-    const PRACTICE_PROCESSING_ACCURACY_THRESHOLD = processingAccThresh;
-    const PRACTICE_PROCESSING_RT_THRESHOLD = processingRTThresh;
+    // FLAGS for final block performance (practice trials)
+    const PRACTICE_PARTIAL_ACCURACY_THRESHOLD = partialAccuracyThresh; // 0.75
+    const PRACTICE_PROCESSING_ACCURACY_THRESHOLD = processingAccThresh; // 0.85
+    const PRACTICE_PROCESSING_RT_THRESHOLD = processingRTThresh; // 1000ms (1s)
 
     if (practiceCount < practiceThresh) {
       data.include_subject = 1;
@@ -8197,7 +8209,7 @@ var endBlock = {
         }, 0) / trials.length;
 
       return {
-        accuracy: correctTrialsCount / trials.length,
+        accuracy: correctTrialsCount / trials.length, // not used in exclusion, partial accuracy only
         partialAccuracy,
       };
     };
@@ -8239,7 +8251,8 @@ var endBlock = {
       processingPerformance
     ) => {
       return (
-        responsePerformance.accuracy >= FLAG_PARTIAL_ACCURACY_THRESHOLD &&
+        responsePerformance.partialAccuracy >=
+          FLAG_PARTIAL_ACCURACY_THRESHOLD &&
         processingPerformance.meanResponseTime <=
           FLAG_PROCESSING_RT_THRESHOLD &&
         processingPerformance.accuracy >= FLAG_PROCESSING_ACCURACY_THRESHOLD
@@ -8251,7 +8264,8 @@ var endBlock = {
       processingPerformance
     ) => {
       return (
-        responsePerformance.accuracy >= PRACTICE_PARTIAL_ACCURACY_THRESHOLD &&
+        responsePerformance.partialAccuracy >=
+          PRACTICE_PARTIAL_ACCURACY_THRESHOLD &&
         processingPerformance.meanResponseTime <=
           PRACTICE_PROCESSING_RT_THRESHOLD &&
         processingPerformance.accuracy >= PRACTICE_PROCESSING_ACCURACY_THRESHOLD
