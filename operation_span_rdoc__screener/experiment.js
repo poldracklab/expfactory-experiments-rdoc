@@ -6977,9 +6977,9 @@ var spanResponses = [
 // stimulus and fixation
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000;
-const processingStimulusDuration = 3000;
-const processingTrialDuration = 3000;
-const responseBlockDuration = 5000;
+const processingStimulusDuration = 2500; // changed from 3000
+const processingTrialDuration = 2500; // changed from 3000
+const responseBlockDuration = 7000; // changed from 5000
 var images = [
   "/static/experiments/operation_span_rdoc__screener/images/operation_span_figure.png",
 ];
@@ -7383,27 +7383,52 @@ var activeGrid;
 var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    var last = jsPsych.data.get().last(1).trials[0];
-    if (last.response.length === 0) {
-      return "<div class=center-box><div class='center-text'><font size =20>Respond Faster!</font></div></div>";
-    } else if (last.correct_trial === 1) {
-      return "<div class=center-box><div class='center-text'><font size =20>Correct!</font></div></div>";
+    function arraysEqual(a, b) {
+      if (a === b) return true;
+      if (a == null || b == null) return false;
+      if (a.length !== b.length) return false;
+      for (var i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) return false;
+      }
+      return true;
+    }
+
+    const { response, spatial_sequence } = jsPsych.data.get().last(1).trials[0];
+    const common = spatial_sequence.filter(ele =>
+      response.includes(ele)
+    ).length;
+
+    const areArraysEqual = arraysEqual(response, spatial_sequence);
+
+    const text =
+      common === 0 ? "You did not submit any" : `You submitted ${common}`;
+
+    if (areArraysEqual) {
+      return `
+          <div class='memory_feedback'>
+            <p>Correct!</p>
+          </div>
+        `;
     } else {
-      return "<div class=center-box><div class='center-text'><font size =20>Incorrect</font></div></div>";
+      return `
+          <div class='memory_feedback'>
+            <p>${text} correct responses.</p>
+            <p>Please attempt to make all 4 correct responses in the order they were presented.</p>
+        </div>`;
     }
   },
   data: function () {
     return {
       exp_stage: "practice",
       trial_id: "practice_feedback",
-      trial_duration: 500,
-      stimulus_duration: 500,
+      trial_duration: 5000, // changed from 500
+      stimulus_duration: 5000, // changed from 500
       block_num: practiceCount,
     };
   },
   choices: ["NO_KEYS"],
-  stimulus_duration: 500,
-  trial_duration: 500,
+  stimulus_duration: 5000, // changed from 500
+  trial_duration: 5000, // changed from 500
 };
 
 var testTrial = {
@@ -7749,7 +7774,7 @@ const get_memory_only_block_count = () => memory_only_count;
 
 const generate_memory_only_trials = () => {
   // trial sequence
-  // [3000ms fixation -> 1000ms memoranda] * 4
+  // [2500ms fixation -> 1000ms memoranda] * 4
   // accuracy threshold of 75% to pass, else repeat
 
   var trials = [];
@@ -7766,8 +7791,8 @@ const generate_memory_only_trials = () => {
           block_num: get_memory_only_block_count(),
         };
       },
-      trial_duration: 3000,
-      stimulus_duration: 3000,
+      trial_duration: 2500, // changed from 3000
+      stimulus_duration: 2500, // changed from 3000
       on_start: function () {
         var { trial_id } = jsPsych.data.get().last(1).trials[0];
 
@@ -7815,12 +7840,12 @@ const generate_memory_only_trials = () => {
         trial_id: "memory_only_trial",
         exp_stage: "memory_only",
         choices: ["NO_KEYS"],
-        trial_duration: 5000,
-        stimulus_duration: 5000,
+        trial_duration: 7000, // changed from 5000
+        stimulus_duration: 7000, // changed from 5000
       };
     },
-    trial_duration: 5000,
-    stimulus_duration: 5000,
+    trial_duration: 7000, // changed from 5000
+    stimulus_duration: 7000, // changed from 5000
     on_finish: function (data) {
       var stimTrials = jsPsych.data
         .get()
@@ -7869,6 +7894,59 @@ const generate_memory_only_trials = () => {
     prompt: practicePromptResponse,
   };
 
+  // include feedback block here to match operation span feedback
+  var memory_only_feedback = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: function () {
+      function arraysEqual(a, b) {
+        if (a === b) return true;
+        if (a == null || b == null) return false;
+        if (a.length !== b.length) return false;
+        for (var i = 0; i < a.length; ++i) {
+          if (a[i] !== b[i]) return false;
+        }
+        return true;
+      }
+
+      const { response, spatial_sequence } = jsPsych.data.get().last(1)
+        .trials[0];
+      const common = spatial_sequence.filter(ele =>
+        response.includes(ele)
+      ).length;
+
+      const areArraysEqual = arraysEqual(response, spatial_sequence);
+
+      const text =
+        common === 0 ? "You did not submit any" : `You submitted ${common}`;
+
+      if (areArraysEqual) {
+        return `
+          <div class='memory_feedback'>
+            <p>Correct!</p>
+          </div>
+        `;
+      } else {
+        return `
+          <div class='memory_feedback'>
+            <p>${text} correct responses.</p>
+            <p>Please attempt to make all 4 correct responses in the order they were presented.</p>
+        </div>`;
+      }
+    },
+    data: function () {
+      return {
+        exp_stage: "memory_only",
+        trial_id: "memory_only_feedback",
+        trial_duration: 5000,
+        stimulus_duration: 5000,
+        block_num: practiceCount,
+      };
+    },
+    choices: ["NO_KEYS"],
+    stimulus_duration: 5000,
+    trial_duration: 5000,
+  };
+
   var iti_block = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
@@ -7883,7 +7961,7 @@ const generate_memory_only_trials = () => {
     stimulus_duration: 5000,
   };
 
-  trials.push(test_trial, iti_block);
+  trials.push(test_trial, memory_only_feedback, iti_block);
 
   return trials;
 };

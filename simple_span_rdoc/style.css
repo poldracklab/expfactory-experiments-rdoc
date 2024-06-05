@@ -230,3 +230,14 @@ img.center {
 .centerbox {
   height: 70vh !important;
 }
+
+.memory_feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.memory_feedback p {
+  font-size: xx-large;
+}

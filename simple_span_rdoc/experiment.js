@@ -439,7 +439,7 @@ var spanResponses = [
 // stimulus and fixation
 const stimStimulusDuration = 1000;
 const stimTrialDuration = 1000;
-const responseBlockDuration = 5000;
+const responseBlockDuration = 7000; // changed from 5000
 
 var runAttentionChecks = true;
 var sumInstructTime = 0; // ms
@@ -544,6 +544,9 @@ var simpleSpanInstructions = `
     <p class="block-text">
       On the blank 4x4 grid, use the <b>arrow keys</b> to navigate the grid and the <b>spacebar</b> to select the cells you think were colored black in the preceding 4 4x4 grids. Please select them in the order they were shown (i.e., respond with the location of the first black square in the 4x4 grid, then the 2nd, …).
     </p>
+    <p class='block-text'>
+      <b>Please note</b>, it's important to be ready to respond promptly when the grid appears, as the screen will move on automatically after a limited time, whether you have responded or not.
+    </p>
   </div>
 `;
 
@@ -604,7 +607,7 @@ var feedbackBlock = {
       exp_stage: stage,
       trial_duration: 60000,
       block_num: stage === "practice" ? practiceCount : testCount,
-      condition: "simple"
+      condition: "simple",
     };
   },
   choices: ["Enter"],
@@ -630,7 +633,7 @@ var stimulusBlock = {
       condition: "simple",
       trial_duration: stimTrialDuration,
       stimulus_duration: stimStimulusDuration,
-      block_num: stage === "practice" ? practiceCount : testCount, 
+      block_num: stage === "practice" ? practiceCount : testCount,
     };
   },
   choices: ["NO_KEYS"],
@@ -644,33 +647,24 @@ var stimulusBlock = {
 };
 
 var startTime = null;
+var initializingTrialIDs = new Set([
+  "practice_feedback",
+  "practice_ITI",
+  "test_ITI",
+  "test_attention_check",
+]);
 
 var waitBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: "<div class = centerbox><div class = fixation>****</div></div>",
   choices: "NO_KEYS",
-  stimulus_duration: 3000,
-  trial_duration: 3000,
+  stimulus_duration: 2500, // changed from 3000
+  trial_duration: 2500, // changed from 3000
   response_ends_trial: true,
   on_start: function () {
-    // calculate time to last 3000ms then end trial
-    if (startTime === null) {
-      startTime = performance.now();
-    }
-
-    // get last trial
-    var lastTrial = jsPsych.data.get().last(1).trials[0];
-    // last trials IDs that start new trials
-    var trialIDs = [
-      "practice_feedback",
-      "practice_ITI",
-      "test_ITI",
-      "test_attention_check",
-    ];
-    // if id starts new trial then set stimuli for that trial
-    if (trialIDs.includes(lastTrial.trial_id)) {
+    var { trial_id } = jsPsych.data.get().last(1).trials[0];
+    if (initializingTrialIDs.has(trial_id)) {
       trialList = generateSpatialTrialValues(numStimuli);
-      trialValues = trialList;
     }
   },
   data: function () {
@@ -682,8 +676,8 @@ var waitBlock = {
       exp_stage: getExpStage(),
       condition: "simple",
       choices: "",
-      trial_duration: 3000,
-      stimulus_duration: 3000,
+      trial_duration: 2500, // changed from 3000
+      stimulus_duration: 2500, // changed from 3000
       block_num: getExpStage() == "practice" ? practiceCount : testCount,
     };
   },
@@ -695,20 +689,6 @@ var waitBlock = {
     if (getExpStage() == "practice") {
       return practicePromptText;
     }
-  },
-};
-
-var waitNode = {
-  timeline: [waitBlock],
-  loop_function: function (data) {
-    var elapsedTime = performance.now() - startTime;
-
-    if (elapsedTime >= 3000) {
-      startTime = null; // Reset startTime for the next trial
-      return false; // End the loop
-    }
-
-    return true; // Continue the loop for the current trial
   },
 };
 
@@ -731,27 +711,52 @@ var activeGrid;
 var practiceFeedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function () {
-    var last = jsPsych.data.get().last(1).trials[0];
-    if (last.correct_trial == null) {
-      return "<div class=center-box><div class='center-text'><font size =20>Respond Faster!</font></div></div>";
-    } else if (last.correct_trial == 1) {
-      return "<div class=center-box><div class='center-text'><font size =20>Correct!</font></div></div>";
+    function arraysEqual(a, b) {
+      if (a === b) return true;
+      if (a == null || b == null) return false;
+      if (a.length !== b.length) return false;
+      for (var i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) return false;
+      }
+      return true;
+    }
+
+    const { response, spatial_sequence } = jsPsych.data.get().last(1).trials[0];
+    const common = spatial_sequence.filter(ele =>
+      response.includes(ele)
+    ).length;
+
+    const areArraysEqual = arraysEqual(response, spatial_sequence);
+
+    const text =
+      common === 0 ? "You did not submit any" : `You submitted ${common}`;
+
+    if (areArraysEqual) {
+      return `
+          <div class='memory_feedback'>
+            <p>Correct!</p>
+          </div>
+        `;
     } else {
-      return "<div class=center-box><div class='center-text'><font size =20>Incorrect</font></div></div>";
+      return `
+          <div class='memory_feedback'>
+            <p>${text} correct responses.</p>
+            <p>Please attempt to make all 4 correct responses in the order they were presented.</p>
+        </div>`;
     }
   },
   data: function () {
     return {
       exp_stage: "practice",
       trial_id: "practice_feedback",
-      trial_duration: 500,
-      stimulus_duration: 500,
+      trial_duration: 5000, // changed from 500
+      stimulus_duration: 5000, // changed from 500
       block_num: practiceCount,
     };
   },
   choices: ["NO_KEYS"],
-  stimulus_duration: 500,
-  trial_duration: 500,
+  stimulus_duration: 5000, // changed from 500
+  trial_duration: 5000, // changed from 500
 };
 
 var testTrial = {
@@ -891,7 +896,7 @@ function generatePracticeTrials() {
 
   for (let i = 0; i < practiceLen; i++) {
     for (let j = 0; j < numStimuli; j++) {
-      returnArray.push(waitNode, stimulusBlock);
+      returnArray.push(waitBlock, stimulusBlock);
     }
     returnArray.push(testTrial, practiceFeedbackBlock, ITIBlock);
   }
@@ -977,7 +982,7 @@ function generateTestTrials() {
   returnArray.push(attentionNode);
   for (let i = 0; i < numTrialsPerBlock; i++) {
     for (let j = 0; j < numStimuli; j++) {
-      returnArray.push(waitNode, stimulusBlock);
+      returnArray.push(waitBlock, stimulusBlock);
     }
     returnArray.push(testTrial, ITIBlock);
   }
@@ -1022,7 +1027,7 @@ var testNode = {
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
-    if (testCount == numTestBlocks) {
+    if (testCount === numTestBlocks) {
       feedbackText = `<div class=centerbox>
         <p class=block-text>Done with this task.</p>
         <p class=centerbox>Press <i>enter</i> to continue.</p>
