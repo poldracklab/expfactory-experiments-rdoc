@@ -305,9 +305,9 @@ var promptTextList = `
       responseMappings.oddEven.even === "," ? "odd" : "even"
     }</b>.</li>
     <li>Cue "Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
-      responseMappings.higherLower.higher === "," ? "high" : "low"
+      responseMappings.higherLower.higher === "," ? "higher than 5" : "lower than 5"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.higherLower.higher === "," ? "low" : "high"
+      responseMappings.higherLower.higher === "," ? "lower than 5" : "higher than 5"
     }</b>.</li>
   </ul>
 `;
@@ -320,9 +320,9 @@ var promptText = `
       responseMappings.oddEven.even === "," ? "odd" : "even"
     }</b></p>
    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
-     responseMappings.higherLower.higher === "," ? "high" : "low"
+     responseMappings.higherLower.higher === "," ? "higher than 5" : "lower than 5"
    }</b> and <b>period key (.)</b> if <b>${
-     responseMappings.higherLower.higher === "," ? "low" : "high"
+     responseMappings.higherLower.higher === "," ? "lower than 5" : "higher than 5"
    }</b></p>
   </div>
 `;
