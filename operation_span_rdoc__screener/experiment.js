@@ -8243,10 +8243,18 @@ var endBlock = {
     const FLAG_PROCESSING_ACCURACY_THRESHOLD = 0.6;
     const FLAG_PROCESSING_RT_THRESHOLD = 1250;
 
+    data.FLAG_PARTIAL_ACCURACY_THRESHOLD = FLAG_PARTIAL_ACCURACY_THRESHOLD;
+    data.FLAG_PROCESSING_ACCURACY_THRESHOLD = FLAG_PROCESSING_ACCURACY_THRESHOLD;
+    data.FLAG_PROCESSING_RT_THRESHOLD = FLAG_PROCESSING_RT_THRESHOLD;
+
     // FLAGS for final block performance (practice trials)
     const PRACTICE_PARTIAL_ACCURACY_THRESHOLD = partialAccuracyThresh; // 0.75
     const PRACTICE_PROCESSING_ACCURACY_THRESHOLD = processingAccThresh; // 0.85
     const PRACTICE_PROCESSING_RT_THRESHOLD = processingRTThresh; // 1000ms (1s)
+
+    data.PRACTICE_PARTIAL_ACCURACY_THRESHOLD = PRACTICE_PARTIAL_ACCURACY_THRESHOLD;
+    data.PRACTICE_PROCESSING_ACCURACY_THRESHOLD = PRACTICE_PROCESSING_ACCURACY_THRESHOLD;
+    data.PRACTICE_PROCESSING_RT_THRESHOLD = PRACTICE_PROCESSING_RT_THRESHOLD;
 
     if (practiceCount < practiceThresh) {
       data.include_subject = 1;
@@ -8324,6 +8332,11 @@ var endBlock = {
       finalBlockProcessingTrials
     );
 
+    data.overall_response_performance = overallResponsePerformance;
+    data.overall_processing_performance = overallProcessingPerformance;
+    data.final_block_response_performance = finalBlockResponsePerformance;
+    data.final_block_processing_performance = finalBlockProcessingPerformance;
+
     const isSubjectIncludedFlag = (
       responsePerformance,
       processingPerformance
@@ -8374,5 +8387,6 @@ var operation_span_rdoc__screener_init = () => {
   operation_span_rdoc__screener_experiment.push(practiceNode);
   operation_span_rdoc__screener_experiment.push(postTaskBlock);
   operation_span_rdoc__screener_experiment.push(endBlock);
+  operation_span_rdoc__screener_experiment.push(instructionNode);
   operation_span_rdoc__screener_experiment.push(exitFullscreen);
 };
