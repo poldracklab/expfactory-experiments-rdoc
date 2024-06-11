@@ -6977,6 +6977,7 @@ var generateGrid = function () {
     }
 
     if (key === " ") {
+      event.preventDefault(); // handling default behavior on keydown event for spacebar. Prevents scrolling of the page.
       let currentTime = Date.now();
       let timeDifference = currentTime - initialCallTime;
       timestampsSubmissions.push(timeDifference); // Store timestamp
