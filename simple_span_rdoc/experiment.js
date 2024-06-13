@@ -29,7 +29,7 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-function calculatePartialAccuracy(trials) {
+function calculate_partial_accuracy(trials) {
   if (trials.length === 0) return 0; // Handle case where trials array is empty
 
   const totalAccuracy = trials.reduce((acc, trial) => {
@@ -919,7 +919,7 @@ var practiceNode = {
     }).trials;
 
     practiceCount += 1;
-    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+    var partialAccuracy = calculate_partial_accuracy(responseGridData);
 
     var correct = 0;
     var totalTrials = responseGridData.length;

@@ -6605,7 +6605,7 @@ const OG_CHEIN_SYMM_GRIDS = [
 /* Define helper functions */
 /* ************************************ */
 // common
-function calculatePartialAccuracy(trials) {
+function calculate_partial_accuracy(trials) {
   if (trials.length === 0) return 0; // Handle case where trials array is empty
 
   const totalAccuracy = trials.reduce((acc, trial) => {
@@ -6620,6 +6620,31 @@ function calculatePartialAccuracy(trials) {
   const partialAccuracy = totalAccuracy / trials.length;
   return partialAccuracy;
 }
+
+const calculate_processing_accuracy = trials => {
+  var correct_trials = 0;
+  var total_trials = 0;
+  var rt = 0;
+
+  for (var i = 0; i < trials.length; i++) {
+    if (trials[i].response === -1) {
+      total_trials++;
+    } else {
+      if (trials[i].response !== null) {
+        total_trials++;
+        if (trials[i].correct_trial === 1) {
+          correct_trials += 1;
+          rt += trials[i].rt;
+        }
+      }
+    }
+  }
+
+  var avgProcessingAcc = correct_trials / total_trials;
+  var avgProcessingRT = rt / correct_trials;
+
+  return { avgProcessingAcc, avgProcessingRT };
+};
 
 function shuffleArray(array) {
   // Create a copy of the original array to avoid modifying it directly
@@ -6852,7 +6877,7 @@ var generateGrid = function () {
     }
 
     if (key === " ") {
-      event.preventDefault(); // handling default behavior on keydown event for spacebar. Prevents scrolling of the page. 
+      event.preventDefault(); // handling default behavior on keydown event for spacebar. Prevents scrolling of the page.
       let currentTime = Date.now();
       let timeDifference = currentTime - initialCallTime;
       timestampsSubmissions.push(timeDifference); // Store timestamp
@@ -7315,13 +7340,25 @@ var waitBlock = {
     data["grid_symmetry"] = spatialAns === true ? "symmetric" : "asymmetric";
 
     // Handling "omissions"
-    if (timeLeft === null) {
-      if (data.response === null) {
+    if (data.response === null) {
+      // if no response at all for period of time, set to -1
+      let last_trial = jsPsych.data.get().last(2).values()[0];
+
+      if (last_trial.trial_id !== data.trial_id) {
         data["response"] = -1;
-      }
-    } else {
-      if (data.response === null) {
-        if (timeLeft > processingRTThresh) {
+      } else {
+        // if wait longer than processing rt threshold to make next response, set to -1
+        let last_trial = jsPsych.data.get().last(2).values()[0];
+        let last_diff_trial = jsPsych.data
+          .get()
+          .trials.filter(function (d) {
+            return d.trial_id !== data.trial_id;
+          })
+          .slice(-1)[0];
+
+        let diff = last_trial.time_elapsed - last_diff_trial.time_elapsed;
+
+        if (processingTrialDuration - diff > processingRTThresh) {
           data["response"] = -1;
         }
       }
@@ -7593,13 +7630,25 @@ const generate_processing_only_trials = () => {
           spatialAns === true ? "symmetric" : "asymmetric";
 
         // Handling "omissions"
-        if (timeLeft === null) {
-          if (data.response === null) {
+        if (data.response === null) {
+          // if no response at all for period of time, set to -1
+          let last_trial = jsPsych.data.get().last(2).values()[0];
+
+          if (last_trial.trial_id !== data.trial_id) {
             data["response"] = -1;
-          }
-        } else {
-          if (data.response === null) {
-            if (timeLeft > processingRTThresh) {
+          } else {
+            // if wait longer than processing rt threshold to make next response, set to -1
+            let last_trial = jsPsych.data.get().last(2).values()[0];
+            let last_diff_trial = jsPsych.data
+              .get()
+              .trials.filter(function (d) {
+                return d.trial_id !== data.trial_id;
+              })
+              .slice(-1)[0];
+
+            let diff = last_trial.time_elapsed - last_diff_trial.time_elapsed;
+
+            if (processingTrialDuration - diff > processingRTThresh) {
               data["response"] = -1;
             }
           }
@@ -7670,32 +7719,13 @@ var processing_only_node = {
       block_num: get_processing_only_block_count(),
     });
 
-    var correct_trials = 0;
-    var total_trials = 0;
-    var rt = 0;
-
-    for (var i = 0; i < trials.length; i++) {
-      if (trials[i].response === -1) {
-        total_trials++;
-      } else {
-        if (trials[i].rt !== null) {
-          total_trials++;
-
-          if (trials[i].correct_trial === 1) {
-            correct_trials += 1;
-            rt += trials[i].rt;
-          }
-        }
-      }
-    }
-
-    var accuracy = correct_trials / total_trials;
-    var average_rt = rt / correct_trials;
+    const { avgProcessingAcc, avgProcessingRT } =
+      calculate_processing_accuracy(trials);
 
     processing_only_count++;
 
     if (
-      (accuracy >= 0.75 && average_rt <= 1250) ||
+      (avgProcessingAcc >= 0.75 && avgProcessingRT <= 1250) ||
       processing_only_count === 2
     ) {
       feedbackText = `
@@ -7737,7 +7767,7 @@ var processing_only_node = {
       return false;
     } else {
       feedbackText = ``;
-      if (accuracy < 0.75) {
+      if (avgProcessingAcc < 0.75) {
         feedbackText +=
           "<p class = block-text>Your accuracy for the 8x8 grid is low.</p>" +
           `<p class = block-text>Try your best determining if the 8x8 grid is ${
@@ -7751,7 +7781,7 @@ var processing_only_node = {
           } (right arrow key).</p>`;
       }
 
-      if (average_rt > 1250) {
+      if (avgProcessingRT > 1250) {
         feedbackText += `<p class='block-text'>
             You are responding too slowly to the 8x8 grids when they appear on the screen.
           </p>
@@ -7978,7 +8008,7 @@ var memory_only_node = {
 
     memory_only_count++;
 
-    var partial_accuracy = calculatePartialAccuracy(trials);
+    var partial_accuracy = calculate_partial_accuracy(trials);
 
     if (partial_accuracy >= 0.5 || memory_only_count === 2) {
       feedbackText = `
@@ -8086,7 +8116,7 @@ var practiceNode = {
       condition: "operation",
       block_num: getCurrBlockNum(),
     }).trials;
-    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+    var partialAccuracy = calculate_partial_accuracy(responseGridData);
 
     practiceCount += 1;
 
@@ -8096,27 +8126,10 @@ var practiceNode = {
       block_num: getCurrBlockNum() - 1, // since already indexed block above
     }).trials;
 
-    var processingCorrect = 0;
-    var totalTrials = 0;
-    var rt = 0;
+    const { avgProcessingAcc, avgProcessingRT } = calculate_processing_accuracy(
+      responseProcessingData
+    );
 
-    for (var i = 0; i < responseProcessingData.length; i++) {
-      if (responseProcessingData[i].response === -1) {
-        totalTrials += 1;
-      } else {
-        if (responseProcessingData[i].rt !== null) {
-          totalTrials += 1;
-
-          if (responseProcessingData[i].correct_trial === 1) {
-            processingCorrect += 1;
-            rt += responseProcessingData[i].rt;
-          }
-        }
-      }
-    }
-
-    var avgProcessingAcc = processingCorrect / totalTrials;
-    var avgProcessingRT = rt / processingCorrect;
     var canProceedToTest;
 
     if (practiceCount === practiceThresh) {
@@ -8245,7 +8258,8 @@ var endBlock = {
     const FLAG_PROCESSING_RT_THRESHOLD = 1250;
 
     data.FLAG_PARTIAL_ACCURACY_THRESHOLD = FLAG_PARTIAL_ACCURACY_THRESHOLD;
-    data.FLAG_PROCESSING_ACCURACY_THRESHOLD = FLAG_PROCESSING_ACCURACY_THRESHOLD;
+    data.FLAG_PROCESSING_ACCURACY_THRESHOLD =
+      FLAG_PROCESSING_ACCURACY_THRESHOLD;
     data.FLAG_PROCESSING_RT_THRESHOLD = FLAG_PROCESSING_RT_THRESHOLD;
 
     // FLAGS for final block performance (practice trials)
@@ -8253,14 +8267,11 @@ var endBlock = {
     const PRACTICE_PROCESSING_ACCURACY_THRESHOLD = processingAccThresh; // 0.85
     const PRACTICE_PROCESSING_RT_THRESHOLD = processingRTThresh; // 1000ms (1s)
 
-    data.PRACTICE_PARTIAL_ACCURACY_THRESHOLD = PRACTICE_PARTIAL_ACCURACY_THRESHOLD;
-    data.PRACTICE_PROCESSING_ACCURACY_THRESHOLD = PRACTICE_PROCESSING_ACCURACY_THRESHOLD;
+    data.PRACTICE_PARTIAL_ACCURACY_THRESHOLD =
+      PRACTICE_PARTIAL_ACCURACY_THRESHOLD;
+    data.PRACTICE_PROCESSING_ACCURACY_THRESHOLD =
+      PRACTICE_PROCESSING_ACCURACY_THRESHOLD;
     data.PRACTICE_PROCESSING_RT_THRESHOLD = PRACTICE_PROCESSING_RT_THRESHOLD;
-
-    if (practiceCount < practiceThresh) {
-      data.include_subject = 1;
-      return;
-    }
 
     const practiceProcessingTrials = jsPsych.data
       .get()
@@ -8280,58 +8291,11 @@ var endBlock = {
       block_num: practiceThresh - 1,
     }).trials;
 
-    const evaluateResponseTrials = trials => {
-      const correctTrialsCount = trials.filter(
-        obj => obj.correct_trial === 1
-      ).length;
-
-      const partialAccuracy =
-        trials.reduce((acc, trial) => {
-          const { response, spatial_sequence } = trial;
-          const correctCount = spatial_sequence.filter(item =>
-            response.includes(item)
-          ).length;
-          const accuracy = correctCount / spatial_sequence.length;
-          return acc + accuracy;
-        }, 0) / trials.length;
-
-      return {
-        accuracy: correctTrialsCount / trials.length, // not used in exclusion, partial accuracy only
-        partialAccuracy,
-      };
-    };
-
-    const evaluateProcessingTrials = trials => {
-      const correctTrialsCount = trials.filter(
-        obj => obj.correct_trial === 1
-      ).length;
-
-      const responseTimes = trials
-        .filter(obj => obj.rt !== null && obj.correct_trial === 1)
-        .map(obj => obj.rt);
-
-      const meanResponseTime =
-        responseTimes.reduce((acc, rt) => acc + rt, 0) / responseTimes.length;
-
-      return {
-        accuracy: correctTrialsCount / trials.length,
-        meanResponseTime,
-      };
-    };
-
-    const overallResponsePerformance = evaluateResponseTrials(
-      practiceResponseTrials
-    );
-    const overallProcessingPerformance = evaluateProcessingTrials(
-      practiceProcessingTrials
-    );
-
-    const finalBlockResponsePerformance = evaluateResponseTrials(
-      finalBlockResponseTrials
-    );
-    const finalBlockProcessingPerformance = evaluateProcessingTrials(
-      finalBlockProcessingTrials
-    );
+    const overallResponsePerformance = calculate_partial_accuracy(practiceResponseTrials)
+    const overallProcessingPerformance = calculate_processing_accuracy(practiceProcessingTrials)
+    
+    const finalBlockResponsePerformance = calculate_partial_accuracy(finalBlockResponseTrials)
+    const finalBlockProcessingPerformance = calculate_processing_accuracy(finalBlockProcessingTrials)
 
     data.overall_response_performance = overallResponsePerformance;
     data.overall_processing_performance = overallProcessingPerformance;
@@ -8343,11 +8307,11 @@ var endBlock = {
       processingPerformance
     ) => {
       return (
-        responsePerformance.partialAccuracy >=
+        responsePerformance >=
           FLAG_PARTIAL_ACCURACY_THRESHOLD &&
-        processingPerformance.meanResponseTime <=
+        processingPerformance.avgProcessingRT <=
           FLAG_PROCESSING_RT_THRESHOLD &&
-        processingPerformance.accuracy >= FLAG_PROCESSING_ACCURACY_THRESHOLD
+        processingPerformance.avgProcessingAcc >= FLAG_PROCESSING_ACCURACY_THRESHOLD
       );
     };
 
@@ -8356,25 +8320,29 @@ var endBlock = {
       processingPerformance
     ) => {
       return (
-        responsePerformance.partialAccuracy >=
+        responsePerformance >=
           PRACTICE_PARTIAL_ACCURACY_THRESHOLD &&
-        processingPerformance.meanResponseTime <=
+        processingPerformance.avgProcessingRT <=
           PRACTICE_PROCESSING_RT_THRESHOLD &&
-        processingPerformance.accuracy >= PRACTICE_PROCESSING_ACCURACY_THRESHOLD
+        processingPerformance.avgProcessingAcc >= PRACTICE_PROCESSING_ACCURACY_THRESHOLD
       );
     };
 
-    data.include_subject =
-      isSubjectIncludedFlag(
-        overallResponsePerformance,
-        overallProcessingPerformance
-      ) ||
-      isSubjectIncludedPractice(
-        finalBlockResponsePerformance,
-        finalBlockProcessingPerformance
-      )
-        ? 1
-        : 0;
+    if (practiceCount < practiceThresh) {
+      data.include_subject = 1;
+    } else {
+      data.include_subject =
+        isSubjectIncludedFlag(
+          overallResponsePerformance,
+          overallProcessingPerformance
+        ) ||
+        isSubjectIncludedPractice(
+          finalBlockResponsePerformance,
+          finalBlockProcessingPerformance
+        )
+          ? 1
+          : 0;
+    }
   },
 };
 

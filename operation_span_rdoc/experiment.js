@@ -6632,7 +6632,7 @@ function sampleFromDecayingExponential() {
   return sample;
 }
 
-function calculatePartialAccuracy(trials) {
+function calculate_partial_accuracy(trials) {
   if (trials.length === 0) return 0; // Handle case where trials array is empty
 
   const totalAccuracy = trials.reduce((acc, trial) => {
@@ -6647,6 +6647,31 @@ function calculatePartialAccuracy(trials) {
   const partialAccuracy = totalAccuracy / trials.length;
   return partialAccuracy;
 }
+
+const calculate_processing_accuracy = trials => {
+  var correct_trials = 0;
+  var total_trials = 0;
+  var rt = 0;
+
+  for (var i = 0; i < trials.length; i++) {
+    if (trials[i].response === -1) {
+      total_trials++;
+    } else {
+      if (trials[i].response !== null) {
+        total_trials++;
+        if (trials[i].correct_trial === 1) {
+          correct_trials += 1;
+          rt += trials[i].rt;
+        }
+      }
+    }
+  }
+
+  var avgProcessingAcc = correct_trials / total_trials;
+  var avgProcessingRT = rt / correct_trials;
+
+  return { avgProcessingAcc, avgProcessingRT };
+};
 
 function shuffleChecksArray(array) {
   // Create a copy of the original array
@@ -7420,13 +7445,25 @@ var waitBlock = {
     data["block_num"] = getExpStage() == "practice" ? practiceCount : testCount;
 
     // Handling "omissions"
-    if (timeLeft === null) {
-      if (data.response === null) {
+    if (data.response === null) {
+      // if no response at all for period of time, set to -1
+      let last_trial = jsPsych.data.get().last(2).values()[0];
+
+      if (last_trial.trial_id !== data.trial_id) {
         data["response"] = -1;
-      }
-    } else {
-      if (data.response === null) {
-        if (timeLeft > processingRTThresh) {
+      } else {
+        // if wait longer than processing rt threshold to make next response, set to -1
+        let last_trial = jsPsych.data.get().last(2).values()[0];
+        let last_diff_trial = jsPsych.data
+          .get()
+          .trials.filter(function (d) {
+            return d.trial_id !== data.trial_id;
+          })
+          .slice(-1)[0];
+
+        let diff = last_trial.time_elapsed - last_diff_trial.time_elapsed;
+
+        if (processingTrialDuration - diff > processingRTThresh) {
           data["response"] = -1;
         }
       }
@@ -7693,7 +7730,7 @@ var practiceNode = {
       block_num: getCurrBlockNum(),
     }).trials;
 
-    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+    var partialAccuracy = calculate_partial_accuracy(responseGridData);
 
     practiceCount += 1;
 
@@ -7703,27 +7740,10 @@ var practiceNode = {
       block_num: getCurrBlockNum() - 1, // since already indexed block above
     }).trials;
 
-    var processingCorrect = 0;
-    var totalTrials = 0;
-    var rt = 0;
+    const { avgProcessingAcc, avgProcessingRT } = calculate_processing_accuracy(
+      responseProcessingData
+    );
 
-    for (var i = 0; i < responseProcessingData.length; i++) {
-      if (responseProcessingData[i].response === -1) {
-        totalTrials += 1;
-      } else {
-        if (responseProcessingData[i].rt !== null) {
-          totalTrials += 1;
-
-          if (responseProcessingData[i].correct_trial === 1) {
-            processingCorrect += 1;
-            rt += responseProcessingData[i].rt;
-          }
-        }
-      }
-    }
-
-    var avgProcessingAcc = processingCorrect / totalTrials;
-    var avgProcessingRT = rt / processingCorrect;
     var canProceedToTest;
 
     if (practiceCount == practiceThresh) {
@@ -7817,7 +7837,7 @@ var testNode = {
       block_num: getCurrBlockNum(),
     }).trials;
 
-    var partialAccuracy = calculatePartialAccuracy(responseGridData);
+    var partialAccuracy = calculate_partial_accuracy(responseGridData);
 
     testCount += 1;
 
@@ -7827,27 +7847,9 @@ var testNode = {
       block_num: getCurrBlockNum() - 1, // since already indexed block above
     }).trials;
 
-    var processingCorrect = 0;
-    var totalTrials = 0;
-    var rt = 0;
-
-    for (var i = 0; i < responseProcessingData.length; i++) {
-      if (responseProcessingData[i].response === -1) {
-        totalTrials += 1;
-      } else {
-        if (responseProcessingData[i].rt !== null) {
-          totalTrials += 1;
-
-          if (responseProcessingData[i].correct_trial === 1) {
-            processingCorrect += 1;
-            rt += responseProcessingData[i].rt;
-          }
-        }
-      }
-    }
-
-    var avgProcessingAcc = processingCorrect / totalTrials;
-    var avgProcessingRT = rt / processingCorrect;
+    const { avgProcessingAcc, avgProcessingRT } = calculate_processing_accuracy(
+      responseProcessingData
+    );
 
     currentAttentionCheckData = attentionCheckData.shift(); // Shift the first object from the array
 
