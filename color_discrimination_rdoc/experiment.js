@@ -218,6 +218,16 @@ var endBlock = {
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
+  on_finish: function (data) {
+    const trial_data = jsPsych.data.get().filter({ trial_id: "test_trial" });
+    const correct_trials = trial_data.filter({ correct_trial: 1 });
+    const accuracy = correct_trials.trials.length / trial_data.trials.length;
+    if (accuracy < 0.2) {
+      data.include_subject = 0;
+    } else {
+      data.include_subject = 1;
+    }
+  },
 };
 
 var color_discrimination_rdoc_experiment = [];
