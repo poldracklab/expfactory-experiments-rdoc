@@ -120,30 +120,6 @@ var trial = {
   },
 };
 
-var postTaskQuestion =
-  "Do you have any comments, concerns, or issues pertaining to this survey?";
-
-var postTaskBlock = {
-  type: jsPsychSurveyText,
-  questions: [
-    {
-      prompt: `<h1 class=block-text>${postTaskQuestion}</h1>`,
-      name: postTaskQuestion,
-      required: false,
-      rows: 20,
-      columns: 80,
-    },
-  ],
-  response_ends_trial: true,
-  data: {
-    trial_id: "post_task_feedback",
-  },
-  on_finish: function (data) {
-    data.question = postTaskQuestion;
-    data.response = data.response[postTaskQuestion];
-  },
-};
-
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
@@ -178,7 +154,6 @@ var l_cat_survey_rdoc_init = () => {
   l_cat_survey_rdoc_experiment.push(fullscreen);
   l_cat_survey_rdoc_experiment.push(instructionsBlock);
   l_cat_survey_rdoc_experiment.push(trial);
-  l_cat_survey_rdoc_experiment.push(postTaskBlock);
   l_cat_survey_rdoc_experiment.push(endBlock);
   l_cat_survey_rdoc_experiment.push(exitFullscreen);
 };

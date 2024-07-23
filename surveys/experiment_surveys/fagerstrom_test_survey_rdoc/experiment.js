@@ -275,21 +275,6 @@ var buttonBoard2 =
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
-
-//Set up post task questionnaire
-var post_task_block = {
-  type: "survey-text",
-  data: {
-    exp_id: "fagerstrom_test_survey_rdoc",
-    trial_id: "post_task_feedback",
-  },
-  questions: [
-    '<p class = center-block-text style = "font-size: 20px">Do you have any comments, concerns, or issues pertaining to this survey?</p>',
-  ],
-  rows: [15],
-  columns: [60],
-};
-
 var end_block = {
   type: "poldrack-text",
   data: {
@@ -390,5 +375,4 @@ fagerstrom_test_survey_rdoc_experiment.push(welcome_block);
 fagerstrom_test_survey_rdoc_experiment.push(instructions_block);
 fagerstrom_test_survey_rdoc_experiment.push(update_state_block);
 fagerstrom_test_survey_rdoc_experiment.push(post_questionnaire_node);
-fagerstrom_test_survey_rdoc_experiment.push(post_task_block);
 fagerstrom_test_survey_rdoc_experiment.push(end_block);

@@ -314,19 +314,6 @@ var post_questionnaire_node = {
   },
 };
 
-var post_task_block = {
-  type: "survey-text",
-  data: {
-    exp_id: "mcarthur_social_status_survey_rdoc",
-    trial_id: "post_task_feedback",
-  },
-  questions: [
-    '<p class = center-block-text style = "font-size: 20px; color:white;">Do you have any comments, concerns, or issues pertaining to this survey?</p>',
-  ],
-  rows: [15],
-  columns: [60],
-};
-
 /* ************************************ */
 /*          Set up Experiment           */
 /* ************************************ */
@@ -335,5 +322,4 @@ mcarthur_social_status_survey_rdoc_experiment.push(welcome_block);
 mcarthur_social_status_survey_rdoc_experiment.push(opening_instructions_block);
 mcarthur_social_status_survey_rdoc_experiment.push(update_state_block);
 mcarthur_social_status_survey_rdoc_experiment.push(post_questionnaire_node);
-mcarthur_social_status_survey_rdoc_experiment.push(post_task_block);
 mcarthur_social_status_survey_rdoc_experiment.push(end_block);
