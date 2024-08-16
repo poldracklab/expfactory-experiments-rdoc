@@ -302,13 +302,15 @@ var promptTextList = `
     <li>Cue "Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
       responseMappings.oddEven.even === "," ? "even" : "odd"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.oddEven.even === "," ? "odd" : "even"
-    }</b>.</li>
+  responseMappings.oddEven.even === "," ? "odd" : "even"
+}</b>.</li>
     <li>Cue "Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
-      responseMappings.higherLower.higher === "," ? "higher than 5" : "lower than 5"
+      responseMappings.higherLower.higher === ","
+        ? "higher than 5"
+        : "lower than 5"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.higherLower.higher === "," ? "lower than 5" : "higher than 5"
-    }</b>.</li>
+  responseMappings.higherLower.higher === "," ? "lower than 5" : "higher than 5"
+}</b>.</li>
   </ul>
 `;
 
@@ -317,13 +319,15 @@ var promptText = `
     <p class="center-block-text" style="font-size:16px; line-height:80%;">"Parity" or "Odd-Even": <b>comma key (,)</b> if <b>${
       responseMappings.oddEven.even === "," ? "even" : "odd"
     }</b> and <b>period key (.)</b> if <b>${
-      responseMappings.oddEven.even === "," ? "odd" : "even"
-    }</b></p>
+  responseMappings.oddEven.even === "," ? "odd" : "even"
+}</b></p>
    <p class="center-block-text" style="font-size:16px; line-height:80%;">"Magnitude" or "High-Low": <b>comma key (,)</b> if <b>${
-     responseMappings.higherLower.higher === "," ? "higher than 5" : "lower than 5"
+     responseMappings.higherLower.higher === ","
+       ? "higher than 5"
+       : "lower than 5"
    }</b> and <b>period key (.)</b> if <b>${
-     responseMappings.higherLower.higher === "," ? "lower than 5" : "higher than 5"
-   }</b></p>
+  responseMappings.higherLower.higher === "," ? "lower than 5" : "higher than 5"
+}</b></p>
   </div>
 `;
 
@@ -332,7 +336,7 @@ var numTrialsPerBlock = 64;
 var numTestBlocks = 3;
 
 var practiceThresh = 3; // 3 blocks of 16 trials
-var rtThresh = 750;
+var rtThresh = 1000;
 var missedResponseThresh = 0.1;
 var accuracyThresh = 0.8; // min acc for block-level feedback
 var practiceAccuracyThresh = 0.75; // min acc to proceed to test blocks
