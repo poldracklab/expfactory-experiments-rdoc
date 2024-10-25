@@ -287,7 +287,7 @@ var fixation = {
   },
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
-  prompt: function () {
+  prompt: function(data) {
     return getExpStage() === "practice" ? promptText : "";
   },
 };
@@ -296,15 +296,16 @@ var fixation = {
 var ISI = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
-  choices: ["NO_KEYS"],
+  // choices: ["NO_KEYS"],
+  response_ends_trial: false,
   data: function () {
     const stage = getExpStage();
     return {
-      trial_id: `${stage}_inter-stimulus`, 
+      trial_id: `${stage}_inter-stimulus`,
       exp_stage: stage,
       trial_duration: fixationDuration + 2500,
       stimulus_duration: fixationDuration + 2500,
-      block_num: stage === "practice" ? practiceCount : testCount, 
+      block_num: stage === "practice" ? practiceCount : testCount,
     };
   },
   stimulus_duration: fixationDuration + 2500, // 3000
@@ -591,9 +592,8 @@ for (i = 0; i < practiceLen; i++) {
     stimulus_duration: cueStimulusDuration, // 500
     trial_duration: cueTrialDuration, // 500
     response_ends_trial: false,
-
     prompt: promptText,
-    on_finish: function (data) {
+    on_finish: function(data) {
       data["cue_letter"] = extractTextFromStimulus(data);
     },
   };
