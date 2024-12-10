@@ -205,7 +205,7 @@ var sumInstructTime = 0; // ms
 var instructTimeThresh = 5; // /in seconds
 var goResponse = " "; // spacebar
 
-var numGoStim = 6; 
+var numGoStim = 6;
 var correctResponses = [
   ["go", goResponse],
   ["nogo", null],
@@ -215,8 +215,7 @@ var correctResponses = [
 var stims = [
   ["solid white", "stim1"],
   ["outlined white", "stim2"],
-]; 
-
+];
 
 var currentTrial = 0;
 var practiceStimuli = [
@@ -349,7 +348,6 @@ var feedbackInstructBlock = {
   trial_duration: 180000,
 };
 
-
 var instructionsBlock = {
   type: jsPsychInstructions,
   data: {
@@ -390,11 +388,11 @@ var feedbackText =
 var feedbackBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: function () {
-    const stage = getExpStage(); 
+    const stage = getExpStage();
     return {
-      trial_id: `${stage}_feedback`, 
-      exp_stage: stage, 
-      trial_duration: 60000, 
+      trial_id: `${stage}_feedback`,
+      exp_stage: stage,
+      trial_duration: 60000,
     };
   },
   choices: ["Enter"],
@@ -735,10 +733,12 @@ var testNode = {
   },
 };
 
-
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
+  on_finish: function (data) {
+    data["group_index"] = group_index;
+  },
 };
 var exitFullscreen = {
   type: jsPsychFullscreen,
