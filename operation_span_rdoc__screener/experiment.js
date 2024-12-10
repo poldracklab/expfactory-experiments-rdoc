@@ -8221,6 +8221,9 @@ var postTaskBlock = {
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
+  on_finish: function (data) {
+    data["group_index"] = group_index;
+  },
 };
 var exitFullscreen = {
   type: jsPsychFullscreen,
@@ -8291,11 +8294,19 @@ var endBlock = {
       block_num: practiceThresh - 1,
     }).trials;
 
-    const overallResponsePerformance = calculate_partial_accuracy(practiceResponseTrials)
-    const overallProcessingPerformance = calculate_processing_accuracy(practiceProcessingTrials)
-    
-    const finalBlockResponsePerformance = calculate_partial_accuracy(finalBlockResponseTrials)
-    const finalBlockProcessingPerformance = calculate_processing_accuracy(finalBlockProcessingTrials)
+    const overallResponsePerformance = calculate_partial_accuracy(
+      practiceResponseTrials
+    );
+    const overallProcessingPerformance = calculate_processing_accuracy(
+      practiceProcessingTrials
+    );
+
+    const finalBlockResponsePerformance = calculate_partial_accuracy(
+      finalBlockResponseTrials
+    );
+    const finalBlockProcessingPerformance = calculate_processing_accuracy(
+      finalBlockProcessingTrials
+    );
 
     data.overall_response_performance = overallResponsePerformance;
     data.overall_processing_performance = overallProcessingPerformance;
@@ -8307,11 +8318,10 @@ var endBlock = {
       processingPerformance
     ) => {
       return (
-        responsePerformance >=
-          FLAG_PARTIAL_ACCURACY_THRESHOLD &&
-        processingPerformance.avgProcessingRT <=
-          FLAG_PROCESSING_RT_THRESHOLD &&
-        processingPerformance.avgProcessingAcc >= FLAG_PROCESSING_ACCURACY_THRESHOLD
+        responsePerformance >= FLAG_PARTIAL_ACCURACY_THRESHOLD &&
+        processingPerformance.avgProcessingRT <= FLAG_PROCESSING_RT_THRESHOLD &&
+        processingPerformance.avgProcessingAcc >=
+          FLAG_PROCESSING_ACCURACY_THRESHOLD
       );
     };
 
@@ -8320,11 +8330,11 @@ var endBlock = {
       processingPerformance
     ) => {
       return (
-        responsePerformance >=
-          PRACTICE_PARTIAL_ACCURACY_THRESHOLD &&
+        responsePerformance >= PRACTICE_PARTIAL_ACCURACY_THRESHOLD &&
         processingPerformance.avgProcessingRT <=
           PRACTICE_PROCESSING_RT_THRESHOLD &&
-        processingPerformance.avgProcessingAcc >= PRACTICE_PROCESSING_ACCURACY_THRESHOLD
+        processingPerformance.avgProcessingAcc >=
+          PRACTICE_PROCESSING_ACCURACY_THRESHOLD
       );
     };
 

@@ -963,6 +963,9 @@ var testNode = {
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
+  on_finish: function (data) {
+    data["group_index"] = group_index;
+  },
 };
 var exitFullscreen = {
   type: jsPsychFullscreen,

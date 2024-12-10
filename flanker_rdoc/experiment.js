@@ -131,7 +131,6 @@ const stimTrialDuration = 1500;
 var sumInstructTime = 0; // ms
 var instructTimeThresh = 5; // /in seconds
 
-
 /* *********** Feedback performance thresholds ************* */
 var practiceThresh = 3;
 var rtThresh = 750;
@@ -655,7 +654,10 @@ var practiceNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var aveRT = sumRT / sumResponses;
 
-    if (accuracy >= practiceAccuracyThresh || practiceCount === practiceThresh) {
+    if (
+      accuracy >= practiceAccuracyThresh ||
+      practiceCount === practiceThresh
+    ) {
       feedbackText = ` <div class="centerbox">
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
@@ -716,7 +718,6 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     choices: ["NO_KEYS"],
     stimulus_duration: fixationDuration,
     trial_duration: fixationDuration,
-
   };
 
   var testTrial = {
@@ -822,10 +823,12 @@ var testNode = {
   },
 };
 
-
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
+  on_finish: function (data) {
+    data["group_index"] = group_index;
+  },
 };
 var exitFullscreen = {
   type: jsPsychFullscreen,

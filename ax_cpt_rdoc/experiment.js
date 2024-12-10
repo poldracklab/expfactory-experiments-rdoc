@@ -236,7 +236,7 @@ var runAttentionChecks = true;
 var practiceThresh = 3; // 3 practice blocks max
 var accuracyThresh = 0.8; // block-level accuracy feedback
 var practiceAccuracyThresh = 0.8; // min accuracy to proceed to test
-var rtThresh = 750; 
+var rtThresh = 750;
 var missedResponseThresh = 0.1; // get feedback if missed responses > 10% of trials
 
 /* ******************************* */
@@ -276,18 +276,18 @@ var fixation = {
   stimulus: "<div class = centerbox><div class = fixation>+</div></div>",
   choices: ["NO_KEYS"],
   data: function () {
-    const stage = getExpStage(); 
+    const stage = getExpStage();
     return {
       trial_id: `${stage}_fixation`,
       exp_stage: stage,
       trial_duration: fixationDuration,
       stimulus_duration: fixationDuration,
-      block_num: stage === "practice" ? practiceCount : testCount, 
+      block_num: stage === "practice" ? practiceCount : testCount,
     };
   },
   stimulus_duration: fixationDuration, // 500
   trial_duration: fixationDuration, // 500
-  prompt: function(data) {
+  prompt: function (data) {
     return getExpStage() === "practice" ? promptText : "";
   },
 };
@@ -446,7 +446,7 @@ var feedbackBlock = {
   data: function () {
     const stage = getExpStage();
     return {
-      trial_id: `${stage}_feedback`, 
+      trial_id: `${stage}_feedback`,
       exp_stage: stage,
       trial_duration: 60000,
       block_num: stage === "practice" ? practiceCount : testCount,
@@ -593,7 +593,7 @@ for (i = 0; i < practiceLen; i++) {
     trial_duration: cueTrialDuration, // 500
     response_ends_trial: false,
     prompt: promptText,
-    on_finish: function(data) {
+    on_finish: function (data) {
       data["cue_letter"] = extractTextFromStimulus(data);
     },
   };
@@ -760,14 +760,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
     response_ends_trial: false,
     on_finish: appendData,
   };
-  testTrials.push(
-    setStimsBlock,
-    fixation,
-    cueBlock,
-    ISI,
-    probeBlock,
-    ITIBlock
-  );
+  testTrials.push(setStimsBlock, fixation, cueBlock, ISI, probeBlock, ITIBlock);
 }
 
 var testCount = 0;
@@ -801,7 +794,7 @@ var testNode = {
     var missedResponses = (totalTrials - sumResponses) / totalTrials;
     var avgRT = sumRT / sumResponses;
 
-    currentAttentionCheckData = attentionCheckData.shift(); 
+    currentAttentionCheckData = attentionCheckData.shift();
 
     if (testCount == numTestBlocks) {
       feedbackText = `
@@ -857,6 +850,9 @@ var testNode = {
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
+  on_finish: function (data) {
+    data["group_index"] = group_index;
+  },
 };
 var exitFullscreen = {
   type: jsPsychFullscreen,
