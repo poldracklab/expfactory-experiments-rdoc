@@ -196,27 +196,42 @@ const fixationDuration = 500;
 var possibleResponses;
 
 function getKeyMappingForTask(group_index) {
-  if (Math.floor(group_index) % 3 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
+  const combinations = [
+    [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
       ["ring finger", "/", "forward slash key (/)"],
-    ];
-  } else if (Math.floor(group_index) % 3 === 1) {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
+    ],
+    [
+      ["index finger", ",", "comma key (,)"],
+      ["ring finger", "/", "forward slash key (/)"],
+      ["middle finger", ".", "period key (.)"],
+    ],
+    [
       ["middle finger", ".", "period key (.)"],
       ["index finger", ",", "comma key (,)"],
       ["ring finger", "/", "forward slash key (/)"],
-    ];
-  } else if (Math.floor(group_index) % 3 === 2) {
-    possibleResponses = [
+    ],
+    [
       ["middle finger", ".", "period key (.)"],
       ["ring finger", "/", "forward slash key (/)"],
       ["index finger", ",", "comma key (,)"],
-    ];
-  }
+    ],
+    [
+      ["ring finger", "/", "forward slash key (/)"],
+      ["index finger", ",", "comma key (,)"],
+      ["middle finger", ".", "period key (.)"],
+    ],
+    [
+      ["ring finger", "/", "forward slash key (/)"],
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ],
+  ];
+
+  // Use modulo 6 to cycle through all combinations
+  const combinationIndex = Math.floor(group_index) % 6;
+  return combinations[combinationIndex];
 }
 
 var group_index =
