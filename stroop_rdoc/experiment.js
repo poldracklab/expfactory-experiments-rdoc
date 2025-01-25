@@ -231,7 +231,7 @@ function getKeyMappingForTask(group_index) {
 
   // Use modulo 6 to cycle through all combinations
   const combinationIndex = Math.floor(group_index) % 6;
-  return combinations[combinationIndex];
+  possibleResponses = combinations[combinationIndex];
 }
 
 var group_index =
