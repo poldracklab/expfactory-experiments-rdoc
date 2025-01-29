@@ -196,42 +196,60 @@ const fixationDuration = 500;
 var possibleResponses;
 
 function getKeyMappingForTask(group_index) {
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - For group indices 0 to 2: use index for "red", middle for "blue", ring for "green"
+  // - For group indices 3 to 5: use index for "red", middle for "green", ring for "blue"
+  // - For group indices 6 to 8: use index for "green", middle for "red", ring for "blue"
+  // - For group indices 9 to 11: use index for "blue", middle for "green", ring for "red"
+  // - For group indices 12 to 14: use index for "green", middle for "blue", ring for "red"
+  // - Removed mapping for "blue", middle for "red", ring for "green"
   const combinations = [
     [
+      // index - red, middle - blue, ring - green
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
       ["ring finger", "/", "forward slash key (/)"],
     ],
     [
+      // index - red, middle - green, ring - blue
       ["index finger", ",", "comma key (,)"],
       ["ring finger", "/", "forward slash key (/)"],
       ["middle finger", ".", "period key (.)"],
     ],
-    [
-      ["middle finger", ".", "period key (.)"],
-      ["index finger", ",", "comma key (,)"],
-      ["ring finger", "/", "forward slash key (/)"],
-    ],
-    [
-      ["middle finger", ".", "period key (.)"],
-      ["ring finger", "/", "forward slash key (/)"],
-      ["index finger", ",", "comma key (,)"],
-    ],
+    // index - blue, middle - green, ring - red
     [
       ["ring finger", "/", "forward slash key (/)"],
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
     ],
+    // index - green, middle - blue, ring - red
     [
       ["ring finger", "/", "forward slash key (/)"],
       ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ],
+    // index - green, middle - red, ring - blue
+    [
+      ["middle finger", ".", "period key (.)"],
+      ["ring finger", "/", "forward slash key (/)"],
       ["index finger", ",", "comma key (,)"],
     ],
   ];
 
-  // Use modulo 6 to cycle through all combinations
-  const combinationIndex = Math.floor(group_index) % 6;
-  possibleResponses = combinations[combinationIndex];
+  if (0 <= group_index && group_index <= 2) {
+    possibleResponses = combinations[0];
+  } else if (3 <= group_index && group_index <= 5) {
+    possibleResponses = combinations[1];
+  } else if (6 <= group_index && group_index <= 8) {
+    possibleResponses = combinations[2];
+  } else if (9 <= group_index && group_index <= 11) {
+    possibleResponses = combinations[3];
+  } else if (12 <= group_index && group_index <= 14) {
+    possibleResponses = combinations[4];
+  } else {
+    throw new Error("Group index out of bounds");
+  }
 }
 
 var group_index =

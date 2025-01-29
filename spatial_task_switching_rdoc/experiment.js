@@ -354,51 +354,44 @@ var appendData = function () {
 /* ************************************ */
 const fixationDuration = 500;
 
+function getResponseMappings(group_index) {
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - No longer sample index for "square, blue"; middle for "circle, orange"
+  // - Evenly sample the remaining key mappings
+  if (0 <= group_index && group_index <= 4) {
+    return {
+      quadMappings: { top: "form", bottom: "color" },
+      responseMappings: {
+        form: { circle: ",", square: "." },
+        color: { blue: ",", orange: "." },
+      },
+    };
+  } else if (5 <= group_index && group_index <= 9) {
+    return {
+      quadMappings: { top: "form", bottom: "color" },
+      responseMappings: {
+        form: { circle: ",", square: "." },
+        color: { blue: ".", orange: "," },
+      },
+    };
+  } else if (10 <= group_index && group_index <= 14) {
+    return {
+      quadMappings: { top: "color", bottom: "form" },
+      responseMappings: {
+        form: { circle: ".", square: "," },
+        color: { blue: ".", orange: "," },
+      },
+    };
+  } else {
+    throw new Error("Group index out of bounds");
+  }
+}
+
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
-function getResponseMappings(group_index) {
-  var responseMapping;
-  var quadMappings;
-
-  if (group_index % 2 == 0) {
-    quadMappings = { top: "form", bottom: "color" };
-  } else {
-    quadMappings = { top: "color", bottom: "form" };
-  }
-
-  switch (group_index % 4) {
-    case 0: // Condition 1
-      responseMapping = {
-        form: { circle: ",", square: "." },
-        color: { blue: ",", orange: "." },
-      };
-      break;
-    case 1: // Condition 2
-      responseMapping = {
-        form: { circle: ".", square: "," },
-        color: { blue: ",", orange: "." },
-      };
-      break;
-    case 2: // Condition 3
-      responseMapping = {
-        form: { circle: ",", square: "." },
-        color: { blue: ".", orange: "," },
-      };
-      break;
-    case 3: // Condition 4
-      responseMapping = {
-        form: { circle: ".", square: "," },
-        color: { blue: ".", orange: "," },
-      };
-      break;
-  }
-
-  return { responseMapping, quadMappings };
-}
-
-var responseMappings = getResponseMappings(group_index).responseMapping;
-var quadMappings = getResponseMappings(group_index).quadMappings;
+var { responseMappings, quadMappings } = getResponseMappings(group_index);
 
 const choices = [",", "."];
 

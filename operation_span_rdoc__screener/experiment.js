@@ -7020,16 +7020,24 @@ var practiceThresh = 3;
 var processingChoices;
 
 function getKeyMappingForTask(group_index) {
-  if (group_index % 2 === 0) {
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - For group indices 0 to 4: use index for "asymmetric" and middle for "symmetric"
+  // - For group indices 5 to 14: use index for "symmetric" and middle for "asymmetric"
+  if (0 <= group_index && group_index <= 4) {
+    // Mapping for "asymmetric" - Index and "symmetric" - Middle
+    processingChoices = [
+      { keycode: "ArrowRight", keyname: "right arrow key" },
+      { keycode: "ArrowLeft", keyname: "left arrow key" },
+    ];
+  } else if (5 <= group_index && group_index <= 14) {
+    // Mapping for "symmetric" - Index and "asymmetric" - Middle
     processingChoices = [
       { keycode: "ArrowLeft", keyname: "left arrow key" },
       { keycode: "ArrowRight", keyname: "right arrow key" },
     ];
   } else {
-    processingChoices = [
-      { keycode: "ArrowRight", keyname: "right arrow key" },
-      { keycode: "ArrowLeft", keyname: "left arrow key" },
-    ];
+    throw new Error("Group index out of bounds");
   }
 }
 
