@@ -218,36 +218,28 @@ var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
 function getResponseMappings(group_index) {
-  var mappings;
-
-  switch (group_index % 4) {
-    case 0: // Condition 1
-      mappings = {
-        higherLower: { higher: ",", lower: "." },
-        oddEven: { odd: ",", even: "." },
-      };
-      break;
-    case 1: // Condition 2
-      mappings = {
-        higherLower: { higher: ".", lower: "," },
-        oddEven: { odd: ",", even: "." },
-      };
-      break;
-    case 2: // Condition 3
-      mappings = {
-        higherLower: { higher: ",", lower: "." },
-        oddEven: { odd: ".", even: "," },
-      };
-      break;
-    case 3: // Condition 4
-      mappings = {
-        higherLower: { higher: ".", lower: "," },
-        oddEven: { odd: ".", even: "," },
-      };
-      break;
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - No longer sample index for "low, odd"; middle for "high, even"
+  // - Evenly sample the remaining key mappings
+  if (0 <= group_index && group_index <= 4) {
+    return {
+      higherLower: { higher: ",", lower: "." },
+      oddEven: { odd: ",", even: "." },
+    };
+  } else if (5 <= group_index && group_index <= 9) {
+    return {
+      higherLower: { higher: ",", lower: "." },
+      oddEven: { odd: ".", even: "," },
+    };
+  } else if (10 <= group_index && group_index <= 14) {
+    return {
+      higherLower: { higher: ".", lower: "," },
+      oddEven: { odd: ".", even: "," },
+    };
+  } else {
+    throw new Error("Group index out of bounds");
   }
-
-  return mappings;
 }
 
 var responseMappings = getResponseMappings(group_index);

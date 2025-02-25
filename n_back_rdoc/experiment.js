@@ -352,18 +352,24 @@ const fixationDuration = 500;
 var possibleResponses;
 
 function getKeyMappingForTask(group_index) {
-  if (group_index % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - For group indices 0 to 4: use index for "mismatch" and middle for "match"
+  // - For group indices 5 to 14: use index for "match" and middle for "mismatch"
+  if (0 <= group_index && group_index <= 4) {
+    // Mapping for "mismatch" - Index and "match" - Middle
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  } else if (5 <= group_index && group_index <= 14) {
+    // Mapping for "match" - Index and "mismatch" - Middle
     possibleResponses = [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
     ];
   } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["middle finger", ".", "period key (.)"],
-      ["index finger", ",", "comma key (,)"],
-    ];
+    throw new Error("Group index out of bounds");
   }
 }
 

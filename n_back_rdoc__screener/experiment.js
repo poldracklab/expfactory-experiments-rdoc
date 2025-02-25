@@ -203,18 +203,24 @@ const fixationDuration = 500;
 var possibleResponses;
 
 function getKeyMappingForTask(group_index) {
-  if (group_index % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - For group indices 0 to 4: use index for "mismatch" and middle for "match"
+  // - For group indices 5 to 14: use index for "match" and middle for "mismatch"
+  if (0 <= group_index && group_index <= 4) {
+    // Mapping for "mismatch" - Index and "match" - Middle
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
+    ];
+  } else if (5 <= group_index && group_index <= 14) {
+    // Mapping for "match" - Index and "mismatch" - Middle
     possibleResponses = [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
     ];
   } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["middle finger", ".", "period key (.)"],
-      ["index finger", ",", "comma key (,)"],
-    ];
+    throw new Error("Group index out of bounds");
   }
 }
 
@@ -291,8 +297,8 @@ var getPromptText = function () {
   return `
     <div class="prompt_box">
       <p class="center-block-text" style="font-size:16px; line-height:80%;">Match the current letter to the letter that appeared ${delay} ${
-        delay === 1 ? "trial" : "trials"
-      } ago.</p>
+    delay === 1 ? "trial" : "trials"
+  } ago.</p>
       <p class="center-block-text" style="font-size:16px; line-height:80%;">${
         possibleResponses[0][0] === "index finger" ? "Match" : "Mismatch"
       }: comma key (,)</p>
@@ -315,8 +321,8 @@ var pageInstruct = [
     <p class="block-text">Press your <b>index finger</b> if the letters <b>${
       possibleResponses[0][0] === "index finger" ? "match" : "mismatch"
     }</b>, and your <b>middle finger</b> if they <b>${
-      possibleResponses[0][0] === "index finger" ? "mismatch" : "match"
-    }</b>.</p>
+    possibleResponses[0][0] === "index finger" ? "mismatch" : "match"
+  }</b>.</p>
     <p class="block-text">Your delay (the number of trials ago to which you compare the current letter) will change from block to block. You will be given the delay at the start of every block of trials.</p>
     <p class="block-text">Capitalization does not matter, so "T" matches with "t".</p>
   </div>
@@ -325,8 +331,8 @@ var pageInstruct = [
   <div class="centerbox">
     <p class="block-text"><b>Your delay for this practice round is ${delay}</b>.</p>
     <p class="block-text">For blocks with a delay of <b>${delay}</b>, please respond <b>mismatch</b> for the <b>first ${
-      delay === 1 ? "trial" : "two trials"
-    }</b>.</p>
+    delay === 1 ? "trial" : "two trials"
+  }</b>.</p>
     <p class="block-text">We'll start with a practice round. During practice, you will receive feedback and a reminder of the rules. These will be taken out for the test, so make sure you understand the instructions before moving on.</p>
     ${speedReminder}
   </div>
@@ -634,13 +640,13 @@ var practiceNode1 = {
         <div class="centerbox">
           <p class="center-block-text"><b>We will now start practice for a delay of ${delay}.</b></p>
             <p class="block-text">For blocks with a delay of <b>${delay}</b>, please respond <b>mismatch</b> for the <b>first ${
-              delay === 1 ? "trial" : "two trials"
-            }</b>.</p>
+        delay === 1 ? "trial" : "two trials"
+      }</b>.</p>
                   <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
 
           <p class="block-text">Please match the current letter to the letter that appeared <b>${delay}</b> ${
-            delay === 1 ? "trial" : "trials"
-          } ago.</p>
+        delay === 1 ? "trial" : "trials"
+      } ago.</p>
           <p class="block-text">Capitalization does not matter, so "T" matches with "t".</p>
           <p class="block-text">Press <i>enter</i> to continue.</p>
         </div>
@@ -718,8 +724,8 @@ var practiceNode2 = {
         <p class="center-block-text">We will now start the test portion.</p>
         <p class="block-text">Keep your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
         <p class="block-text"><b>Your delay for this block is ${delay}</b>. Please match the current letter to the letter that appeared <b>${delay}</b> ${
-          delay === 1 ? "trial" : "trials"
-        } ago.</p>
+        delay === 1 ? "trial" : "trials"
+      } ago.</p>
         <p class="block-text">Capitalization does not matter, so "T" matches with "t".</p>
         <p class="block-text">Press <i>enter</i> to continue.</p>
       </div>

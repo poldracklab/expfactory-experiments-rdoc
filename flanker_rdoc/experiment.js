@@ -75,19 +75,26 @@ const getCurrBlockNum = () =>
 /* Define experimental variables */
 /* ************************************ */
 var possibleResponses;
+
 function getKeyMappingForTask(group_index) {
-  if (Math.floor(group_index / 12) % 2 === 0) {
-    // Assuming even group_index uses ",", odd group_index uses "."
+  // Adjust group index to use values from 0 to 14.
+  // Oversampling adjustments:
+  // - For group indices 0 to 4: use index for "H" and middle for "F"
+  // - For group indices 5 to 14: use index for "F" and middle for "H"
+  if (0 <= group_index && group_index <= 4) {
+    // Mapping for "H" - Index and "F" - Middle
     possibleResponses = [
       ["index finger", ",", "comma key (,)"],
       ["middle finger", ".", "period key (.)"],
+    ];
+  } else if (5 <= group_index && group_index <= 14) {
+    // Mapping for "F" - Index and "H" - Middle
+    possibleResponses = [
+      ["middle finger", ".", "period key (.)"],
+      ["index finger", ",", "comma key (,)"],
     ];
   } else {
-    // Assuming even group_index uses ",", odd group_index uses "."
-    possibleResponses = [
-      ["middle finger", ".", "period key (.)"],
-      ["index finger", ",", "comma key (,)"],
-    ];
+    throw new Error("Group index out of bounds");
   }
 }
 
