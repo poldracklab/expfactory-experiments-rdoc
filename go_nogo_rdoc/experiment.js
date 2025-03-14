@@ -217,6 +217,9 @@ var stims = [
   ["outlined white", "stim2"],
 ];
 
+var group_index =
+  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+
 var currentTrial = 0;
 var practiceStimuli = [
   {
