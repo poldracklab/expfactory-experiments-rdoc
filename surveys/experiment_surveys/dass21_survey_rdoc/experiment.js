@@ -125,9 +125,9 @@ var instructionsBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
     trial_id: "instructions",
-    trial_duration: 180000,
+    trial_duration: 60000,
   },
-  trial_duration: 180000,
+  trial_duration: 60000,
   stimulus: instructions,
   choices: ["Enter"],
   post_trial_gap: 0,
@@ -191,9 +191,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "dass21_survey_rdoc",
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,

@@ -9,9 +9,9 @@ var instructionsBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: {
     trial_id: "instructions",
-    trial_duration: 180000,
+    trial_duration: 30000,
   },
-  trial_duration: 180000,
+  trial_duration: 30000,
   stimulus: instructions,
   choices: ["Enter"],
   post_trial_gap: 0,
@@ -21,9 +21,9 @@ var trial = {
   type: jsPsychSurveyMultiChoice,
   data: {
     trial_id: "instructions",
-    trial_duration: 180000,
+    trial_duration: 60000,
   },
-  trial_duration: 180000,
+  trial_duration: 60000,
   questions: [
     {
       prompt: `You've just completed practice sessions for a sample of the cognitive tasks in the 12-hour "main" study. The main study includes 5 repetitions of each of these tasks and 5 repetitions of other, similar tasks. Some subjects find the main study tasks monotonous and/or cognitively demanding.<br><br> 
@@ -110,9 +110,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "retain_interest_survey_rdoc",
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,

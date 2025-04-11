@@ -28,7 +28,7 @@ var getQuestions = function () {
   //if subject makes fatal or conditional response on previous question, set time == 1.
   //doing the above skips the upcoming question
   skip_question = 1;
-  do_not_skip_question = 300000;
+  do_not_skip_question = 120000;
 
   if (sub_made_fatal_response === 0 && sub_made_conditional_response == -1) {
     whichTime = do_not_skip_question;
@@ -229,7 +229,7 @@ var end_block = {
     exp_id: "alcohol_drugs_survey_network",
     trial_id: "end",
   },
-  timing_response: 180000,
+  timing_response: 15000,
   text:
     "<div class = bigbox><div class = centerbox>" +
     '<p class = center-text2 style="font-size:36px"><font color="white">Thanks for completing this survey!</font></p>' +
