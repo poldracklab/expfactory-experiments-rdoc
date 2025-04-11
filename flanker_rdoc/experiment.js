@@ -348,7 +348,7 @@ images.push(pathSource + "F.png");
 images.push(pathSource + "H.png");
 
 const getCurrAttentionCheckQuestion = () =>
-  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 1 minute. Do not press shift.</div>`;
+  `${currentAttentionCheckData.Q} <div class="block-text">This screen will advance automatically in 15 seconds. Do not press shift.</div>`;
 
 const getCurrAttentionCheckAnswer = () => currentAttentionCheckData.A;
 
@@ -457,50 +457,64 @@ var attentionNode = {
   },
 };
 
+var sumInstructTime = 0;
+
 var feedbackInstructBlock = {
   type: jsPsychHtmlKeyboardResponse,
   choices: ["Enter"],
+  stimulus: getInstructFeedback,
   data: {
     trial_id: "instruction_feedback",
-    trial_duration: 180000,
+    trial_duration: 30000,
   },
-  stimulus: getInstructFeedback,
-  trial_duration: 180000,
-};
-var instructionsBlock = {
-  type: jsPsychInstructions,
-  pages: [pageInstruct],
-  allow_keys: false,
-  data: {
-    trial_id: "instructions",
-    trial_duration: null,
-    stimulus: pageInstruct,
-  },
-  show_clickable_nav: true,
+  trial_duration: 30000,
 };
 
+// Show the one instruction page, allow clicking or timeout
+var instructionsBlock = {
+  type: jsPsychInstructions,
+  pages: [pageInstruct], // Just one page
+  allow_keys: false,
+  show_clickable_nav: true,
+  data: {
+    trial_id: "instructions",
+    stimulus: pageInstruct,
+  },
+  on_load: function () {
+    setTimeout(() => {
+      jsPsych.finishTrial(); // auto-advance after 60 seconds
+    }, 60000);
+  },
+  on_finish: function (data) {
+    if (data.rt != null) {
+      sumInstructTime += data.rt;
+    } else {
+      sumInstructTime += 60000;
+    }
+  }
+};
+
+// Node that loops if too fast
 var instructionNode = {
   timeline: [feedbackInstructBlock, instructionsBlock],
   loop_function: function (data) {
-    for (i = 0; i < data.trials.length; i++) {
-      if (
-        data.trials[i].trial_id == "instructions" &&
-        data.trials[i].rt != null
-      ) {
-        rt = data.trials[i].rt;
-        sumInstructTime += rt;
-      }
+    sumInstructTime = 0;
+    const trials = data.filter({ trial_id: "instructions" }).trials;
+    for (let i = 0; i < trials.length; i++) {
+      sumInstructTime += trials[i].rt != null ? trials[i].rt : 60000;
     }
+
     if (sumInstructTime <= instructTimeThresh * 1000) {
-      feedbackInstructText =
-        "<p class=block-text>Read through instructions too quickly. Please take your time and make sure you understand the instructions.</p><p class=block-text>Press <i>enter</i> to continue.</p>";
-      return true;
-    } else if (sumInstructTime > instructTimeThresh * 1000) {
-      feedbackInstructText =
-        "<p class=block-text>Done with instructions. Press <i>enter</i> to continue.</p>";
-      return false;
+      feedbackInstructText = `
+        <p class=block-text>Read through instructions too quickly. Please take your time and make sure you understand the instructions.</p>
+        <p class=block-text>Press <i>enter</i> to continue.</p>`;
+      return true; // repeat
+    } else {
+      feedbackInstructText = `
+        <p class=block-text>Done with instructions. Press <i>enter</i> to continue.</p>`;
+      return false; // continue
     }
-  },
+  }
 };
 
 var feedbackText =
@@ -512,13 +526,13 @@ var feedbackBlock = {
     return {
       trial_id: `${stage}_feedback`,
       exp_stage: stage,
-      trial_duration: 60000,
+      trial_duration: 30000,
       block_num: stage === "practice" ? practiceCount : testCount,
     };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  trial_duration: 60000,
+  trial_duration: 30000,
   response_ends_trial: true,
 };
 
@@ -679,7 +693,7 @@ var practiceNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
@@ -792,7 +806,7 @@ var testNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       feedbackText += `<p class=block-text>You have completed ${testCount} out of ${numTestBlocks} blocks of trials.</p>`;
 
@@ -849,9 +863,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: expID,
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
 };

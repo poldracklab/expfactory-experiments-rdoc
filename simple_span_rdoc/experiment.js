@@ -59,7 +59,7 @@ function shuffleChecksArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 15 seconds. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -502,7 +502,7 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: 60000,
+    trial_duration: 15000,
     timing_post_trial: 1000,
     exp_stage: "test",
     condition: "simple",
@@ -511,7 +511,7 @@ var attentionCheckBlock = {
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
   timing_post_trial: 1000,
-  trial_duration: 60000,
+  trial_duration: 15000,
   on_finish: data => (data["block_num"] = testCount),
 };
 
@@ -527,10 +527,10 @@ var feedbackInstructBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instruction_feedback",
-    trial_duration: 180000,
+    trial_duration: 30000,
   },
   stimulus: getInstructFeedback,
-  trial_duration: 180000,
+  trial_duration: 30000,
 };
 
 var simpleSpanInstructions = `
@@ -560,35 +560,59 @@ var reminderInstruct = `
   </div>
 `;
 
-var instructionsBlock = {
-  type: jsPsychInstructions,
-  pages: [simpleSpanInstructions, reminderInstruct],
-  allow_keys: false,
-  data: {
-    trial_id: "instructions",
-    trial_duration: null,
-    stimulus: [simpleSpanInstructions, reminderInstruct],
-  },
-  show_clickable_nav: true,
-};
+var sumInstructTime = 0;
+var instructTimers = [];
+
+var instructionPages = [simpleSpanInstructions, reminderInstruct];
+var instructionsBlock = [];
+
+function createInstructionTrial(pageIndex) {
+  return {
+    type: jsPsychInstructions,
+    pages: [instructionPages[pageIndex]],
+    show_clickable_nav: true,
+    allow_keys: false,
+    data: {
+      trial_id: "instructions",
+      page_index: pageIndex,
+      stimulus: instructionPages[pageIndex],
+    },
+    on_load: function () {
+      const timer = setTimeout(() => {
+        jsPsych.finishTrial();
+      }, 60000); // auto-advance after 60 seconds
+      instructTimers.push(timer);
+    },
+    on_finish: function (data) {
+      instructTimers.forEach((t) => clearTimeout(t));
+      instructTimers = [];
+      sumInstructTime += data.rt != null ? data.rt : 60000;
+    },
+  };
+}
+
+// Build individual timed instruction trials
+for (let i = 0; i < instructionPages.length; i++) {
+  instructionsBlock.push(createInstructionTrial(i));
+}
 
 var instructionNode = {
-  timeline: [feedbackInstructBlock, instructionsBlock],
+  timeline: [feedbackInstructBlock, ...instructionsBlock],
   loop_function: function (data) {
-    for (i = 0; i < data.trials.length; i++) {
-      if (
-        data.trials[i].trial_id == "instructions" &&
-        data.trials[i].rt != null
-      ) {
-        rt = data.trials[i].rt;
-        sumInstructTime += rt;
+    sumInstructTime = 0;
+    for (let i = 0; i < data.trials.length; i++) {
+      if (data.trials[i].trial_id === "instructions") {
+        sumInstructTime += data.trials[i].rt != null
+          ? data.trials[i].rt
+          : 60000;
       }
     }
+
     if (sumInstructTime <= instructTimeThresh * 1000) {
       feedbackInstructText =
         "<p class=block-text>Read through instructions too quickly. Please take your time and make sure you understand the instructions.</p><p class=block-text>Press <i>enter</i> to continue.</p>";
       return true;
-    } else if (sumInstructTime > instructTimeThresh * 1000) {
+    } else {
       feedbackInstructText =
         "<p class=block-text>Done with instructions. Press <i>enter</i> to continue.</p>";
       return false;
@@ -606,14 +630,14 @@ var feedbackBlock = {
     return {
       trial_id: `${stage}_feedback`,
       exp_stage: stage,
-      trial_duration: 60000,
+      trial_duration: 30000,
       block_num: stage === "practice" ? practiceCount : testCount,
       condition: "simple",
     };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  trial_duration: 60000,
+  trial_duration: 30000,
   response_ends_trial: true,
 };
 
@@ -954,7 +978,7 @@ var practiceNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       if (partialAccuracy < partialAccuracyThresh) {
         feedbackText +=
@@ -1036,7 +1060,7 @@ var testNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       feedbackText += `<p class=block-text>You have completed ${testCount} out of ${numTestBlocks} blocks of trials.</p>`;
 
@@ -1079,9 +1103,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "simple_span_rdoc",
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
 };

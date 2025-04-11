@@ -121,11 +121,11 @@ var instructionsBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instructions",
-    trial_duration: 180000,
+    trial_duration: 60000,
   },
   stimulus: instructions,
   post_trial_gap: 0,
-  trial_duration: 180000,
+  trial_duration: 60000,
 };
 
 var testTrial = {
@@ -191,9 +191,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: expID,
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
   post_trial_gap: 0,
