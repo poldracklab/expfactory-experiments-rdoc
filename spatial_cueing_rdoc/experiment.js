@@ -313,7 +313,7 @@ var invalidCueStim = stimuli.filter(obj => obj.data.condition === "invalid");
 
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
-
+  
 var promptText = `
   <div class="prompt_box">
     <p class="center-block-text" style="font-size:16px; line-height:80%;">Star in left box: ${possibleResponses[0][2]}</p>

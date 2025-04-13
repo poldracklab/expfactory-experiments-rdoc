@@ -60,6 +60,9 @@ function generateStims() {
   return stims;
 }
 
+var group_index =
+  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+
 var stims = generateStims();
 
 const getInstructFeedback = () =>
@@ -183,7 +186,7 @@ var exitFullscreen = {
   fullscreen_mode: false,
 };
 
-var expID = "color_blindness_rdoc";
+var expID = "color_discrimination_rdoc";
 
 // last block in timeline
 var endBlock = {
