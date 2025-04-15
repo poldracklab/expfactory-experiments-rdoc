@@ -317,7 +317,7 @@ var instructions_block = {
     '<p class = block-text style="font-size:28px"><font color="white">Please answer the following questions regarding your nicotine use.</font></p>' +
     '<p class = block-text style="font-size:28px"><font color="white">Click on the button that best fits your answer, then <strong>press enter to submit your response</strong>.</font></p>' +
     '<p class = block-text style="font-size:28px"><font color="white">You will not be able to go back, so please carefully read and understand each question before you move on.</font></p>' +
-    '<p class = block-text style="font-size:28px"><font color="white">Each question will disappear after 3 minutes if you do not respond.  Please answer each question by the time limit.</font></p>' +
+    '<p class = block-text style="font-size:28px"><font color="white">Each question will disappear after 1 minute if you do not respond.  Please answer each question by the time limit.</font></p>' +
     '<p class = block-text style="font-size:28px"><font color="white">Press enter to begin the survey.</font></p>' +
     "</div>",
   cont_key: [13],
