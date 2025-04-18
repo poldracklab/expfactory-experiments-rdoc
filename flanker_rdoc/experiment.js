@@ -438,7 +438,7 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: 60000,
+    trial_duration: 15000,
     timing_post_trial: 1000,
     exp_stage: "test",
   },
@@ -446,7 +446,7 @@ var attentionCheckBlock = {
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
   timing_post_trial: 1000,
-  trial_duration: 60000,
+  trial_duration: 15000,
   on_finish: data => (data["block_num"] = testCount),
 };
 
