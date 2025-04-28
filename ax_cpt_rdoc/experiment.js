@@ -207,6 +207,7 @@ var pageInstruct = [
     <p class=block-text>Place your <b>index finger</b> on the <b>comma key (,)</b> and your <b>middle finger</b> on the <b>period key (.)</b></p>
     <p class = block-text>During this task, on each trial you will see a letter presented, a short break, and then a second letter. For instance, you may see an "A" followed by an "F".</p>
     <p class = block-text>If the first letter was an "A" <b>AND</b> the second letter is an "X", press your <b>${possibleResponses[0][0]}</b>. Otherwise, press your <b>${possibleResponses[1][0]}</b>.</p>
+
   </div>
   `,
   `
@@ -848,7 +849,7 @@ var testNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       feedbackText += `<p class=block-text>You have completed ${testCount} out of ${numTestBlocks} blocks of trials.</p>`;
 
@@ -879,9 +880,9 @@ var testNode = {
       return true;
     }
   },
-  on_timeline_finish: function () {
-    window.dataSync();
-  },
+  // on_timeline_finish: function () {
+  //   window.dataSync();
+  // },
 };
 
 /* ******************************* */
