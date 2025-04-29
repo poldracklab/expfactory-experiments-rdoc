@@ -44,7 +44,7 @@ function shuffleArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 15 seconds. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -302,7 +302,7 @@ var promptText = `
 
 var pageInstruct = `
   <div class="centerbox">
-    <p class="block-text">Place your <b>index finger</b> on the <b>spacebar</b></p>
+    <p class="block-text">Place your <b>index finger</b> on the <b>spacebar</b>.</p>
     <p class="block-text">In this experiment, on each trial a ${stims[0][0]} or ${stims[1][0]} square will appear on the screen.</p>
     <p class="block-text">If you see the <b>${stims[0][0]} square</b>, you should respond by pressing your <b>index finger</b> as quickly as possible.</p>
     <p class="block-text">If you see the <b>${stims[1][0]} square</b>, you should <b>not respond</b>.</p>
@@ -321,7 +321,7 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: 60000,
+    trial_duration: 15000,
     timing_post_trial: 1000,
     exp_stage: "test",
   },
@@ -329,7 +329,7 @@ var attentionCheckBlock = {
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
   timing_post_trial: 1000,
-  trial_duration: 60000,
+  trial_duration: 15000,
   on_finish: data => (data["block_num"] = testCount),
 };
 
@@ -345,11 +345,14 @@ var feedbackInstructBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instruction_feedback",
-    trial_duration: 180000,
+    trial_duration: 30000,
   },
   stimulus: getInstructFeedback,
-  trial_duration: 180000,
+  trial_duration: 30000,
 };
+
+var sumInstructTime = 0;
+var instructTimer;
 
 var instructionsBlock = {
   type: jsPsychInstructions,
@@ -358,9 +361,24 @@ var instructionsBlock = {
     trial_duration: null,
     stimulus: pageInstruct,
   },
-  pages: [pageInstruct],
+  pages: [pageInstruct], // assuming pageInstruct is a single page of HTML
   allow_keys: false,
   show_clickable_nav: true,
+  on_load: function () {
+    // Automatically end the trial after 60s if participant hasn't navigated
+    instructTimer = setTimeout(() => {
+      jsPsych.finishTrial();
+    }, 60000); // 60 seconds
+  },
+  on_finish: function (data) {
+    // Clear the auto-advance timer
+    clearTimeout(instructTimer);
+    // If participant didn't click 'next', count as 60s
+    if (data.rt === null) {
+      data.rt = 60000;
+    }
+    sumInstructTime += data.rt;
+  }
 };
 
 var instructionNode = {
@@ -395,12 +413,12 @@ var feedbackBlock = {
     return {
       trial_id: `${stage}_feedback`,
       exp_stage: stage,
-      trial_duration: 60000,
+      trial_duration: 30000,
     };
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  trial_duration: 60000,
+  trial_duration: 30000,
   response_ends_trial: true,
 };
 
@@ -593,7 +611,7 @@ var practiceNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       if (accuracy < practiceAccuracyThresh) {
         feedbackText += `
@@ -699,7 +717,7 @@ var testNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       feedbackText += `<p class=block-text>You have completed ${testCount} out of ${numTestBlocks} blocks of trials.</p>`;
 
@@ -756,9 +774,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: expID,
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
 };

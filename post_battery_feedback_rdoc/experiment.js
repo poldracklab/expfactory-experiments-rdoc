@@ -21,9 +21,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: expID,
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
 };

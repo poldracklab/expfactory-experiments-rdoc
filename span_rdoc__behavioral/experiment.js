@@ -6647,7 +6647,7 @@ function shuffleChecksArray(array) {
 }
 
 var getCurrAttentionCheckQuestion = function () {
-  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 1 minute. Do not press shift.</div>`;
+  return `${currentAttentionCheckData.Q} <div class=block-text>This screen will advance automatically in 15 seconds. Do not press shift.</div>`;
 };
 
 var getCurrAttentionCheckAnswer = function () {
@@ -7171,7 +7171,7 @@ var attentionCheckBlock = {
   type: jsPsychAttentionCheckRdoc,
   data: {
     trial_id: "test_attention_check",
-    trial_duration: 60000,
+    trial_duration: 15000,
     timing_post_trial: 200,
     exp_stage: "test",
   },
@@ -7179,7 +7179,7 @@ var attentionCheckBlock = {
   key_answer: getCurrAttentionCheckAnswer,
   response_ends_trial: true,
   timing_post_trial: 200,
-  trial_duration: 60000,
+  trial_duration: 15000,
   on_finish: data => (data["block_num"] = testCount),
 };
 
@@ -7195,10 +7195,10 @@ var feedbackInstructBlock = {
   choices: ["Enter"],
   data: {
     trial_id: "instruction_feedback",
-    trial_duration: 180000,
+    trial_duration: 30000,
   },
   stimulus: getInstructFeedback,
-  trial_duration: 180000,
+  trial_duration: 30000,
 };
 
 var opSpanInstructions = `
@@ -7340,21 +7340,21 @@ var feedbackBlock = {
       return {
         trial_id: "practice_feedback",
         exp_stage: getExpStage(),
-        trial_duration: 60000,
+        trial_duration: 30000,
         block_num: practiceCount,
       };
     } else {
       return {
         trial_id: "test_feedback",
         exp_stage: getExpStage(),
-        trial_duration: 60000,
+        trial_duration: 30000,
         block_num: testCount,
       };
     }
   },
   choices: ["Enter"],
   stimulus: getFeedback,
-  trial_duration: 60000,
+  trial_duration: 30000,
   response_ends_trial: true,
 };
 
@@ -7816,7 +7816,7 @@ var practiceNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       if (accuracy < accuracyThresh) {
         feedbackText +=
@@ -7971,7 +7971,7 @@ var testNode = {
       return false;
     } else {
       feedbackText =
-        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 1 minute.</p>";
+        "<div class = centerbox><p class = block-text>Please take this time to read your feedback! This screen will advance automatically in 30 seconds.</p>";
 
       feedbackText += `<p class=block-text>You have completed ${testCount} out of ${numTestBlocks} blocks of trials.</p>`;
 
@@ -8053,9 +8053,9 @@ var endBlock = {
   data: {
     trial_id: "end",
     exp_id: "span_rdoc",
-    trial_duration: 180000,
+    trial_duration: 15000,
   },
-  trial_duration: 180000,
+  trial_duration: 15000,
   stimulus: endText,
   choices: ["Enter"],
 };
