@@ -116,6 +116,7 @@ function getKeyMappingForTask(group_index) {
   // Oversampling adjustments:
   // - For group indices 0 to 4: use index for "other" and middle for "AX"
   // - For group indices 5 to 14: use index for "AX" and middle for "other"
+  console.log("Group index passed as arg: ", group_index);
   if (0 <= group_index && group_index <= 4) {
     // Mapping for "Other" - Index and "AX" - Middle
     possibleResponses = [
@@ -142,6 +143,8 @@ const conditionValues = ["AX", "BY", "BX", "AY"];
 var group_index =
   typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
 
+console.log("Global group index variable: ", group_index);
+console.log("Window EF vars: ", window.efVars);
 getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];
@@ -388,7 +391,7 @@ function createInstructionTrial(pageIndex) {
       exp_id: expID,
       trial_id: "instructions",
       page_index: pageIndex,
-      stimulus: instructionPages[pageIndex]
+      stimulus: instructionPages[pageIndex],
     },
     on_load: function () {
       // Set timeout for auto-advance
@@ -399,12 +402,12 @@ function createInstructionTrial(pageIndex) {
     },
     on_finish: function (data) {
       // Clear all active timers
-      instructTimers.forEach((t) => clearTimeout(t));
+      instructTimers.forEach(t => clearTimeout(t));
       instructTimers = [];
       if (data.rt != null) {
         sumInstructTime += data.rt;
       }
-    }
+    },
   };
 }
 
@@ -440,8 +443,6 @@ var instructionNode = {
     }
   },
 };
-
-
 
 /* ******************************* */
 /* PRACTICE FEEDBACK STUFF */
