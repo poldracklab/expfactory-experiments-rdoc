@@ -116,7 +116,6 @@ function getKeyMappingForTask(group_index) {
   // Oversampling adjustments:
   // - For group indices 0 to 4: use index for "other" and middle for "AX"
   // - For group indices 5 to 14: use index for "AX" and middle for "other"
-  console.log("Group index passed as arg: ", group_index);
   if (0 <= group_index && group_index <= 4) {
     // Mapping for "Other" - Index and "AX" - Middle
     possibleResponses = [
@@ -142,8 +141,6 @@ const conditionValues = ["AX", "BY", "BX", "AY"];
 
 var group_index = window.efVars?.group_index ?? 1;
 
-console.log("Global group index variable: ", group_index);
-console.log("Window EF vars: ", window.efVars);
 getKeyMappingForTask(group_index);
 
 const choices = [possibleResponses[0][1], possibleResponses[1][1]];

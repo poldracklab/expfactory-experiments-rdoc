@@ -224,8 +224,7 @@ function getKeyMappingForTask(group_index) {
   }
 }
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 getKeyMappingForTask(group_index);
 

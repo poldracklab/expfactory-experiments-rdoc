@@ -311,9 +311,8 @@ var doubleCueStim = stimuli.filter(obj => obj.data.condition === "doublecue");
 var validCueStim = stimuli.filter(obj => obj.data.condition === "valid");
 var invalidCueStim = stimuli.filter(obj => obj.data.condition === "invalid");
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
-  
+var group_index = window.efVars?.group_index ?? 1;
+
 var promptText = `
   <div class="prompt_box">
     <p class="center-block-text" style="font-size:16px; line-height:80%;">Star in left box: ${possibleResponses[0][2]}</p>
@@ -414,7 +413,7 @@ for (let i = 0; i < pageInstruct.length; i++) {
       instructTimers.push(timer);
     },
     on_finish: function (data) {
-      instructTimers.forEach((t) => clearTimeout(t));
+      instructTimers.forEach(t => clearTimeout(t));
       instructTimers = [];
       sumInstructTime += data.rt != null ? data.rt : 60000;
     },
@@ -427,12 +426,9 @@ var instructionNode = {
   loop_function: function (data) {
     sumInstructTime = 0;
     for (let i = 0; i < data.trials.length; i++) {
-      if (
-        data.trials[i].trial_id === "instructions"
-      ) {
-        sumInstructTime += data.trials[i].rt != null
-          ? data.trials[i].rt
-          : 60000;
+      if (data.trials[i].trial_id === "instructions") {
+        sumInstructTime +=
+          data.trials[i].rt != null ? data.trials[i].rt : 60000;
       }
     }
 

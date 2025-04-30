@@ -188,6 +188,8 @@ var practiceThresh = 3;
 var numTrialsPerBlock = 63; // multiple of 7 (6go:1nogo)
 var numTestBlocks = 3;
 
+var group_index = window.efVars?.group_index ?? 1;
+
 var promptTextList = `
   <ul style="text-align:left;">
     <li>${stims[0][0]} square: spacebar</li>

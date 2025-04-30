@@ -388,8 +388,7 @@ function getResponseMappings(group_index) {
   }
 }
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 var { responseMappings, quadMappings } = getResponseMappings(group_index);
 
@@ -752,7 +751,6 @@ var feedback_instruct_block = {
   trial_duration: 30000,
 };
 
-
 var sumInstructTime = 0;
 var instructTimers = [];
 var instructionPages = pageInstruct; // an array of HTML instruction pages
@@ -777,7 +775,7 @@ function createInstructionTrial(pageIndex) {
       instructTimers.push(timer);
     },
     on_finish: function (data) {
-      instructTimers.forEach((t) => clearTimeout(t));
+      instructTimers.forEach(t => clearTimeout(t));
       instructTimers = [];
       sumInstructTime += data.rt != null ? data.rt : 60000;
     },
@@ -804,7 +802,9 @@ var instruction_node = {
   timeline: [feedback_instruct_block, ...instructions_block],
   loop_function: function () {
     sumInstructTime = 0;
-    const trials = jsPsych.data.get().filter({ trial_id: "instructions" }).trials;
+    const trials = jsPsych.data
+      .get()
+      .filter({ trial_id: "instructions" }).trials;
 
     for (let i = 0; i < trials.length; i++) {
       sumInstructTime += trials[i].rt != null ? trials[i].rt : 60000;
@@ -822,7 +822,6 @@ var instruction_node = {
     }
   },
 };
-
 
 var end_block = {
   type: jsPsychHtmlKeyboardResponse,
