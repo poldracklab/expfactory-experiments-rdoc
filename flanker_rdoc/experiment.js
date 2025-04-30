@@ -98,8 +98,7 @@ function getKeyMappingForTask(group_index) {
   }
 }
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 getKeyMappingForTask(group_index);
 
@@ -491,7 +490,7 @@ var instructionsBlock = {
     } else {
       sumInstructTime += 60000;
     }
-  }
+  },
 };
 
 // Node that loops if too fast
@@ -514,7 +513,7 @@ var instructionNode = {
         <p class=block-text>Done with instructions. Press <i>enter</i> to continue.</p>`;
       return false; // continue
     }
-  }
+  },
 };
 
 var feedbackText =

@@ -60,8 +60,7 @@ function generateStims() {
   return stims;
 }
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 var stims = generateStims();
 

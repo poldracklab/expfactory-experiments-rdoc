@@ -217,8 +217,7 @@ var stims = [
   ["outlined white", "stim2"],
 ];
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 var currentTrial = 0;
 var practiceStimuli = [
@@ -378,7 +377,7 @@ var instructionsBlock = {
       data.rt = 60000;
     }
     sumInstructTime += data.rt;
-  }
+  },
 };
 
 var instructionNode = {

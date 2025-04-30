@@ -1,3 +1,5 @@
+var group_index = window.efVars?.group_index ?? 1;
+
 var fullscreen = {
   type: jsPsychFullscreen,
   fullscreen_mode: true,
