@@ -239,8 +239,8 @@ var appendData = function () {
       whichQuadrant === 1
         ? quadMappings.top
         : whichQuadrant === 2
-          ? quadMappings.top
-          : quadMappings.bottom,
+        ? quadMappings.top
+        : quadMappings.bottom,
     condition: task_switch,
     correct_response: correct_response,
     whichQuadrant: whichQuadrant,
@@ -268,8 +268,7 @@ var appendData = function () {
 /* ************************************ */
 const fixationDuration = 500;
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 function getResponseMappings(group_index) {
   var responseMapping;
@@ -420,10 +419,10 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-          ? responseMappings.color.blue === ","
-            ? "blue"
-            : "orange"
-          : ""
+        ? responseMappings.color.blue === ","
+          ? "blue"
+          : "orange"
+        : ""
     }</b>: comma key (,)</li>
     <li><b>${
       quadMappings.top === "form"
@@ -431,10 +430,10 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-          ? responseMappings.color.blue === "."
-            ? "blue"
-            : "orange"
-          : ""
+        ? responseMappings.color.blue === "."
+          ? "blue"
+          : "orange"
+        : ""
     }</b>: period key (.)</li>
     <li>Bottom 2 quadrants: judge the shape on its <b>${
       quadMappings.bottom
@@ -445,10 +444,10 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-          ? responseMappings.color.blue === ","
-            ? "blue"
-            : "orange"
-          : ""
+        ? responseMappings.color.blue === ","
+          ? "blue"
+          : "orange"
+        : ""
     }</b>: comma key (,)</li>
     <li><b>${
       quadMappings.bottom === "form"
@@ -456,10 +455,10 @@ var prompt_text_list = `
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-          ? responseMappings.color.blue === "."
-            ? "blue"
-            : "orange"
-          : ""
+        ? responseMappings.color.blue === "."
+          ? "blue"
+          : "orange"
+        : ""
     }</b>: period key (.)</li>
   </ul>`;
 
@@ -474,10 +473,10 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.top === "color"
-              ? responseMappings.color.blue === ","
-                ? "blue"
-                : "orange"
-              : ""
+            ? responseMappings.color.blue === ","
+              ? "blue"
+              : "orange"
+            : ""
         }</b>: comma key (,)</li>
         <li><b>${
           quadMappings.top === "form"
@@ -485,10 +484,10 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.top === "color"
-              ? responseMappings.color.blue === "."
-                ? "blue"
-                : "orange"
-              : ""
+            ? responseMappings.color.blue === "."
+              ? "blue"
+              : "orange"
+            : ""
         }</b>: period key (.)</li>
       </ul>
     </div>
@@ -503,10 +502,10 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.bottom === "color"
-              ? responseMappings.color.blue === ","
-                ? "blue"
-                : "orange"
-              : ""
+            ? responseMappings.color.blue === ","
+              ? "blue"
+              : "orange"
+            : ""
         }</b>: comma key (,)</li>
         <li><b>${
           quadMappings.bottom === "form"
@@ -514,10 +513,10 @@ var prompt_text = `
               ? "circle"
               : "square"
             : quadMappings.bottom === "color"
-              ? responseMappings.color.blue === "."
-                ? "blue"
-                : "orange"
-              : ""
+            ? responseMappings.color.blue === "."
+              ? "blue"
+              : "orange"
+            : ""
         }</b>: period key (.)</li>
       </ul>
     </div>
@@ -532,61 +531,61 @@ var pageInstruct = [
     <p class = block-text>In the top two quadrants, please judge the shape based on its <b>${
       quadMappings.top
     }</b>. Press your <b>index finger</b> ${
-      quadMappings.top === "form" ? "if it's a" : "if it's"
-    }
+    quadMappings.top === "form" ? "if it's a" : "if it's"
+  }
     <b>${
       quadMappings.top === "form"
         ? responseMappings.form.circle === ","
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-          ? responseMappings.color.blue === ","
-            ? "<span style='color:#87CEEB'>blue</span>"
-            : "<span style='color:#FFD700'>orange</span>"
-          : ""
+        ? responseMappings.color.blue === ","
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
+        : ""
     }</b> and your <b>middle finger</b> ${
-      quadMappings.top === "form" ? "if it's a" : "if it's"
-    }
+    quadMappings.top === "form" ? "if it's a" : "if it's"
+  }
     <b>${
       quadMappings.top === "form"
         ? responseMappings.form.circle === "."
           ? "circle"
           : "square"
         : quadMappings.top === "color"
-          ? responseMappings.color.blue === "."
-            ? "<span style='color:#87CEEB'>blue</span>"
-            : "<span style='color:#FFD700'>orange</span>"
-          : ""
+        ? responseMappings.color.blue === "."
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
+        : ""
     }</b>.
     </p>
      <p class = block-text>In the bottom two quadrants, please judge the shape based on its <b>${
        quadMappings.bottom
      }</b>. Press your <b>index finger</b> ${
-       quadMappings.bottom === "form" ? "if it's a" : "if it's"
-     }
+    quadMappings.bottom === "form" ? "if it's a" : "if it's"
+  }
     <b>${
       quadMappings.bottom === "form"
         ? responseMappings.form.circle === ","
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-          ? responseMappings.color.blue === ","
-            ? "<span style='color:#87CEEB'>blue</span>"
-            : "<span style='color:#FFD700'>orange</span>"
-          : ""
+        ? responseMappings.color.blue === ","
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
+        : ""
     }</b> and your <b>middle finger</b> ${
-      quadMappings.bottom === "form" ? "if it's a" : "if it's"
-    }
+    quadMappings.bottom === "form" ? "if it's a" : "if it's"
+  }
     <b>${
       quadMappings.bottom === "form"
         ? responseMappings.form.circle === "."
           ? "circle"
           : "square"
         : quadMappings.bottom === "color"
-          ? responseMappings.color.blue === "."
-            ? "<span style='color:#87CEEB'>blue</span>"
-            : "<span style='color:#FFD700'>orange</span>"
-          : ""
+        ? responseMappings.color.blue === "."
+          ? "<span style='color:#87CEEB'>blue</span>"
+          : "<span style='color:#FFD700'>orange</span>"
+        : ""
     }</b>.
     </p>
   </div>`,
