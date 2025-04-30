@@ -140,8 +140,7 @@ function getKeyMappingForTask(group_index) {
 const fixationDuration = 500;
 const conditionValues = ["AX", "BY", "BX", "AY"];
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 console.log("Global group index variable: ", group_index);
 console.log("Window EF vars: ", window.efVars);
