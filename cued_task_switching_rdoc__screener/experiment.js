@@ -214,8 +214,7 @@ var getResponse = function () {
 /* ************************************ */
 const fixationDuration = 500;
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 function getResponseMappings(group_index) {
   // Adjust group index to use values from 0 to 14.

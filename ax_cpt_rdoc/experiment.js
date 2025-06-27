@@ -139,8 +139,7 @@ function getKeyMappingForTask(group_index) {
 const fixationDuration = 500;
 const conditionValues = ["AX", "BY", "BX", "AY"];
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 getKeyMappingForTask(group_index);
 
@@ -388,7 +387,7 @@ function createInstructionTrial(pageIndex) {
       exp_id: expID,
       trial_id: "instructions",
       page_index: pageIndex,
-      stimulus: instructionPages[pageIndex]
+      stimulus: instructionPages[pageIndex],
     },
     on_load: function () {
       // Set timeout for auto-advance
@@ -399,12 +398,12 @@ function createInstructionTrial(pageIndex) {
     },
     on_finish: function (data) {
       // Clear all active timers
-      instructTimers.forEach((t) => clearTimeout(t));
+      instructTimers.forEach(t => clearTimeout(t));
       instructTimers = [];
       if (data.rt != null) {
         sumInstructTime += data.rt;
       }
-    }
+    },
   };
 }
 
@@ -440,8 +439,6 @@ var instructionNode = {
     }
   },
 };
-
-
 
 /* ******************************* */
 /* PRACTICE FEEDBACK STUFF */

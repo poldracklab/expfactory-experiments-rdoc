@@ -467,8 +467,7 @@ function getKeyMappingForTask(group_index) {
   }
 }
 
-var group_index =
-  typeof window.efVars !== "undefined" ? window.efVars.group_index : 1;
+var group_index = window.efVars?.group_index ?? 1;
 
 getKeyMappingForTask(group_index);
 
@@ -584,7 +583,7 @@ function createInstructionTrial(pageIndex) {
       instructTimers.push(timer);
     },
     on_finish: function (data) {
-      instructTimers.forEach((t) => clearTimeout(t));
+      instructTimers.forEach(t => clearTimeout(t));
       instructTimers = [];
       sumInstructTime += data.rt != null ? data.rt : 60000;
     },
@@ -602,9 +601,8 @@ var instructionNode = {
     sumInstructTime = 0;
     for (let i = 0; i < data.trials.length; i++) {
       if (data.trials[i].trial_id === "instructions") {
-        sumInstructTime += data.trials[i].rt != null
-          ? data.trials[i].rt
-          : 60000;
+        sumInstructTime +=
+          data.trials[i].rt != null ? data.trials[i].rt : 60000;
       }
     }
 
