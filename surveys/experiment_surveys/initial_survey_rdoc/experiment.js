@@ -18,7 +18,7 @@ var questions = [
   {
     type: "multi-choice",
     prompt:
-      "This study includes repeating 11 cognitive tasks 5 times each, and within each task there are many repetitions of each trial type. Though you are free to leave the study at any time, the nature of the study and planned analyses require complete, 12-hour datasets. Given this study structure, are you confident that you will be able to complete all 12 sessions of the main study? If you are reluctant to continue or think you may not be able to complete all 12 sessions, respond “no” to this question.",
+      "This study includes repeating 12 cognitive tasks 5 times each, and within each task there are many repetitions of each trial type. Though you are free to leave the study at any time, the nature of the study and planned analyses require complete, 12-hour datasets. Given this study structure, are you confident that you will be able to complete all 12 sessions of the main study? If you are reluctant to continue or think you may not be able to complete all 12 sessions, respond “no” to this question.",
     name: "structure_of_study",
     required: true,
     options: ["Yes", "No"],
